@@ -1,0 +1,26 @@
+.single-article {
+    padding: 20px;
+  }
+  
+  .single-article h1 {
+    font-size: 32px;
+    margin-bottom: 10px;
+  }
+  
+  .article-meta {
+    font-size: 14px;
+    color: #777;
+    margin-bottom: 20px;
+  }
+  
+  .article-content p {
+    font-size: 16px;
+    line-height: 1.6;
+    margin-bottom: 15px;
+  }
+  
+  .article-stats {
+    font-size: 14px;
+    color: #555;
+    margin-top: 20px;
+  }

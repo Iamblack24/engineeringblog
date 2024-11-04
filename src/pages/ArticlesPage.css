@@ -1,0 +1,10 @@
+.articles-page {
+    padding: 20px;
+  }
+  
+  .articles-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    justify-content: center;
+  }

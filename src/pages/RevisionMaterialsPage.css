@@ -1,0 +1,10 @@
+.revision-materials-page {
+    padding: 20px;
+  }
+  
+  .materials-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    justify-content: center;
+  }
