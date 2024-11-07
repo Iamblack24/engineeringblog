@@ -30,7 +30,7 @@ const HomePage = () => {
         </section>
         <section className="content-section">
           <div className="content-card">
-            <img src="/cad1.jpg" alt="Articles" className="content-image" />
+            <img src="/cad1.jpg" alt="Articles" className="content-image small-image" />
             <div className="content-text">
               <h2>Articles</h2>
               <p>Explore a wide range of articles on various civil engineering topics, including construction, sustainability, and project management.</p>
@@ -38,7 +38,7 @@ const HomePage = () => {
             </div>
           </div>
           <div className="content-card">
-            <img src="/cad2.jpg" alt="Case Studies" className="content-image" />
+            <img src="/cad2.jpg" alt="Case Studies" className="content-image small-image" />
             <div className="content-text">
               <h2>Case Studies</h2>
               <p>Dive into detailed case studies of famous engineering projects, showcasing innovative solutions and best practices.</p>
@@ -46,7 +46,7 @@ const HomePage = () => {
             </div>
           </div>
           <div className="content-card">
-            <img src="/cad3.jpg" alt="Engineering Tools" className="content-image" />
+            <img src="/cad3.jpg" alt="Engineering Tools" className="content-image small-image" />
             <div className="content-text">
               <h2>Engineering Tools</h2>
               <p>Utilize our interactive tools, including calculators and visualizers, to enhance your learning and project planning.</p>
@@ -54,7 +54,7 @@ const HomePage = () => {
             </div>
           </div>
           <div className="content-card">
-            <img src="/build.jpg" alt="Revision Materials" className="content-image" />
+            <img src="/build.jpg" alt="Revision Materials" className="content-image small-image" />
             <div className="content-text">
               <h2>Revision Materials</h2>
               <p>Access a variety of revision materials, including flashcards, summaries, and quizzes, to help you prepare for exams.</p>
@@ -62,7 +62,7 @@ const HomePage = () => {
             </div>
           </div>
           <div className="content-card">
-            <img src="/last.jpg" alt="Career Guides" className="content-image" />
+            <img src="/last.jpg" alt="Career Guides" className="content-image small-image" />
             <div className="content-text">
               <h2>Career Guides</h2>
               <p>Get insights into different career paths, interview preparation tips, and skill development resources for civil engineers.</p>
@@ -87,7 +87,7 @@ const HomePage = () => {
             <p>"This blog has been an invaluable resource for my studies. The articles and tools are top-notch!"</p>
             <span>- Alex, Civil Engineering Student</span>
           </div>
-          <div className="testimonial">
+          <div class="testimonial">
             <p>"The case studies provide great insights into real-world engineering challenges and solutions."</p>
             <span>- Maria, Structural Engineer</span>
           </div>
