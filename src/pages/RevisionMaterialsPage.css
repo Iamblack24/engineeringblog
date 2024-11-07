@@ -1,10 +1,47 @@
 .revision-materials-page {
-    padding: 20px;
-  }
-  
-  .materials-list {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 20px;
-    justify-content: center;
-  }
+  padding: 20px;
+  background-color: var(--background-color);
+}
+
+.materials-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  justify-content: center;
+}
+
+.material-link {
+  text-decoration: none;
+  flex: 1 1 calc(33.333% - 20px);
+  max-width: calc(33.333% - 20px);
+}
+
+.material-link:hover .revision-material-card {
+  transform: scale(1.05);
+  transition: transform 0.3s ease;
+}
+
+.material-link h2 {
+  font-size: 1.5em;
+  color: var(--text-color);
+}
+
+.revision-material-card {
+  background-color: var(--secondary-color);
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 20px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease;
+}
+
+.revision-material-card h2 {
+  font-size: 1.5em;
+  margin-bottom: 10px;
+  color: var(--text-color);
+}
+
+.revision-material-card p {
+  font-size: 1em;
+  color: var(--text-color);
+}

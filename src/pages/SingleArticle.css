@@ -3,7 +3,7 @@
   }
   
   .single-article h1 {
-    font-size: 32px;
+    font-size: 31px;
     margin-bottom: 10px;
   }
   
@@ -11,6 +11,7 @@
     font-size: 14px;
     color: #777;
     margin-bottom: 20px;
+    
   }
   
   .article-content p {

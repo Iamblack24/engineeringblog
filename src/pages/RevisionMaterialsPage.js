@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import RevisionMaterialCard from '../components/RevisionMaterialCard';
 import './RevisionMaterialsPage.css'; // Import the CSS file for styling
 
@@ -42,12 +43,12 @@ const RevisionMaterialsPage = () => {
       <h1>Revision Materials</h1>
       <div className="materials-list">
         {revisionMaterials.map((material, index) => (
-          <RevisionMaterialCard
-            key={index}
-            title={material.title}
-            description={material.description}
-            link={material.link}
-          />
+          <Link to={material.link} key={index} className="material-link">
+            <RevisionMaterialCard
+              title={material.title}
+              description={material.description}
+            />
+          </Link>
         ))}
       </div>
     </div>

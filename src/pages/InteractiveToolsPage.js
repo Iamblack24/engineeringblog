@@ -14,11 +14,6 @@ const tools = [
     link: '/tools/concrete-mix-design', // Replace with the actual link to the tool
   },
   {
-    title: 'Unit Converter',
-    description: 'Convert between different units of measurement commonly used in engineering.',
-    link: '/tools/unit-converter', // Replace with the actual link to the tool
-  },
-  {
     title: 'Slope Stability Calculator',
     description: 'Analyze the stability of slopes and embankments.',
     link: '/tools/slope-stability', // Replace with the actual link to the tool
@@ -38,6 +33,29 @@ const tools = [
     description: 'Determine the bearing capacity of soil for foundation design.',
     link: '/tools/soil-bearing-capacity', // Replace with the actual link to the tool
   },
+  {
+    title: 'Pile Design Tool',
+    description: 'Design and analyze pile foundations for various soil conditions.',
+    link: '/tools/pile-design', // Replace with the actual link to the tool
+  },
+  {
+    title: 'Retaining Wall Design Tool',
+    description: 'Design and analyze different types of retaining walls for stability and safety.',
+    link: '/tools/retaining-wall-design', // Replace with the actual link to the tool
+  },
+  {
+    title: 'Steel Connection Design Tool',
+    description: 'Design bolted and welded steel connections for structural steel members.',
+    link: '/tools/steel-connection-design', // Replace with the actual link to the tool
+  },
+  {
+    title: 'Reinforced Concrete Design Tool',
+    description: 'Design reinforced concrete beams, columns, and slabs for strength and durability.',
+    link: '/tools/reinforced-concrete-design', // Replace with the actual link to the tool
+  },
+  
+  
+
   // Add more tools here
 ];
 

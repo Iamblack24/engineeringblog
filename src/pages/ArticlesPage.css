@@ -1,10 +1,27 @@
+/* src/pages/ArticlesPage.css */
+
 .articles-page {
-    padding: 20px;
-  }
-  
-  .articles-list {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 20px;
-    justify-content: center;
-  }
+  padding: 20px;
+  background-color: var(--background-color);
+  color: var(--text-color);
+}
+
+.articles-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+.article-card {
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 15px;
+  width: 300px; /* Set the card width */
+  background-color: var(--accent-color);
+}
+
+.article-image {
+  width: 100%; /* Make the image take the full width of the card */
+  height: auto; /* Maintain aspect ratio */
+  border-radius: 4px;
+}

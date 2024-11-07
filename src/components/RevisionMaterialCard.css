@@ -14,7 +14,8 @@
   }
   
   .revision-material-card h2 {
-    font-size: 24px;
+    font-size: 1.5em;
+    color: #333;
     margin-bottom: 10px;
   }
   
@@ -27,7 +28,7 @@
   .material-link {
     display: inline-block;
     padding: 10px 20px;
-    background-color: #007bff;
+    background-color: #64FFDA;
     color: white;
     text-decoration: none;
     border-radius: 4px;

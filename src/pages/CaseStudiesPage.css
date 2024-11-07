@@ -1,10 +1,17 @@
+/* src/pages/CaseStudiesPage.css */
 .case-studies-page {
-    padding: 20px;
-  }
-  
-  .case-studies-list {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 20px;
-    justify-content: center;
-  }
+  padding: 20px;
+  background-color: var(--background-color);
+  color: var(--secondary-color);
+}
+
+.case-studies-page h1 {
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.case-studies-list {
+  display: flex;
+  gap: 20px;
+  justify-content: center;
+}

@@ -10,7 +10,7 @@ const articles = [
     date: '2023-01-15',
     likes: 120,
     dislikes: 5,
-    photo: '/path/to/photo.jpg' // Add a photo path for the article
+    photo: '/und-struct-eng.jpg' // Add a photo path for the article
   },
   {
     id: 2,
@@ -19,7 +19,7 @@ const articles = [
     date: '2023-02-10',
     likes: 98,
     dislikes: 2,
-    photo: '/path/to/photo.jpg' // Add a photo path for the article
+    photo: '/sustainable.jpg'  // Add a photo path for the article
   },
   // Add more articles here
 ];

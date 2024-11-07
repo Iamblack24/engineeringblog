@@ -1,15 +1,17 @@
+// src/components/CaseStudyCard.js
 import React from 'react';
 import { Link } from 'react-router-dom';
-import './CaseStudyCard.css'; // Import the CSS file for styling
+import './CaseStudyCard.css';
 
-const CaseStudyCard = ({ id, title, description, image }) => {
+const CaseStudyCard = ({ caseStudy }) => {
   return (
     <div className="case-study-card">
-      <img src={image} alt={title} className="case-study-image" />
-      <h2>
-        <Link to={`/case-studies/${id}`}>{title}</Link>
-      </h2>
-      <p>{description}</p>
+      <img src={caseStudy.image} alt={caseStudy.title} className="case-study-image" />
+      <h2>{caseStudy.title}</h2>
+      <p>{caseStudy.description}</p>
+      <Link to={`/case-studies/${caseStudy.id}`} className="read-more-link">
+        Read More
+      </Link>
     </div>
   );
 };

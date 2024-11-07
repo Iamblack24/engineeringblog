@@ -1,10 +1,12 @@
 .interactive-tools-page {
-    padding: 20px;
-  }
-  
-  .tools-list {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 20px;
-    justify-content: center;
-  }
+  padding: 20px;
+  background-color: var(--background-color);
+  color: var(--secondary-color);
+}
+
+.tools-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  justify-content: center;
+}

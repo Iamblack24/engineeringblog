@@ -1,0 +1,72 @@
+/* src/RetainingWallDesignTool.css */
+
+.retaining-wall-design-tool {
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 20px;
+  background-color: var(--secondary-color);
+  color: var(--text-color);
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.retaining-wall-design-tool h1 {
+  text-align: center;
+  color: var(--accent-color);
+  margin-bottom: 20px;
+}
+
+.form-group {
+  margin-bottom: 15px;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 5px;
+  font-weight: bold;
+  color: var(--text-color); /* Ensure label text color is set */
+}
+
+.form-group input,
+.form-group select {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid var(--accent-color);
+  border-radius: 4px;
+  background-color: var(--primary-color);
+  color: var(--text-color); /* Ensure input text color is set */
+}
+
+button {
+  width: 100%;
+  padding: 10px;
+  background-color: var(--accent-color);
+  color: var(--background-color);
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 1rem;
+}
+
+button:hover {
+  background-color: #52c7b8; /* Slightly lighter accent color */
+}
+
+.result {
+  margin-top: 20px;
+  padding: 15px;
+  background-color: var(--primary-color);
+  color: var(--text-color); /* Ensure result text color is set */
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.result h2 {
+  color: var(--accent-color);
+  margin-bottom: 10px;
+}
+
+.result p {
+  margin: 5px 0;
+  color: var(--text-color); /* Ensure paragraph text color is set */
+}

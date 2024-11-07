@@ -1,0 +1,22 @@
+/* src/pages/CareerGuideDetail.css */
+
+.career-guide-detail {
+    padding: 20px;
+    max-width: 800px;
+    margin: 0 auto;
+  }
+  
+  .career-guide-detail h1 {
+    margin-bottom: 20px;
+  }
+  
+  .career-guide-detail p {
+    font-size: 16px;
+    line-height: 1.6;
+    margin-bottom: 15px;
+  }
+  
+  .career-guide-detail h2 {
+    margin-top: 20px;
+    margin-bottom: 10px;
+  }

@@ -1,0 +1,17 @@
+.design-materials-page {
+  padding: 20px;
+  background-color: var(--background-color);
+  color: var(--secondary-color);
+}
+
+.design-materials-page h1 {
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.materials-list {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 20px;
+}

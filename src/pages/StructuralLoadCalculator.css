@@ -1,0 +1,31 @@
+/* src/pages/StructuralLoadCalculator.css */
+
+.structural-load-calculator {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.form-group {
+  margin-bottom: 15px;
+}
+
+label {
+  display: block;
+  font-weight: bold;
+}
+
+input, select {
+  width: 100%;
+  padding: 8px;
+  margin-top: 5px;
+}
+
+button {
+  margin-top: 10px;
+  padding: 10px 20px;
+}
+
+.results {
+  margin-top: 30px;
+}

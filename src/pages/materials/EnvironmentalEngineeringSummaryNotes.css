@@ -1,0 +1,80 @@
+/* EnvironmentalEngineeringSummaryNotes.css */
+
+.environmental-engineering-summary-notes {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 30px;
+    background-color: var(--primary-color);
+    color: var(--text-color);
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  }
+  
+  .environmental-engineering-summary-notes h1 {
+    text-align: center;
+    color: var(--accent-color);
+    margin-bottom: 20px;
+  }
+  
+  .environmental-engineering-summary-notes p {
+    text-align: center;
+    margin-bottom: 30px;
+    font-size: 1.1rem;
+  }
+  
+  .notes-section {
+    margin-bottom: 25px;
+  }
+  
+  .notes-section h2 {
+    color: var(--accent-color);
+    margin-bottom: 10px;
+    font-size: 1.5rem;
+  }
+  
+  .notes-section p {
+    margin-bottom: 10px;
+    line-height: 1.6;
+  }
+  
+  .notes-section ul {
+    list-style-type: disc;
+    margin-left: 20px;
+  }
+  
+  .notes-section li {
+    margin-bottom: 8px;
+    line-height: 1.6;
+  }
+  
+  .notes-section pre {
+    background-color: #f4f4f4; /* Light gray background */
+    color: #333333;           /* Dark text color */
+    padding: 10px;
+    border-radius: 4px;
+    overflow-x: auto;
+    font-family: Consolas, monospace;
+    font-size: 1rem;
+    margin-top: 10px;
+  }
+  
+  @media (max-width: 600px) {
+    .environmental-engineering-summary-notes {
+      padding: 20px;
+    }
+  
+    .environmental-engineering-summary-notes h1 {
+      font-size: 1.8rem;
+    }
+  
+    .notes-section h2 {
+      font-size: 1.3rem;
+    }
+  
+    .environmental-engineering-summary-notes p,
+    .notes-section p,
+    .notes-section li {
+      font-size: 1rem;
+    }
+  }
