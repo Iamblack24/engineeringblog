@@ -8,6 +8,10 @@ const Navbar = () => {
     setIsMenuOpen(!isMenuOpen);
   };
 
+  const handleCloseMenu = () => {
+    setIsMenuOpen(false);
+  };
+
   return (
     <nav className="navbar dark-navbar">
       <div className="navbar-logo">
@@ -17,15 +21,16 @@ const Navbar = () => {
         ☰
       </div>
       <ul className={`navbar-links ${isMenuOpen ? 'open' : ''}`}>
-        <li><a href="/">Home</a></li>
-        <li><a href="/articles">Articles</a></li>
-        <li><a href="/design-materials">Design Materials</a></li>
-        <li><a href="/case-studies">Case Studies</a></li>
-        <li><a href="/tools">Tools</a></li>
-        <li><a href="/revision-materials">Revision Materials</a></li>
-        <li><a href="/career-guides">Career Guides</a></li>
-        <li><a href="/contact">Contact</a></li>
+        <li><a href="/" onClick={handleCloseMenu}>Home</a></li>
+        <li><a href="/articles" onClick={handleCloseMenu}>Articles</a></li>
+        <li><a href="/design-materials" onClick={handleCloseMenu}>Design Materials</a></li>
+        <li><a href="/case-studies" onClick={handleCloseMenu}>Case Studies</a></li>
+        <li><a href="/tools" onClick={handleCloseMenu}>Tools</a></li>
+        <li><a href="/revision-materials" onClick={handleCloseMenu}>Revision Materials</a></li>
+        <li><a href="/career-guides" onClick={handleCloseMenu}>Career Guides</a></li>
+        <li><a href="/contact" onClick={handleCloseMenu}>Contact</a></li>
       </ul>
+      {isMenuOpen && <div className="backdrop" onClick={handleCloseMenu}></div>}
       <div className="in-development-label">
         🚧 In Development 🚧
       </div>
