@@ -1,35 +1,15 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import './Navbar.css'; // Import the CSS file for navbar styling
 
 const Navbar = () => {
-  const [isDarkMode, setIsDarkMode] = useState(() => {
-    // Check local storage for theme preference
-    const savedTheme = localStorage.getItem('theme');
-    return savedTheme === 'dark';
-  });
-
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-
-  useEffect(() => {
-    if (isDarkMode) {
-      document.body.classList.add('dark-theme');
-      localStorage.setItem('theme', 'dark');
-    } else {
-      document.body.classList.remove('dark-theme');
-      localStorage.setItem('theme', 'light');
-    }
-  }, [isDarkMode]);
-
-  const handleToggle = () => {
-    setIsDarkMode(!isDarkMode);
-  };
 
   const handleMenuToggle = () => {
     setIsMenuOpen(!isMenuOpen);
   };
 
   return (
-    <nav className="navbar">
+    <nav className="navbar dark-navbar">
       <div className="navbar-logo">
         <h2>Engineering Hub</h2>
       </div>
@@ -48,13 +28,6 @@ const Navbar = () => {
       </ul>
       <div className="in-development-label">
         🚧 In Development 🚧
-      </div>
-      <div className="dark-mode-toggle">
-        <label className="switch">
-          <input type="checkbox" checked={isDarkMode} onChange={handleToggle} />
-          <span className="slider round"></span>
-        </label>
-        <span>{isDarkMode ? 'Dark' : 'Light'} Mode</span>
       </div>
     </nav>
   );
