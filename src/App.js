@@ -30,6 +30,7 @@ import TransportationEngineeringQuiz from './pages/materials/TransportationEngin
 import RetainingWallDesignTool from './pages/RetainingWallDesignTool'; // Import the new component
 import SteelConnectionDesignTool from './pages/SteelConnectionDesignTool'; // Import the new component
 import ReinforcedConcreteDesignTool from './pages/ReinforcedConcreteDesignTool'; // Import the new component
+import DownloadableRevisionMaterialsPage from './pages/materials/DownloadableRevisionMaterialsPage'; // Import the new component
 import './App.css'; // Import global CSS
 
 function App() {
@@ -52,6 +53,7 @@ function App() {
         <Route path="/tools/steel-connection-design" element={<SteelConnectionDesignTool />} /> {/* Add this route */}
         <Route path="/tools/reinforced-concrete-design" element={<ReinforcedConcreteDesignTool />} /> {/* Add this route */}
         <Route path="/revision-materials" element={<RevisionMaterialsPage />} />
+        <Route path="/materials/downloadable-revision-materials" element={<DownloadableRevisionMaterialsPage />} /> {/* Add this route */}
         <Route path="/career-guides" element={<CareerGuidesPage />} />
         <Route path="/tools/soil-bearing-capacity" element={<SoilBearingCapacityCalculator />} />
         <Route path="/tools/structural-load" element={<StructuralLoadCalculator />} />

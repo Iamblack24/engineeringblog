@@ -1,83 +1,110 @@
 /* src/pages/PileDesignTool.css */
 
 .pile-design-tool {
-    max-width: 700px;
-    margin: 40px auto;
-    padding: 30px;
-    background-color: var(--secondary-color);
-    color: var(--text-color);
-    border-radius: 10px;
-    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+  background-color: #f9f9f9; /* Light background */
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  color: #333333; /* Dark text */
+}
+
+.pile-design-tool h1 {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.form-group label {
+  margin-bottom: 5px;
+  font-weight: bold;
+}
+
+.form-group input,
+.form-group select {
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.soil-layer {
+  border: 1px solid #ddd;
+  padding: 15px;
+  border-radius: 4px;
+  background-color: #ffffff;
+  margin-bottom: 10px;
+}
+
+.soil-layer h4 {
+  margin-top: 0;
+}
+
+button {
+  padding: 10px 15px;
+  background-color: #1e90ff; /* DodgerBlue */
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 16px;
+  transition: background-color 0.3s;
+}
+
+button:hover {
+  background-color: #1c86ee; /* Slightly darker */
+}
+
+.results {
+  margin-top: 30px;
+  padding: 15px;
+  background-color: #e6f7ff; /* Light blue */
+  border-radius: 4px;
+}
+
+.results h2 {
+  margin-top: 0;
+}
+
+.chart-container {
+  margin-top: 30px;
+}
+
+.chart-container h2 {
+  text-align: center;
+  margin-bottom: 10px;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .pile-design-tool {
+    padding: 15px;
   }
-  
-  .pile-design-tool h1 {
-    text-align: center;
-    color: var(--accent-color);
-    margin-bottom: 25px;
+
+  button {
+    font-size: 14px;
+    padding: 8px 12px;
   }
-  
-  .pile-form {
-    display: flex;
-    flex-direction: column;
+
+  .soil-layer {
+    padding: 10px;
   }
-  
-  .form-group {
-    display: flex;
-    flex-direction: column;
-    margin-bottom: 20px;
+
+  .results {
+    padding: 10px;
   }
-  
-  .form-group label {
-    margin-bottom: 8px;
-    font-weight: bold;
-  }
-  
-  .form-group input,
-  .form-group select {
-    padding: 12px;
-    border: 1px solid var(--accent-color);
-    border-radius: 6px;
-    background-color: var(--primary-color);
-    color: var(--text-color);
-    font-size: 1rem;
-  }
-  
-  .calculate-button {
-    padding: 12px;
-    background-color: var(--accent-color);
-    color: var(--background-color);
-    border: none;
-    border-radius: 6px;
-    cursor: pointer;
-    font-size: 1.1rem;
-    transition: background-color 0.3s ease;
-  }
-  
-  .calculate-button:hover {
-    background-color: #52c7b8; /* Slightly lighter accent color */
-  }
-  
-  .result {
-    margin-top: 30px;
-    padding: 20px;
-    background-color: var(--primary-color);
-    border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  }
-  
-  .result h2 {
-    color: var(--accent-color);
-    margin-bottom: 15px;
-  }
-  
-  .result p {
-    margin: 8px 0;
-    font-size: 1rem;
-  }
+
   .chart-container {
-    margin-top: 30px;
-    padding: 20px;
-    background-color: var(--primary-color);
-    border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    margin-top: 20px;
   }
+}

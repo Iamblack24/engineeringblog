@@ -34,6 +34,11 @@ const revisionMaterials = [
     description: 'Test your knowledge with this quiz on transportation engineering.',
     link: '/materials/transportation-engineering-quiz', // Replace with the actual link to the material
   },
+  {
+    title: 'Downloadable Revision Materials',
+    description: 'Access and download various revision materials.',
+    link: '/materials/downloadable-revision-materials', // Link to the new page
+  },
   // Add more revision materials here
 ];
 

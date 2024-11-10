@@ -23,11 +23,11 @@
   background-repeat: no-repeat;
   position: relative;
   height: 400px;
-  color: var(--text-color);
+  color: black;
 }
 
 .hero-overlay {
-  background-color: rgba(10, 25, 47, 0.85); /* Semi-transparent dark blue overlay */
+  /* Semi-transparent dark blue overlay */
   position: absolute;
   top: 0;
   left: 0;

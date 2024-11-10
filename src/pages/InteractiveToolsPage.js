@@ -1,5 +1,6 @@
 import React from 'react';
 import InteractiveToolCard from '../components/InteractiveToolCard';
+import InteractiveAI from '../components/InteractiveAI';
 import './InteractiveToolsPage.css'; // Import the CSS file for styling
 
 const tools = [
@@ -73,6 +74,8 @@ const InteractiveToolsPage = () => {
           />
         ))}
       </div>
+      {/* Standalon ai tool */}
+      <InteractiveAI />
     </div>
   );
 };

@@ -1,413 +1,528 @@
 // src/pages/StructuralLoadCalculator.js
 import React, { useState } from 'react';
 import './StructuralLoadCalculator.css';
-import CanvasJSReact from '../assets/canvasjs.react'; // Ensure the path is correct
+import { Line } from 'react-chartjs-2';
+import {
+  Chart as ChartJS,
+  LineElement,
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  Tooltip,
+  Legend,
+} from 'chart.js';
 
-const CanvasJSChart = CanvasJSReact.CanvasJSChart;
+ChartJS.register(LineElement, CategoryScale, LinearScale, PointElement, Tooltip, Legend);
 
 const StructuralLoadCalculator = () => {
-  // State variables for beam configuration, loads, and results
-  const [beamLength, setBeamLength] = useState('');
-  const [supportType, setSupportType] = useState('simply-supported');
-  const [overhangLength, setOverhangLength] = useState('');
-  const [loads, setLoads] = useState([]);
-  const [loadType, setLoadType] = useState('point');
-  const [loadValue, setLoadValue] = useState('');
-  const [loadStart, setLoadStart] = useState('');
-  const [loadEnd, setLoadEnd] = useState('');
-  const [results, setResults] = useState(null);
-  const [reactions, setReactions] = useState(null);
+  const [beamType, setBeamType] = useState('simplySupported'); // New state for beam type
+  const [beam, setBeam] = useState({
+    mainSpan: '',
+    overhang: '',
+  });
 
-  // Adds a load to the loads array with validation
-  const addLoad = () => {
-    const value = parseFloat(loadValue);
-    const start = parseFloat(loadStart);
-    const end = loadType === 'udl' ? parseFloat(loadEnd) : null;
-    const L = parseFloat(beamLength);
-    const OH = supportType === 'overhanging' ? parseFloat(overhangLength) : 0;
-    const totalBeamLength = L + OH;
+  const [pointLoads, setPointLoads] = useState([]);
+  const [udls, setUdls] = useState([]);
 
-    // Input Validation
-    if (isNaN(value) || isNaN(start) || (loadType === 'udl' && isNaN(end))) {
-      alert('Please enter valid load values and positions.');
-      return;
-    }
+  const [result, setResult] = useState(null);
+  const [shearForce, setShearForce] = useState([]);
+  const [bendingMoment, setBendingMoment] = useState([]);
 
-    if (loadType === 'udl' && end <= start) {
-      alert('End position must be greater than start position for UDL.');
-      return;
-    }
-
-    // Determine maximum allowable position based on support type
-    const maxPosition = supportType === 'overhanging' ? totalBeamLength : L;
-
-    if (start > maxPosition || (loadType === 'udl' && end > maxPosition)) {
-      alert(`Load position must be within beam length (${maxPosition} m).`);
-      return;
-    }
-
-    // Create new load object
-    const newLoad = {
-      type: loadType,
-      value: value,
-      start: start,
-      end: end,
-    };
-
-    // Add new load to the loads array
-    setLoads([...loads, newLoad]);
-
-    // Reset load input fields
-    setLoadValue('');
-    setLoadStart('');
-    setLoadEnd('');
+  // Handle beam type selection
+  const handleBeamTypeChange = (e) => {
+    setBeamType(e.target.value);
+    // Reset beam geometry when beam type changes
+    setBeam({
+      mainSpan: '',
+      overhang: '',
+    });
+    setPointLoads([]);
+    setUdls([]);
+    setResult(null);
+    setShearForce([]);
+    setBendingMoment([]);
   };
 
-  // Removes a load from the loads array
-  const removeLoad = (index) => {
-    const updatedLoads = [...loads];
-    updatedLoads.splice(index, 1);
-    setLoads(updatedLoads);
+  // Handle beam geometry input changes
+  const handleBeamChange = (e) => {
+    const { name, value } = e.target;
+    setBeam((prevBeam) => ({
+      ...prevBeam,
+      [name]: parseFloat(value),
+    }));
   };
 
-  // Calculates reactions and internal forces
-  const calculateResults = (e) => {
-    e.preventDefault();
+  // Handle point loads input changes
+  const handlePointLoadChange = (index, e) => {
+    const { name, value } = e.target;
+    const newPointLoads = [...pointLoads];
+    newPointLoads[index][name] = parseFloat(value);
+    setPointLoads(newPointLoads);
+  };
 
-    const L = parseFloat(beamLength);
-    if (isNaN(L) || L <= 0) {
-      alert('Please enter a valid beam length.');
-      return;
-    }
+  // Handle UDLs input changes
+  const handleUdlChange = (index, e) => {
+    const { name, value } = e.target;
+    const newUdls = [...udls];
+    newUdls[index][name] = parseFloat(value);
+    setUdls(newUdls);
+  };
 
-    const OH = supportType === 'overhanging' ? parseFloat(overhangLength) : 0;
-    const totalBeamLength = L + OH;
+  // Add a new point load
+  const addPointLoad = () => {
+    setPointLoads([...pointLoads, { value: '', position: '' }]);
+  };
 
-    if (supportType === 'overhanging' && isNaN(OH)) {
-      alert('Please enter a valid overhang length.');
-      return;
-    }
+  // Add a new UDL
+  const addUdl = () => {
+    setUdls([...udls, { w: '', start: '', end: '' }]);
+  };
 
-    if (supportType === 'overhanging' && OH < 0) {
-      alert('Overhang length must be a positive number.');
-      return;
-    }
+  // Calculate Reactions based on beam type
+  const calculateReactions = () => {
+    const L = beam.mainSpan;
+    const l = beam.overhang || 0;
 
-    // Initialize a local array to hold all loads (added + pending)
-    let allLoads = [...loads];
-
-    // Check if there are pending load inputs
-    if (
-      loadValue !== '' &&
-      loadStart !== '' &&
-      (loadType === 'point' || (loadType === 'udl' && loadEnd !== ''))
-    ) {
-      const value = parseFloat(loadValue);
-      const start = parseFloat(loadStart);
-      const end = loadType === 'udl' ? parseFloat(loadEnd) : null;
-
-      // Validate the entered load
-      if (isNaN(value) || isNaN(start) || (loadType === 'udl' && isNaN(end))) {
-        alert('Please enter valid load values and positions.');
-        return;
-      }
-
-      if (loadType === 'udl' && end <= start) {
-        alert('End position must be greater than start position for UDL.');
-        return;
-      }
-
-      // Determine maximum allowable position based on support type
-      const maxPosition = supportType === 'overhanging' ? totalBeamLength : L;
-
-      if (start > maxPosition || (loadType === 'udl' && end > maxPosition)) {
-        alert(`Load position must be within beam length (${maxPosition} m).`);
-        return;
-      }
-
-      // Add the pending load to the local allLoads array
-      allLoads.push({
-        type: loadType,
-        value: value,
-        start: start,
-        end: end,
-      });
-
-      // Reset load input fields
-      setLoadValue('');
-      setLoadStart('');
-      setLoadEnd('');
-    }
-
-    if (allLoads.length === 0) {
-      alert('Please add at least one load before calculating.');
-      return;
-    }
-
-    // Calculate total load and moment about Support A
-    let totalLoad = 0;
-    let totalMomentA = 0;
-
-    allLoads.forEach((load) => {
-      if (load.type === 'point') {
-        totalLoad += load.value;
-        totalMomentA += load.value * load.start;
-      } else if (load.type === 'udl') {
-        const w = load.value;
-        const a = load.start;
-        const b = load.end;
-        const udlTotal = w * (b - a);
-        const udlCentroid = (a + b) / 2;
-        totalLoad += udlTotal;
-        totalMomentA += udlTotal * udlCentroid;
-      }
+    // Total load from point loads
+    let totalPointLoad = 0;
+    pointLoads.forEach((load) => {
+      totalPointLoad += load.value;
     });
 
-    // Calculate reactions based on support type
+    // Total load from UDLs
+    let totalUdlLoad = 0;
+    udls.forEach((udl) => {
+      const length = udl.end - udl.start;
+      totalUdlLoad += udl.w * length;
+    });
+
+    const totalLoad = totalPointLoad + totalUdlLoad;
+
     let RA = 0;
     let RB = 0;
+    let centroid = 0;
+    let momentA = 0;
 
-    if (supportType === 'simply-supported') {
-      RB = totalMomentA / L;
-      RA = totalLoad - RB;
-    } else if (supportType === 'overhanging') {
-      RB = totalMomentA / L;
-      RA = totalLoad - RB;
-    } else if (supportType === 'cantilever') {
-      RA = totalLoad;
-      RB = 0;
+    switch (beamType) {
+      case 'simplySupported':
+        // Reactions for Simply Supported Beams
+        // Sum of moments about A: RB * L = Total Load * (centroid position)
+        pointLoads.forEach((load) => {
+          centroid += load.value * load.position;
+        });
+
+        udls.forEach((udl) => {
+          const length = udl.end - udl.start;
+          const totalUdLoad = udl.w * length;
+          const udlCentroid = udl.start + length / 2;
+          centroid += totalUdLoad * udlCentroid;
+        });
+
+        RB = centroid / L;
+        RA = totalLoad - RB;
+        break;
+
+      case 'fixed':
+        // Reactions for Fixed Beams
+        // Requires additional calculations for fixed supports
+        // For simplicity, assuming fixed at both ends with moments
+        // Sum of vertical forces: RA + RB = Total Load
+        // Sum of moments about A: RB * L = Total Load * centroid position
+        // Additionally, calculate moments at supports
+
+        pointLoads.forEach((load) => {
+          centroid += load.value * load.position;
+        });
+
+        udls.forEach((udl) => {
+          const length = udl.end - udl.start;
+          const totalUdLoad = udl.w * length;
+          const udlCentroid = udl.start + length / 2;
+          centroid += totalUdLoad * udlCentroid;
+        });
+
+        RB = centroid / L;
+        RA = totalLoad - RB;
+        break;
+
+      case 'cantilever':
+        // Reactions for Cantilever Beams
+        // Fixed at one end (A), free at the other
+
+        pointLoads.forEach((load) => {
+          momentA += load.value * load.position;
+        });
+
+        udls.forEach((udl) => {
+          const length = udl.end - udl.start;
+          const totalUdLoad = udl.w * length;
+          const udlCentroid = udl.start + length / 2;
+          momentA += totalUdLoad * udlCentroid;
+        });
+
+        RA = totalLoad;
+        RB = 0; // No support at the free end
+        break;
+
+      case 'overhanging':
+        // Reactions for Overhanging Beams
+        // As previously implemented
+        // Sum of moments about A
+        pointLoads.forEach((load) => {
+          if (load.position <= L) {
+            momentA += load.value * load.position;
+          } else {
+            momentA += load.value * L;
+          }
+        });
+
+        udls.forEach((udl) => {
+          const length = udl.end - udl.start;
+          const totalUdLoad = udl.w * length;
+          const centroid = udl.start + length / 2;
+
+          if (centroid <= L) {
+            momentA += totalUdLoad * centroid;
+          } else {
+            momentA += totalUdLoad * L;
+          }
+        });
+
+        RB = momentA / (L + l);
+        RA = totalLoad - RB;
+        break;
+
+      default:
+        RA = 0;
+        RB = 0;
     }
 
-    setReactions({
-      RA: RA.toFixed(2),
-      RB: supportType !== 'cantilever' ? RB.toFixed(2) : '0.00',
-    });
+    return { RA, RB };
+  };
 
-    // Calculate Shear Force and Bending Moment
-    const shearForce = [];
-    const bendingMoment = [];
-    const numPoints = 200; // Increased for better resolution
-    const dx = totalBeamLength / (numPoints - 1);
+  // Handle form submission
+  const handleSubmit = (e) => {
+    e.preventDefault();
 
-    for (let i = 0; i < numPoints; i++) {
-      const x = parseFloat((i * dx).toFixed(4));
+    // Validate inputs
+    if (!beam.mainSpan || (beamType === 'overhanging' && beam.overhang === '')) {
+      alert('Please enter beam geometry.');
+      return;
+    }
+
+    // Calculate reactions
+    const { RA, RB } = calculateReactions();
+
+    // Initialize arrays for shear force and bending moment
+    const shear = [];
+    const momentArr = [];
+
+    const totalLength =
+      beamType === 'overhanging' ? beam.mainSpan + beam.overhang : beam.mainSpan;
+    const increment = 0.1; // Define the resolution of the diagrams
+
+    for (let x = 0; x <= totalLength; x += increment) {
       let V = RA;
       let M = RA * x;
 
-      // Apply loads
-      allLoads.forEach((load) => {
-        if (load.type === 'point' && x >= load.start) {
+      // Apply point loads
+      pointLoads.forEach((load) => {
+        if (x >= load.position && (beamType !== 'overhanging' || load.position <= beam.mainSpan)) {
           V -= load.value;
-          M -= load.value * (x - load.start);
-        } else if (load.type === 'udl') {
-          const w = load.value;
-          const a = load.start;
-          const b = load.end;
+          M -= load.value * (x - load.position);
+        }
+      });
 
-          if (x >= a && x <= b) {
-            const span = x - a;
+      // Apply UDLs
+      udls.forEach((udl) => {
+        const w = udl.w;
+        const a = udl.start;
+        const b = udl.end;
+
+        if (x >= a && x <= b && (beamType !== 'overhanging' || a <= beam.mainSpan)) {
+          const span = x - a;
+          V -= w * span;
+          M -= (w * Math.pow(span, 2)) / 2;
+        } else if (x > b && (beamType !== 'overhanging' || a <= beam.mainSpan)) {
+          const span = b - a;
+          V -= w * span;
+          M -= w * span * (x - (a + b) / 2);
+        }
+
+        // Handle overhang UDLs
+        if (beamType === 'overhanging') {
+          if (udl.start > beam.mainSpan && x >= udl.start && x <= udl.end) {
+            const span = x - udl.start;
             V -= w * span;
             M -= (w * Math.pow(span, 2)) / 2;
-          } else if (x > b) {
-            const span = b - a;
+          } else if (udl.start > beam.mainSpan && x > udl.end) {
+            const span = udl.end - udl.start;
             V -= w * span;
-            M -= w * span * (x - (a + b) / 2);
+            M -= w * span * (x - (udl.start + udl.end) / 2);
           }
         }
       });
 
-      shearForce.push({ x: x, y: parseFloat(V.toFixed(2)) });
-      bendingMoment.push({ x: x, y: parseFloat(M.toFixed(2)) });
+      // Apply reaction RB if applicable
+      if (beamType === 'overhanging' && x > beam.mainSpan) {
+        V -= RB;
+        M -= RB * (x - beam.mainSpan);
+      }
+
+      shear.push({ x: parseFloat(x.toFixed(2)), y: parseFloat(V.toFixed(2)) });
+      momentArr.push({ x: parseFloat(x.toFixed(2)), y: parseFloat(M.toFixed(2)) });
     }
 
-    setResults({
-      shearForce,
-      bendingMoment,
-    });
+    setResult({ RA: RA.toFixed(2), RB: RB.toFixed(2) });
+    setShearForce(shear);
+    setBendingMoment(momentArr);
   };
 
-  // Resets all input fields and results
-  const resetCalculator = () => {
-    setBeamLength('');
-    setSupportType('simply-supported');
-    setOverhangLength('');
-    setLoads([]);
-    setLoadType('point');
-    setLoadValue('');
-    setLoadStart('');
-    setLoadEnd('');
-    setResults(null);
-    setReactions(null);
+  // Prepare Chart Data for Shear Force and Bending Moment
+  const prepareChartData = () => {
+    const shearLabels = shearForce.map((point) => point.x);
+    const shearData = shearForce.map((point) => point.y);
+
+    const momentLabels = bendingMoment.map((point) => point.x);
+    const momentData = bendingMoment.map((point) => point.y);
+
+    return {
+      shear: {
+        labels: shearLabels,
+        datasets: [
+          {
+            label: 'Shear Force (V)',
+            data: shearData,
+            borderColor: 'rgba(255, 99, 132, 1)',
+            backgroundColor: 'rgba(255, 99, 132, 0.2)',
+            fill: false,
+            tension: 0.1,
+          },
+        ],
+      },
+      moment: {
+        labels: momentLabels,
+        datasets: [
+          {
+            label: 'Bending Moment (M)',
+            data: momentData,
+            borderColor: 'rgba(54, 162, 235, 1)',
+            backgroundColor: 'rgba(54, 162, 235, 0.2)',
+            fill: false,
+            tension: 0.1,
+          },
+        ],
+      },
+    };
   };
 
   return (
     <div className="structural-load-calculator">
       <h1>Structural Load Calculator</h1>
-      <form onSubmit={calculateResults}>
-        {/* Beam Length Input */}
+      <form onSubmit={handleSubmit}>
+        <h2>Beam Type</h2>
         <div className="form-group">
-          <label title="Beam length in meters. Must be a positive number.">Beam Length (m):</label>
-          <input
-            type="number"
-            step="0.01"
-            value={beamLength}
-            onChange={(e) => setBeamLength(e.target.value)}
+          <label htmlFor="beamType">Select Beam Type:</label>
+          <select
+            id="beamType"
+            name="beamType"
+            value={beamType}
+            onChange={handleBeamTypeChange}
             required
-          />
-        </div>
-
-        {/* Support Type Selection */}
-        <div className="form-group">
-          <label title="Select the type of support for the beam.">Support Type:</label>
-          <select value={supportType} onChange={(e) => setSupportType(e.target.value)}>
-            <option value="simply-supported">Simply Supported</option>
+          >
+            <option value="simplySupported">Simply Supported</option>
+            <option value="fixed">Fixed</option>
             <option value="cantilever">Cantilever</option>
             <option value="overhanging">Overhanging</option>
           </select>
         </div>
 
-        {/* Overhang Length Input (Conditional) */}
-        {supportType === 'overhanging' && (
+        <h2>Beam Geometry</h2>
+        <div className="form-group">
+          <label htmlFor="mainSpan">Main Span Length (L) in meters:</label>
+          <input
+            type="number"
+            id="mainSpan"
+            name="mainSpan"
+            value={beam.mainSpan}
+            onChange={handleBeamChange}
+            placeholder="Enter main span length"
+            step="0.1"
+            required
+          />
+        </div>
+        {beamType === 'overhanging' && (
           <div className="form-group">
-            <label title="Length of the overhang in meters. Must be a positive number.">Overhang Length (m):</label>
+            <label htmlFor="overhang">Overhang Length (l) in meters:</label>
             <input
               type="number"
-              step="0.01"
-              value={overhangLength}
-              onChange={(e) => setOverhangLength(e.target.value)}
+              id="overhang"
+              name="overhang"
+              value={beam.overhang}
+              onChange={handleBeamChange}
+              placeholder="Enter overhang length"
+              step="0.1"
               required
             />
           </div>
         )}
 
-        {/* Load Addition Section */}
-        <h3>Add Loads</h3>
-        <div className="form-group">
-          <label title="Select the type of load to add.">Load Type:</label>
-          <select value={loadType} onChange={(e) => setLoadType(e.target.value)}>
-            <option value="point">Point Load</option>
-            <option value="udl">UDL (Uniformly Distributed Load)</option>
-          </select>
-        </div>
-
-        {/* Load Value Input */}
-        <div className="form-group">
-          <label title={loadType === 'point' ? "Load value in kN." : "Load intensity in kN/m."}>
-            {loadType === 'point' ? 'Load Value (kN):' : 'Load Intensity (kN/m):'}
-          </label>
-          <input
-            type="number"
-            step="0.01"
-            value={loadValue}
-            onChange={(e) => setLoadValue(e.target.value)}
-            required
-          />
-        </div>
-
-        {/* Load Position Inputs */}
-        <div className="form-group">
-          <label title={loadType === 'point' ? "Position of the point load in meters." : "Start position of the UDL in meters."}>
-            {loadType === 'point' ? 'Position (m):' : 'Start Position (m):'}
-          </label>
-          <input
-            type="number"
-            step="0.01"
-            value={loadStart}
-            onChange={(e) => setLoadStart(e.target.value)}
-            required
-          />
-        </div>
-
-        {loadType === 'udl' && (
-          <div className="form-group">
-            <label title="End position of the UDL in meters. Must be greater than start position.">End Position (m):</label>
-            <input
-              type="number"
-              step="0.01"
-              value={loadEnd}
-              onChange={(e) => setLoadEnd(e.target.value)}
-              required
-            />
+        <h2>Point Loads</h2>
+        {pointLoads.map((load, index) => (
+          <div key={index} className="load-group">
+            <div className="form-group">
+              <label>Load Value (P) in kN:</label>
+              <input
+                type="number"
+                name="value"
+                value={load.value}
+                onChange={(e) => handlePointLoadChange(index, e)}
+                placeholder="Enter load value"
+                step="0.1"
+                required
+              />
+            </div>
+            <div className="form-group">
+              <label>Position (x) in meters:</label>
+              <input
+                type="number"
+                name="position"
+                value={load.position}
+                onChange={(e) => handlePointLoadChange(index, e)}
+                placeholder="Enter position"
+                step="0.1"
+                required
+              />
+            </div>
           </div>
-        )}
-
-        {/* Add Load Button */}
-        <button type="button" onClick={addLoad}>
-          Add Load
+        ))}
+        <button type="button" onClick={addPointLoad}>
+          Add Point Load
         </button>
 
-        {/* Display Added Loads */}
-        <h3>Loads Added:</h3>
-        {loads.length === 0 ? (
-          <p>No loads added yet.</p>
-        ) : (
-          <ul>
-            {loads.map((load, index) => (
-              <li key={index}>
-                {load.type === 'point'
-                  ? `Point Load: ${load.value} kN at ${load.start} m`
-                  : `UDL: ${load.value} kN/m from ${load.start} m to ${load.end} m`}
-                <button type="button" onClick={() => removeLoad(index)}>
-                  Remove
-                </button>
-              </li>
-            ))}
-          </ul>
-        )}
+        <h2>Uniformly Distributed Loads (UDLs)</h2>
+        {udls.map((udl, index) => (
+          <div key={index} className="load-group">
+            <div className="form-group">
+              <label>Load Intensity (w) in kN/m:</label>
+              <input
+                type="number"
+                name="w"
+                value={udl.w}
+                onChange={(e) => handleUdlChange(index, e)}
+                placeholder="Enter load intensity"
+                step="0.1"
+                required
+              />
+            </div>
+            <div className="form-group">
+              <label>Start Position (a) in meters:</label>
+              <input
+                type="number"
+                name="start"
+                value={udl.start}
+                onChange={(e) => handleUdlChange(index, e)}
+                placeholder="Enter start position"
+                step="0.1"
+                required
+              />
+            </div>
+            <div className="form-group">
+              <label>End Position (b) in meters:</label>
+              <input
+                type="number"
+                name="end"
+                value={udl.end}
+                onChange={(e) => handleUdlChange(index, e)}
+                placeholder="Enter end position"
+                step="0.1"
+                required
+              />
+            </div>
+          </div>
+        ))}
+        <button type="button" onClick={addUdl}>
+          Add UDL
+        </button>
 
-        {/* Calculate and Reset Buttons */}
         <button type="submit">Calculate</button>
-        <button type="button" onClick={resetCalculator}>
-          Reset
-        </button>
       </form>
 
-      {/* Display Reactions */}
-      {reactions && (
+      {result && (
         <div className="results">
-          <h2>Reactions at Supports</h2>
+          <h2>Support Reactions</h2>
           <p>
-            <strong>Reaction at A (RA):</strong> {reactions.RA} kN
+            <strong>Reaction at Support A (RA):</strong> {result.RA} kN
           </p>
-          {supportType !== 'cantilever' && (
+          {beamType !== 'cantilever' && (
             <p>
-              <strong>Reaction at B (RB):</strong> {reactions.RB} kN
+              <strong>Reaction at Support B (RB):</strong> {result.RB} kN
             </p>
           )}
         </div>
       )}
 
-      {/* Display Shear Force and Bending Moment Diagrams */}
-      {results && (
-        <div className="results">
+      {(shearForce.length > 0 && bendingMoment.length > 0) && (
+        <div className="diagrams">
           <h2>Shear Force Diagram</h2>
-          <CanvasJSChart
+          <Line
+            data={prepareChartData().shear}
             options={{
-              title: { text: 'Shear Force Diagram' },
-              axisX: { title: 'Position (m)', includeZero: true },
-              axisY: { title: 'Shear Force (kN)', includeZero: true },
-              data: [
-                {
-                  type: 'line',
-                  markerSize: 0,
-                  dataPoints: results.shearForce,
+              responsive: true,
+              plugins: {
+                legend: {
+                  position: 'top',
                 },
-              ],
+                title: {
+                  display: true,
+                  text: 'Shear Force Diagram',
+                },
+              },
+              scales: {
+                x: {
+                  title: {
+                    display: true,
+                    text: 'Position (m)',
+                  },
+                },
+                y: {
+                  title: {
+                    display: true,
+                    text: 'Shear Force (kN)',
+                  },
+                },
+              },
             }}
           />
+
           <h2>Bending Moment Diagram</h2>
-          <CanvasJSChart
+          <Line
+            data={prepareChartData().moment}
             options={{
-              title: { text: 'Bending Moment Diagram' },
-              axisX: { title: 'Position (m)', includeZero: true },
-              axisY: { title: 'Bending Moment (kN·m)', includeZero: true },
-              data: [
-                {
-                  type: 'line',
-                  markerSize: 0,
-                  dataPoints: results.bendingMoment,
+              responsive: true,
+              plugins: {
+                legend: {
+                  position: 'top',
                 },
-              ],
+                title: {
+                  display: true,
+                  text: 'Bending Moment Diagram',
+                },
+              },
+              scales: {
+                x: {
+                  title: {
+                    display: true,
+                    text: 'Position (m)',
+                  },
+                },
+                y: {
+                  title: {
+                    display: true,
+                    text: 'Bending Moment (kN·m)',
+                  },
+                },
+              },
             }}
           />
         </div>

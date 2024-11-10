@@ -1,181 +1,449 @@
 // src/pages/PileDesignTool.js
 import React, { useState } from 'react';
 import './PileDesignTool.css';
-import { Bar } from 'react-chartjs-2';
+import { Bar, Line } from 'react-chartjs-2';
 import {
   Chart as ChartJS,
   BarElement,
+  LineElement,
   CategoryScale,
   LinearScale,
+  PointElement,
   Tooltip,
   Legend,
 } from 'chart.js';
 
-ChartJS.register(BarElement, CategoryScale, LinearScale, Tooltip, Legend);
+ChartJS.register(
+  BarElement,
+  LineElement,
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  Tooltip,
+  Legend
+);
 
 const PileDesignTool = () => {
+  // State Definitions
   const [input, setInput] = useState({
-    load: '',
-    soilBearingCapacity: '',
+    // Structural Loads
+    deadLoad: '',
+    liveLoad: '',
+    windLoad: '',
+    seismicLoad: '',
+
+    // Geotechnical Data
+    cohesion: '',
+    frictionAngle: '',
+    shearStrength: '',
+    waterTableLevel: '',
+    soilLayers: [
+      // Example: { depth: 5, cohesion: 25, frictionAngle: 30, unitWeight: 18 }
+    ],
+
+    // Pile Properties
+    pileType: 'driven', // Options: driven, bored, screw, micropiles
     pileDiameter: '',
     pileLength: '',
-    soilUnitWeight: '',
-    cohesion: '',
-    adhesionFactor: '0.5',
+    pileSpacing: '',
+    numberOfPiles: 1,
+
+    // Design Codes
+    designCode: 'Eurocode', // Options: Eurocode, AASHTO, IS Codes
+
+    // Safety Factors
     factorOfSafety: '3',
   });
 
-  const [result, setResult] = useState(null);
+  const [results, setResults] = useState({
+    Q_skin: null,
+    Q_end: null,
+    Q_ult: null,
+    Q_design: null,
+    settlement: null,
+    groupEfficiency: null,
+    axialLoad: null,
+    shearForce: null,
+    bendingMoment: null,
+  });
 
+  const [chartsData, setChartsData] = useState({
+    loadDistribution: null,
+    settlementCurve: null,
+  });
+
+  // Handle Input Changes
   const handleChange = (e) => {
+    const { name, value } = e.target;
     setInput({
       ...input,
-      [e.target.name]: e.target.value,
+      [name]: value,
     });
   };
 
-  const calculatePileCapacity = (e) => {
-    e.preventDefault();
+  // Handle Soil Layers Change
+  const handleSoilLayerChange = (index, e) => {
+    const { name, value } = e.target;
+    const updatedSoilLayers = input.soilLayers.map((layer, idx) => {
+      if (idx === index) {
+        return { ...layer, [name]: value };
+      }
+      return layer;
+    });
+    setInput({ ...input, soilLayers: updatedSoilLayers });
+  };
 
-    const {
-      load,
-      soilBearingCapacity,
-      pileDiameter,
-      pileLength,
-      cohesion,
-      adhesionFactor,
-      factorOfSafety,
-    } = input;
+  // Add Soil Layer
+  const addSoilLayer = () => {
+    setInput({
+      ...input,
+      soilLayers: [
+        ...input.soilLayers,
+        { depth: '', cohesion: '', frictionAngle: '', unitWeight: '' },
+      ],
+    });
+  };
 
-    // Input Validation
-    if (
-      !load ||
-      !soilBearingCapacity ||
-      !pileDiameter ||
-      !pileLength ||
-      !cohesion
-    ) {
-      alert('Please fill in all fields.');
-      return;
+  // Remove Soil Layer
+  const removeSoilLayer = (index) => {
+    const updatedSoilLayers = input.soilLayers.filter((_, idx) => idx !== index);
+    setInput({ ...input, soilLayers: updatedSoilLayers });
+  };
+
+  // Calculate Ultimate Pile Capacity
+  const calculateUltimateCapacity = (params) => {
+    const { pileType, soilProperties, pileDimensions, safetyFactors } = params;
+
+    let alpha;
+    switch (pileType) {
+      case 'driven':
+        alpha = 1.0;
+        break;
+      case 'bored':
+        alpha = 0.8;
+        break;
+      // Add other cases
+      default:
+        alpha = 1.0;
     }
 
-    // Convert inputs to numbers
-    const P = parseFloat(load); // Applied Load (kN)
-    const q_allow = parseFloat(soilBearingCapacity); // Allowable Soil Bearing Capacity (kN/m²)
-    const D = parseFloat(pileDiameter); // Pile Diameter (m)
-    const L = parseFloat(pileLength); // Pile Length (m)
-    const c = parseFloat(cohesion); // Cohesion (kN/m²)
-    const α = parseFloat(adhesionFactor); // Adhesion Factor
-    const FS = parseFloat(factorOfSafety); // Factor of Safety
+    const Q_skin = alpha * soilProperties.shearStrength * Math.PI * pileDimensions.length;
+    const Q_end = soilProperties.shearStrength * Math.PI * Math.pow(pileDimensions.diameter / 2, 2);
+    const Q_ult = Q_skin + Q_end;
+    const Q_design = Q_ult / safetyFactors.factorOfSafety;
 
-    // Calculations
-
-    // Area of Pile Base (A_end = π * (D/2)^2)
-    const A_end = Math.PI * Math.pow(D / 2, 2);
-
-    // Area of Pile Surface (A_surface = π * D * L)
-    const A_surface = Math.PI * D * L;
-
-    // End Bearing Capacity (Q_end = q_allow * A_end)
-    const Q_end = q_allow * A_end;
-
-    // Skin Friction Capacity (Q_skin = α * c * A_surface)
-    const Q_skin = α * c * A_surface;
-
-    // Total Pile Capacity (Q_total = Q_end + Q_skin)
-    const Q_total = Q_end + Q_skin;
-
-    // Adjusted Total Capacity with Factor of Safety (Q_total_FS = Q_total * FS)
-    const Q_total_FS = Q_total * FS;
-
-    // Capacity Sufficiency
-    const isSufficient = Q_total_FS >= P;
-
-    setResult({
-      A_end: A_end.toFixed(2),
-      A_surface: A_surface.toFixed(2),
-      Q_end: Q_end.toFixed(2),
-      Q_skin: Q_skin.toFixed(2),
-      Q_total: Q_total.toFixed(2),
-      Q_total_FS: Q_total_FS.toFixed(2),
-      isSufficient: isSufficient ? 'Yes ✅' : 'No ❌',
-    });
+    return {
+      Q_skin,
+      Q_end,
+      Q_ult,
+      Q_design,
+    };
   };
 
-  // Prepare Chart Data
-  const chartData = result
-    ? {
-        labels: [
-          'End Bearing Capacity (Q_end)',
-          'Skin Friction Capacity (Q_skin)',
-          'Total Capacity (Q_total)',
-          'Applied Load (P)',
-        ],
-        datasets: [
-          {
-            label: 'Capacity (kN)',
-            data: [
-              parseFloat(result.Q_end),
-              parseFloat(result.Q_skin),
-              parseFloat(result.Q_total),
-              parseFloat(input.load),
-            ],
-            backgroundColor: ['#64FFDA', '#FF6F61', '#6B5B95', '#FFA500'],
-          },
-        ],
-      }
-    : null;
+  // Calculate Settlement
+  const calculateSettlement = () => {
+    const { pileLength, pileDiameter, soilLayers } = input;
+    const D = parseFloat(pileDiameter);
+    const L = parseFloat(pileLength);
 
-  const chartOptions = {
-    responsive: true,
-    plugins: {
-      legend: {
-        position: 'top',
-      },
-      tooltip: {
-        enabled: true,
-      },
-    },
-    scales: {
-      y: {
-        beginAtZero: true,
-      },
-    },
+    // Example: Using first soil layer's elastic modulus E
+    const soil = soilLayers[0];
+    const E = soil ? parseFloat(soil.unitWeight) * 100 : 20000; // Placeholder for Elastic Modulus
+
+    const appliedLoad = parseFloat(input.deadLoad) + parseFloat(input.liveLoad);
+    const settlement = (appliedLoad * L) / (E * Math.PI * Math.pow(D, 2) / 4);
+
+    return settlement;
+  };
+
+  // Calculate Group Pile Efficiency
+  const calculateGroupEfficiency = () => {
+    const { pileSpacing, pileDiameter, numberOfPiles } = input;
+    const S = parseFloat(pileSpacing);
+    const D = parseFloat(pileDiameter);
+    const N = parseInt(numberOfPiles, 10);
+
+    // Example formula for group efficiency
+    const efficiency = 1 - (S / (3 * D)) * N;
+    const groupEfficiency = efficiency > 0 ? efficiency : 0;
+
+    return groupEfficiency;
+  };
+
+  // Handle Form Submission
+  const handleSubmit = (e) => {
+    e.preventDefault();
+
+    // Capacity Analysis
+    const capacity = calculateUltimateCapacity();
+
+    // Settlement Analysis
+    const settlement = calculateSettlement();
+
+    // Group Pile Efficiency
+    const groupEfficiency = calculateGroupEfficiency();
+
+    // Structural Design (Placeholder for actual calculations)
+    const axialLoad = capacity.Q_design * groupEfficiency;
+    const shearForce = axialLoad * 0.3; // Example
+    const bendingMoment = axialLoad * 0.2; // Example
+
+    setResults({
+      Q_skin: capacity.Q_skin.toFixed(2),
+      Q_end: capacity.Q_end.toFixed(2),
+      Q_ult: capacity.Q_ult.toFixed(2),
+      Q_design: capacity.Q_design.toFixed(2),
+      settlement: settlement.toFixed(2),
+      groupEfficiency: (groupEfficiency * 100).toFixed(2),
+      axialLoad: axialLoad.toFixed(2),
+      shearForce: shearForce.toFixed(2),
+      bendingMoment: bendingMoment.toFixed(2),
+    });
+
+    // Prepare Charts Data
+    prepareCharts(capacity, settlement);
+  };
+
+  // Prepare Charts Data
+  const prepareCharts = (capacity, settlement) => {
+    // Load Distribution Chart
+    const loadDistributionData = {
+      labels: ['Skin Friction (Q_skin)', 'End Bearing (Q_end)', 'Ultimate Capacity (Q_ult)', 'Design Capacity (Q_design)'],
+      datasets: [
+        {
+          label: 'Load Distribution (kN)',
+          data: [capacity.Q_skin, capacity.Q_end, capacity.Q_ult, capacity.Q_design],
+          backgroundColor: [
+            'rgba(75, 192, 192, 0.6)',
+            'rgba(153, 102, 255, 0.6)',
+            'rgba(255, 206, 86, 0.6)',
+            'rgba(255, 99, 132, 0.6)',
+          ],
+          borderColor: [
+            'rgba(75, 192, 192, 1)',
+            'rgba(153, 102, 255, 1)',
+            'rgba(255, 206, 86, 1)',
+            'rgba(255, 99, 132, 1)',
+          ],
+          borderWidth: 1,
+        },
+      ],
+    };
+
+    // Settlement Curve Chart (Simple Representation)
+    const settlementCurveData = {
+      labels: ['Initial Settlement', 'Final Settlement'],
+      datasets: [
+        {
+          label: 'Settlement (mm)',
+          data: [0, parseFloat(results.settlement || settlement.toFixed(2))],
+          fill: false,
+          backgroundColor: 'rgba(54, 162, 235, 0.6)',
+          borderColor: 'rgba(54, 162, 235, 1)',
+        },
+      ],
+    };
+
+    setChartsData({
+      loadDistribution: loadDistributionData,
+      settlementCurve: settlementCurveData,
+    });
   };
 
   return (
     <div className="pile-design-tool">
       <h1>Pile Design Tool</h1>
-      <form onSubmit={calculatePileCapacity} className="pile-form">
+      <form onSubmit={handleSubmit}>
+        {/* Structural Loads */}
         <div className="form-group">
-          <label htmlFor="load">Applied Load (kN):</label>
+          <h2>Structural Loads (kN)</h2>
+          <label htmlFor="deadLoad">Dead Load:</label>
           <input
             type="number"
-            id="load"
-            name="load"
-            value={input.load}
+            id="deadLoad"
+            name="deadLoad"
+            value={input.deadLoad}
             onChange={handleChange}
+            placeholder="Enter Dead Load"
             required
-            min="0"
-            step="any"
-            placeholder="e.g., 500"
           />
-        </div>
-        <div className="form-group">
-          <label htmlFor="soilBearingCapacity">Allowable Soil Bearing Capacity (kN/m²):</label>
+
+          <label htmlFor="liveLoad">Live Load:</label>
           <input
             type="number"
-            id="soilBearingCapacity"
-            name="soilBearingCapacity"
-            value={input.soilBearingCapacity}
+            id="liveLoad"
+            name="liveLoad"
+            value={input.liveLoad}
             onChange={handleChange}
+            placeholder="Enter Live Load"
             required
-            min="0"
-            step="any"
-            placeholder="e.g., 150"
+          />
+
+          <label htmlFor="windLoad">Wind Load:</label>
+          <input
+            type="number"
+            id="windLoad"
+            name="windLoad"
+            value={input.windLoad}
+            onChange={handleChange}
+            placeholder="Enter Wind Load"
+          />
+
+          <label htmlFor="seismicLoad">Seismic Load:</label>
+          <input
+            type="number"
+            id="seismicLoad"
+            name="seismicLoad"
+            value={input.seismicLoad}
+            onChange={handleChange}
+            placeholder="Enter Seismic Load"
           />
         </div>
+
+        {/* Geotechnical Data */}
         <div className="form-group">
+          <h2>Geotechnical Data</h2>
+          <label htmlFor="soilType">Soil Type:</label>
+          <select
+            id="soilType"
+            name="soilType"
+            value={input.soilType}
+            onChange={handleChange}
+            required
+          >
+            <option value="">Select Soil Type</option>
+            <option value="cohesive">Cohesive</option>
+            <option value="cohesionless">Cohesionless</option>
+          </select>
+
+          {/* Cohesive Soils */}
+          {input.soilType === 'cohesive' && (
+            <>
+              <label htmlFor="cohesion">Cohesion (kPa):</label>
+              <input
+                type="number"
+                id="cohesion"
+                name="cohesion"
+                value={input.cohesion}
+                onChange={handleChange}
+                placeholder="Enter Cohesion"
+                required
+              />
+            </>
+          )}
+
+          {/* Cohesionless Soils */}
+          {input.soilType === 'cohesionless' && (
+            <>
+              <label htmlFor="shearStrength">Shear Strength (kPa):</label>
+              <input
+                type="number"
+                id="shearStrength"
+                name="shearStrength"
+                value={input.shearStrength}
+                onChange={handleChange}
+                placeholder="Enter Shear Strength"
+                required
+              />
+
+              <label htmlFor="frictionAngle">Friction Angle (degrees):</label>
+              <input
+                type="number"
+                id="frictionAngle"
+                name="frictionAngle"
+                value={input.frictionAngle}
+                onChange={handleChange}
+                placeholder="Enter Friction Angle"
+                required
+              />
+            </>
+          )}
+
+          <label htmlFor="waterTableLevel">Water Table Level (m):</label>
+          <input
+            type="number"
+            id="waterTableLevel"
+            name="waterTableLevel"
+            value={input.waterTableLevel}
+            onChange={handleChange}
+            placeholder="Enter Water Table Level"
+            required
+          />
+
+          {/* Soil Layers */}
+          <h3>Layered Soil Profiles</h3>
+          {input.soilLayers.map((layer, index) => (
+            <div key={index} className="soil-layer">
+              <h4>Layer {index + 1}</h4>
+              <label htmlFor={`depth_${index}`}>Depth (m):</label>
+              <input
+                type="number"
+                id={`depth_${index}`}
+                name="depth"
+                value={layer.depth}
+                onChange={(e) => handleSoilLayerChange(index, e)}
+                placeholder="Enter Depth"
+                required
+              />
+
+              <label htmlFor={`cohesion_${index}`}>Cohesion (kPa):</label>
+              <input
+                type="number"
+                id={`cohesion_${index}`}
+                name="cohesion"
+                value={layer.cohesion}
+                onChange={(e) => handleSoilLayerChange(index, e)}
+                placeholder="Enter Cohesion"
+              />
+
+              <label htmlFor={`frictionAngle_${index}`}>Friction Angle (degrees):</label>
+              <input
+                type="number"
+                id={`frictionAngle_${index}`}
+                name="frictionAngle"
+                value={layer.frictionAngle}
+                onChange={(e) => handleSoilLayerChange(index, e)}
+                placeholder="Enter Friction Angle"
+              />
+
+              <label htmlFor={`unitWeight_${index}`}>Unit Weight (kN/m³):</label>
+              <input
+                type="number"
+                id={`unitWeight_${index}`}
+                name="unitWeight"
+                value={layer.unitWeight}
+                onChange={(e) => handleSoilLayerChange(index, e)}
+                placeholder="Enter Unit Weight"
+              />
+
+              <button type="button" onClick={() => removeSoilLayer(index)}>
+                Remove Layer
+              </button>
+            </div>
+          ))}
+          <button type="button" onClick={addSoilLayer}>
+            Add Soil Layer
+          </button>
+        </div>
+
+        {/* Pile Properties */}
+        <div className="form-group">
+          <h2>Pile Properties</h2>
+          <label htmlFor="pileType">Pile Type:</label>
+          <select
+            id="pileType"
+            name="pileType"
+            value={input.pileType}
+            onChange={handleChange}
+            required
+          >
+            <option value="">Select Pile Type</option>
+            <option value="driven">Driven</option>
+            <option value="bored">Bored</option>
+            <option value="screw">Screw</option>
+            <option value="micropiles">Micropiles</option>
+          </select>
+
           <label htmlFor="pileDiameter">Pile Diameter (m):</label>
           <input
             type="number"
@@ -183,13 +451,10 @@ const PileDesignTool = () => {
             name="pileDiameter"
             value={input.pileDiameter}
             onChange={handleChange}
+            placeholder="Enter Pile Diameter"
             required
-            min="0"
-            step="any"
-            placeholder="e.g., 0.4"
           />
-        </div>
-        <div className="form-group">
+
           <label htmlFor="pileLength">Pile Length (m):</label>
           <input
             type="number"
@@ -197,100 +462,130 @@ const PileDesignTool = () => {
             name="pileLength"
             value={input.pileLength}
             onChange={handleChange}
+            placeholder="Enter Pile Length"
             required
-            min="0"
-            step="any"
-            placeholder="e.g., 10"
           />
-        </div>
-        <div className="form-group">
-          <label htmlFor="soilUnitWeight">Soil Unit Weight (kN/m³):</label>
+
+          <label htmlFor="pileSpacing">Pile Spacing (m):</label>
           <input
             type="number"
-            id="soilUnitWeight"
-            name="soilUnitWeight"
-            value={input.soilUnitWeight}
+            id="pileSpacing"
+            name="pileSpacing"
+            value={input.pileSpacing}
             onChange={handleChange}
-            required
-            min="0"
-            step="any"
-            placeholder="e.g., 18"
+            placeholder="Enter Pile Spacing"
           />
-        </div>
-        <div className="form-group">
-          <label htmlFor="cohesion">Cohesion (c) (kN/m²):</label>
+
+          <label htmlFor="numberOfPiles">Number of Piles:</label>
           <input
             type="number"
-            id="cohesion"
-            name="cohesion"
-            value={input.cohesion}
+            id="numberOfPiles"
+            name="numberOfPiles"
+            value={input.numberOfPiles}
             onChange={handleChange}
+            placeholder="Enter Number of Piles"
+            min="1"
             required
-            min="0"
-            step="any"
-            placeholder="e.g., 20"
           />
         </div>
+
+        {/* Design Codes */}
         <div className="form-group">
-          <label htmlFor="adhesionFactor">Adhesion Factor (α):</label>
+          <h2>Design Codes</h2>
+          <label htmlFor="designCode">Select Design Code:</label>
           <select
-            id="adhesionFactor"
-            name="adhesionFactor"
-            value={input.adhesionFactor}
+            id="designCode"
+            name="designCode"
+            value={input.designCode}
             onChange={handleChange}
+            required
           >
-            <option value="0.3">0.3</option>
-            <option value="0.5">0.5</option>
-            <option value="0.7">0.7</option>
+            <option value="">Select Design Code</option>
+            <option value="Eurocode">Eurocode</option>
+            <option value="AASHTO">AASHTO</option>
+            <option value="ISCodes">IS Codes</option>
           </select>
         </div>
+
+        {/* Safety Factors */}
         <div className="form-group">
+          <h2>Safety Factors</h2>
           <label htmlFor="factorOfSafety">Factor of Safety:</label>
-          <select
+          <input
+            type="number"
             id="factorOfSafety"
             name="factorOfSafety"
             value={input.factorOfSafety}
             onChange={handleChange}
-          >
-            <option value="2">2</option>
-            <option value="3">3</option>
-            <option value="4">4</option>
-          </select>
+            placeholder="Enter Factor of Safety"
+            required
+            min="1"
+            step="0.1"
+          />
         </div>
-        <button type="submit" className="calculate-button">
-          Calculate
-        </button>
+
+        {/* Submit Button */}
+        <button type="submit">Calculate</button>
       </form>
 
-      {result && (
-        <div className="result">
-          <h2>Calculation Results</h2>
-          <p>
-            <strong>Area of Pile Base (A_end) (m²):</strong> {result.A_end}
-          </p>
-          <p>
-            <strong>Area of Pile Surface (A_surface) (m²):</strong> {result.A_surface}
-          </p>
-          <p>
-            <strong>End Bearing Capacity (Q_end) (kN):</strong> {result.Q_end}
-          </p>
-          <p>
-            <strong>Skin Friction Capacity (Q_skin) (kN):</strong> {result.Q_skin}
-          </p>
-          <p>
-            <strong>Total Pile Capacity (Q_total) (kN):</strong> {result.Q_total}
-          </p>
-          <p>
-            <strong>Adjusted Total Capacity with Factor of Safety (Q_total_FS) (kN):</strong> {result.Q_total_FS}
-          </p>
-          <p>
-            <strong>Is the Pile Capacity Sufficient for the Applied Load?</strong> {result.isSufficient}
-          </p>
+      {/* Results Display */}
+      {results.Q_design && (
+        <div className="results">
+          <h2>Capacity Analysis</h2>
+          <p><strong>Skin Friction (Q_skin):</strong> {results.Q_skin} kN</p>
+          <p><strong>End Bearing (Q_end):</strong> {results.Q_end} kN</p>
+          <p><strong>Ultimate Capacity (Q_ult):</strong> {results.Q_ult} kN</p>
+          <p><strong>Design Capacity (Q_design):</strong> {results.Q_design} kN</p>
 
-          {/* Chart Section */}
-          <div className="chart-container">
-            <Bar data={chartData} options={chartOptions} />
-          </div>
+          <h2>Settlement Analysis</h2>
+          <p><strong>Settlement:</strong> {results.settlement} mm</p>
+
+          <h2>Group Pile Efficiency</h2>
+          <p><strong>Efficiency:</strong> {results.groupEfficiency}%</p>
+
+          <h2>Structural Design</h2>
+          <p><strong>Axial Load:</strong> {results.axialLoad} kN</p>
+          <p><strong>Shear Force:</strong> {results.shearForce} kN</p>
+          <p><strong>Bending Moment:</strong> {results.bendingMoment} kN·m</p>
+        </div>
+      )}
+
+      {/* Charts */}
+      {chartsData.loadDistribution && (
+        <div className="chart-container">
+          <h2>Load Distribution</h2>
+          <Bar
+            data={chartsData.loadDistribution}
+            options={{
+              responsive: true,
+              plugins: {
+                legend: { position: 'top' },
+                title: { display: true, text: 'Load Distribution' },
+              },
+              scales: {
+                y: { beginAtZero: true },
+              },
+            }}
+          />
+        </div>
+      )}
+
+      {chartsData.settlementCurve && (
+        <div className="chart-container">
+          <h2>Settlement Curve</h2>
+          <Line
+            data={chartsData.settlementCurve}
+            options={{
+              responsive: true,
+              plugins: {
+                legend: { position: 'top' },
+                title: { display: true, text: 'Settlement Curve' },
+              },
+              scales: {
+                y: { beginAtZero: true },
+              },
+            }}
+          />
         </div>
       )}
     </div>

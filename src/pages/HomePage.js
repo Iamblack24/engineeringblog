@@ -28,6 +28,10 @@ const HomePage = () => {
             <p>Empowering Future Civil Engineers, Architects, Structural Engineers</p>
           </div>
         </section>
+        <section className="random-fact-section">
+          <h2>Did You Know?</h2>
+          <p>{randomFact}</p>
+        </section>
         <section className="content-section">
           <div className="content-card">
             <img src="/cad1.jpg" alt="Articles" className="content-image small-image" />
@@ -77,10 +81,6 @@ const HomePage = () => {
             </div>
           </div>
         </section>
-        <section className="random-fact-section">
-          <h2>Did You Know?</h2>
-          <p>{randomFact}</p>
-        </section>
         <section className="testimonials-section">
           <h2>What Our Readers Say</h2>
           <div className="testimonial">
@@ -105,7 +105,6 @@ const HomePage = () => {
             <a href="/featured-article-2" className="content-link">Read More</a>
           </div>
         </section>
-        <NewsletterSignup />
       </div>
     </>
   );

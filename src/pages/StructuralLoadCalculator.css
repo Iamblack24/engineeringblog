@@ -1,31 +1,121 @@
 /* src/pages/StructuralLoadCalculator.css */
 
 .structural-load-calculator {
-  max-width: 800px;
+  max-width: 1000px;
   margin: 0 auto;
   padding: 20px;
+  background-color: var(--card-background);
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  color: black;
+}
+
+.structural-load-calculator h1 {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.structural-load-calculator form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
 }
 
 .form-group {
-  margin-bottom: 15px;
+  display: flex;
+  flex-direction: column;
 }
 
-label {
-  display: block;
+.form-group label {
+  margin-bottom: 5px;
   font-weight: bold;
 }
 
-input, select {
-  width: 100%;
-  padding: 8px;
-  margin-top: 5px;
+.form-group input,
+.form-group select {
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
 }
 
-button {
+.load-group {
+  border: 1px solid #ddd;
+  padding: 15px;
+  border-radius: 4px;
+  background-color: #f9f9f9;
+}
+
+.load-group + .load-group {
   margin-top: 10px;
-  padding: 10px 20px;
+}
+
+button[type="button"],
+button[type="submit"] {
+  padding: 10px 15px;
+  background-color: var(--accent-color);
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 16px;
+  transition: background-color 0.3s;
+}
+
+button[type="button"]:hover,
+button[type="submit"]:hover {
+  background-color: #1e90ff; /* Darken the accent color */
 }
 
 .results {
   margin-top: 30px;
+  padding: 15px;
+  background-color: #f1f1f1;
+  border-radius: 4px;
+}
+
+.results h2 {
+  margin-top: 0;
+}
+
+.diagrams {
+  margin-top: 30px;
+}
+
+.diagrams h2 {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.chart-container {
+  margin-bottom: 40px;
+}
+
+/* Responsive Design for Mobile Devices */
+@media (max-width: 600px) {
+  .structural-load-calculator {
+    padding: 15px;
+  }
+
+  .form-group input,
+  .form-group select {
+    font-size: 14px;
+  }
+
+  button[type="button"],
+  button[type="submit"] {
+    font-size: 14px;
+    padding: 8px 12px;
+  }
+
+  .load-group {
+    padding: 10px;
+  }
+
+  .results {
+    padding: 10px;
+  }
+
+  .chart-container {
+    margin-bottom: 30px;
+  }
 }

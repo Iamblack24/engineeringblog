@@ -14,6 +14,7 @@
   text-decoration: none;
   flex: 1 1 calc(33.333% - 20px);
   max-width: calc(33.333% - 20px);
+  box-sizing: border-box;
 }
 
 .material-link:hover .revision-material-card {
@@ -44,4 +45,16 @@
 .revision-material-card p {
   font-size: 1em;
   color: var(--text-color);
+}
+
+@media (max-width: 768px) {
+  .material-link {
+    flex: 1 1 calc(50% - 20px);
+  }
+}
+
+@media (max-width: 480px) {
+  .material-link {
+    flex: 1 1 100%;
+  }
 }
