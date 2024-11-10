@@ -46,7 +46,7 @@ const InteractiveAI = () => {
     setShowResponse(false); // Hide response initially
 
     try {
-      const response = await axios.post('http://localhost:5000/api/ask', {
+      const response = await axios.post('https://enginehub.onrender.com/api/ask', {
         question,
       });
 
