@@ -28,12 +28,13 @@ const CheckoutForm = ({ material }) => {
     const { id } = paymentMethod;
 
     try {
+      console.log('Sending payment request to backend...');
       const response = await axios.post('https://enginehub.onrender.com/api/payment', {
         amount: Number(material.price.replace(/[^0-9.-]+/g,"")) * 100, // Convert price to number
         id,
       });
 
-      console.log(response.data); // Log the response for debugging
+      console.log('Received response from backend:', response.data);
 
       if (response.data.success) {
         setSucceeded(true);
@@ -42,6 +43,7 @@ const CheckoutForm = ({ material }) => {
         setError('Payment failed');
       }
     } catch (error) {
+      console.error('Error during payment request:', error);
       setError('Payment failed');
     }
 
