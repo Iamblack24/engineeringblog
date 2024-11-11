@@ -71,7 +71,6 @@ const RetainingWallDesignTool = () => {
   // Calculate Stability Factors
   const calculateStability = () => {
     const {
-      // wallType, // Removed unused variable
       soilDensity,
       cohesion,
       frictionAngle,
@@ -90,19 +89,14 @@ const RetainingWallDesignTool = () => {
     const phi = frictionAngle * (Math.PI / 180);
 
     // Design Code Safety Factors (example values)
-    // let safetyFactorRequired; // Removed unused variable
     switch (designCode) {
       case 'Eurocode':
-        // safetyFactorRequired = 1.5; // Removed unused variable
         break;
       case 'AASHTO':
-        // safetyFactorRequired = 1.7; // Removed unused variable
         break;
       case 'IS456':
-        // safetyFactorRequired = 1.6; // Removed unused variable
         break;
       default:
-        // safetyFactorRequired = 1.5; // Removed unused variable
     }
 
     // Active Earth Pressure (Rankine)
@@ -120,14 +114,14 @@ const RetainingWallDesignTool = () => {
 
     // Moments
     const momentOverturning = earthPressureTotal * (wallHeight / 3) + surchargeLoad * wallHeight;
-    const momentResisting = baseWidth * wallHeight + heel * wallHeight + stemThickness * wallHeight;
+    const momentResisting = (baseWidth * wallHeight * soilDensity) / 2 + (heel * wallHeight * soilDensity) / 2 + (stemThickness * wallHeight * soilDensity) / 2;
 
     // Factor of Safety against Overturning
     const fsOverturning = momentResisting / momentOverturning;
 
     // Sliding Factors
     const horizontalForce = totalEarthPressure + surchargeLoad + seismicForce;
-    const resistingForce = cohesion * baseWidth + (toe * Math.tan(phi));
+    const resistingForce = cohesion * baseWidth + (toe * Math.tan(phi)) + (soilDensity * wallHeight * baseWidth);
     const fsSliding = resistingForce / horizontalForce;
 
     // Bearing Capacity Factors
@@ -144,6 +138,7 @@ const RetainingWallDesignTool = () => {
       horizontalForce: horizontalForce,
       resistingForce: resistingForce,
       verticalLoad: verticalLoad,
+      hydrostaticPressure: hydrostaticPressure,
     };
   };
 
@@ -155,7 +150,7 @@ const RetainingWallDesignTool = () => {
 
   // Calculate Earth Pressure
   const calculateEarthPressure = () => {
-    const { soilDensity, frictionAngle, wallHeight, /* wallType, */ waterTable } = input; // Removed unused variable
+    const { soilDensity, frictionAngle, wallHeight, waterTable } = input; // Removed unused variable
     const phi = frictionAngle * (Math.PI / 180);
 
     // Active Earth Pressure (Rankine)
@@ -198,6 +193,9 @@ const RetainingWallDesignTool = () => {
       horizontalForce: stability.horizontalForce.toFixed(2),
       resistingForce: stability.resistingForce.toFixed(2),
       verticalLoad: stability.verticalLoad.toFixed(2),
+      // Additional results
+      totalEarthPressure: stability.earthPressureTotal.toFixed(2),
+      hydrostaticPressure: stability.hydrostaticPressure.toFixed(2),
     });
 
     // Prepare Charts Data
@@ -497,6 +495,12 @@ const RetainingWallDesignTool = () => {
           <p>
             <strong>Total Earth Pressure (kN):</strong> {results.earthPressure}
           </p>
+          <p>
+            <strong>Hydrostatic Pressure (kN):</strong> {results.hydrostaticPressure}
+          </p>
+          <p>
+            <strong>Total Earth Pressure including Hydrostatic (kN):</strong> {results.totalEarthPressure}
+          </p>
 
           <h2>Structural Design</h2>
           <p>
@@ -519,6 +523,7 @@ const RetainingWallDesignTool = () => {
             data={chartsData.earthPressureChart}
             options={{
               responsive: true,
+              maintainAspectRatio: false,
               plugins: {
                 legend: { position: 'top' },
                 title: { display: true, text: 'Earth Pressure Distribution' },
@@ -527,6 +532,7 @@ const RetainingWallDesignTool = () => {
                 y: { beginAtZero: true },
               },
             }}
+            height={400}
           />
         </div>
       )}
@@ -538,6 +544,7 @@ const RetainingWallDesignTool = () => {
             data={chartsData.stabilityResultsChart}
             options={{
               responsive: true,
+              maintainAspectRatio: false,
               plugins: {
                 legend: { position: 'top' },
                 title: { display: true, text: 'Stability Factors of Safety' },
@@ -546,6 +553,7 @@ const RetainingWallDesignTool = () => {
                 y: { beginAtZero: true },
               },
             }}
+            height={400}
           />
         </div>
       )}
@@ -557,6 +565,7 @@ const RetainingWallDesignTool = () => {
             data={chartsData.structuralDesignChart}
             options={{
               responsive: true,
+              maintainAspectRatio: false,
               plugins: {
                 legend: { position: 'top' },
                 title: { display: true, text: 'Bending Moment and Shear Force' },
@@ -565,6 +574,7 @@ const RetainingWallDesignTool = () => {
                 y: { beginAtZero: true },
               },
             }}
+            height={400}
           />
         </div>
       )}

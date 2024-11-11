@@ -10,6 +10,15 @@ const HydraulicCalculator = () => {
   const [frictionFactor, setFrictionFactor] = useState('');
   const [results, setResults] = useState(null);
 
+  const resetForm = () => {
+    setVelocity('');
+    setDiameter('');
+    setLength('');
+    setDensity('');
+    setFrictionFactor('');
+    setResults(null);
+  };
+
   const calculateHydraulics = (e) => {
     e.preventDefault();
 
@@ -21,14 +30,24 @@ const HydraulicCalculator = () => {
     const frictionFactorNum = parseFloat(frictionFactor);
 
     // Validate inputs
-    if (
-      isNaN(velocityNum) ||
-      isNaN(diameterNum) ||
-      isNaN(lengthNum) ||
-      isNaN(densityNum) ||
-      isNaN(frictionFactorNum)
-    ) {
-      alert('Please enter valid numbers for all fields.');
+    if (isNaN(velocityNum)) {
+      alert('Please enter a valid number for velocity.');
+      return;
+    }
+    if (isNaN(diameterNum)) {
+      alert('Please enter a valid number for diameter.');
+      return;
+    }
+    if (isNaN(lengthNum)) {
+      alert('Please enter a valid number for length.');
+      return;
+    }
+    if (isNaN(densityNum)) {
+      alert('Please enter a valid number for density.');
+      return;
+    }
+    if (isNaN(frictionFactorNum)) {
+      alert('Please enter a valid number for friction factor.');
       return;
     }
 
@@ -103,6 +122,7 @@ const HydraulicCalculator = () => {
           />
         </div>
         <button type="submit">Calculate</button>
+        <button type="button" onClick={resetForm}>Reset</button>
       </form>
       {results && (
         <div className="results">

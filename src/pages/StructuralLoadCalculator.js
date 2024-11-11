@@ -197,7 +197,7 @@ const StructuralLoadCalculator = () => {
         RB = 0;
     }
 
-    return { RA, RB };
+    return { RA, RB, totalLoad };
   };
 
   // Handle form submission
@@ -211,7 +211,7 @@ const StructuralLoadCalculator = () => {
     }
 
     // Calculate reactions
-    const { RA, RB } = calculateReactions();
+    const { RA, RB, totalLoad } = calculateReactions();
 
     // Initialize arrays for shear force and bending moment
     const shear = [];
@@ -273,7 +273,7 @@ const StructuralLoadCalculator = () => {
       momentArr.push({ x: parseFloat(x.toFixed(2)), y: parseFloat(M.toFixed(2)) });
     }
 
-    setResult({ RA: RA.toFixed(2), RB: RB.toFixed(2) });
+    setResult({ RA: RA.toFixed(2), RB: RB.toFixed(2), totalLoad: totalLoad.toFixed(2) });
     setShearForce(shear);
     setBendingMoment(momentArr);
   };
@@ -459,72 +459,83 @@ const StructuralLoadCalculator = () => {
               <strong>Reaction at Support B (RB):</strong> {result.RB} kN
             </p>
           )}
+          <p>
+            <strong>Total Load:</strong> {result.totalLoad} kN
+          </p>
         </div>
       )}
 
       {(shearForce.length > 0 && bendingMoment.length > 0) && (
         <div className="diagrams">
           <h2>Shear Force Diagram</h2>
-          <Line
-            data={prepareChartData().shear}
-            options={{
-              responsive: true,
-              plugins: {
-                legend: {
-                  position: 'top',
-                },
-                title: {
-                  display: true,
-                  text: 'Shear Force Diagram',
-                },
-              },
-              scales: {
-                x: {
+          <div className="chart-container">
+            <Line
+              data={prepareChartData().shear}
+              options={{
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                  legend: {
+                    position: 'top',
+                  },
                   title: {
                     display: true,
-                    text: 'Position (m)',
+                    text: 'Shear Force Diagram',
                   },
                 },
-                y: {
-                  title: {
-                    display: true,
-                    text: 'Shear Force (kN)',
+                scales: {
+                  x: {
+                    title: {
+                      display: true,
+                      text: 'Position (m)',
+                    },
+                  },
+                  y: {
+                    title: {
+                      display: true,
+                      text: 'Shear Force (kN)',
+                    },
                   },
                 },
-              },
-            }}
-          />
+              }}
+              height={300}
+            />
+          </div>
 
           <h2>Bending Moment Diagram</h2>
-          <Line
-            data={prepareChartData().moment}
-            options={{
-              responsive: true,
-              plugins: {
-                legend: {
-                  position: 'top',
-                },
-                title: {
-                  display: true,
-                  text: 'Bending Moment Diagram',
-                },
-              },
-              scales: {
-                x: {
+          <div className="chart-container">
+            <Line
+              data={prepareChartData().moment}
+              options={{
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                  legend: {
+                    position: 'top',
+                  },
                   title: {
                     display: true,
-                    text: 'Position (m)',
+                    text: 'Bending Moment Diagram',
                   },
                 },
-                y: {
-                  title: {
-                    display: true,
-                    text: 'Bending Moment (kN·m)',
+                scales: {
+                  x: {
+                    title: {
+                      display: true,
+                      text: 'Position (m)',
+                    },
+                  },
+                  y: {
+                    title: {
+                      display: true,
+                      text: 'Bending Moment (kN·m)',
+                    },
                   },
                 },
-              },
-            }}
-          />
+              }}
+              height={300}
+            />
+          </div>
         </div>
       )}
     </div>

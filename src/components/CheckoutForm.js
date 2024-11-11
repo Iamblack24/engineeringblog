@@ -29,9 +29,11 @@ const CheckoutForm = ({ material }) => {
 
     try {
       const response = await axios.post('https://enginehub.onrender.com/api/payment', {
-        amount: material.price * 100, // Stripe expects the amount in cents
+        amount: Number(material.price.replace(/[^0-9.-]+/g,"")) * 100, // Convert price to number
         id,
       });
+
+      console.log(response.data); // Log the response for debugging
 
       if (response.data.success) {
         setSucceeded(true);

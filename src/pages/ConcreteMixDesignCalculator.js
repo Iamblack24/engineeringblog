@@ -123,7 +123,7 @@ const ConcreteMixDesignCalculator = () => {
         </div>
         <button type="submit">Calculate Mix Design</button>
       </form>
-      {cementContent && (
+      {waterCementRatio !== null && cementContent !== null && waterContent !== null && fineAggregate !== null && coarseAggregate !== null && (
         <div className="results">
           <h2>Mix Design Results</h2>
           <p>

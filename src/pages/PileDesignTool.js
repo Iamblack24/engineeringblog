@@ -175,7 +175,21 @@ const PileDesignTool = () => {
     e.preventDefault();
 
     // Capacity Analysis
-    const capacity = calculateUltimateCapacity();
+    const capacity = calculateUltimateCapacity({
+      pileType: input.pileType,
+      soilProperties: {
+        shearStrength: parseFloat(input.shearStrength),
+        cohesion: parseFloat(input.cohesion),
+        frictionAngle: parseFloat(input.frictionAngle),
+      },
+      pileDimensions: {
+        diameter: parseFloat(input.pileDiameter),
+        length: parseFloat(input.pileLength),
+      },
+      safetyFactors: {
+        factorOfSafety: parseFloat(input.factorOfSafety),
+      },
+    });
 
     // Settlement Analysis
     const settlement = calculateSettlement();

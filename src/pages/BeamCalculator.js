@@ -3,7 +3,7 @@ import './BeamCalculator.css'; // Import the CSS file for styling
 
 const BeamCalculator = () => {
   const [length, setLength] = useState('');
-  const [loads, setLoads] = useState([{ type: 'udl', value: '', location: '' }]);
+  const [loads, setLoads] = useState([{ type: 'udl', value: '', location: '', position: '' }]);
   const [supportType, setSupportType] = useState('simply-supported'); // Simply Supported by default
   const [E, setE] = useState(210); // Default E = 210 GPa
   const [I, setI] = useState(10000); // Default I = 10000 cm^4
@@ -18,7 +18,7 @@ const BeamCalculator = () => {
   };
 
   const addLoad = () => {
-    setLoads([...loads, { type: 'udl', value: '', location: '' }]);
+    setLoads([...loads, { type: 'udl', value: '', location: '', position: '' }]);
   };
 
   const removeLoad = (index) => {
@@ -48,6 +48,11 @@ const BeamCalculator = () => {
       if (load.type === 'point-load') {
         if (isNaN(parseFloat(load.location)) || parseFloat(load.location) <= 0 || parseFloat(load.location) > parseFloat(length)) {
           alert(`Please enter a valid Load Location for Load ${i + 1} (must be between 0 and Length of Beam).`);
+          return false;
+        }
+      } else if (load.type === 'udl') {
+        if (isNaN(parseFloat(load.position)) || parseFloat(load.position) < 0 || parseFloat(load.position) > parseFloat(length)) {
+          alert(`Please enter a valid Load Position for Load ${i + 1} (must be between 0 and Length of Beam).`);
           return false;
         }
       }
@@ -159,6 +164,18 @@ const BeamCalculator = () => {
                   step="0.01"
                   value={load.location}
                   onChange={(e) => handleLoadChange(index, 'location', e.target.value)}
+                  required
+                />
+              </div>
+            )}
+            {load.type === 'udl' && (
+              <div className="form-group">
+                <label>Load Position (m):</label>
+                <input
+                  type="number"
+                  step="0.01"
+                  value={load.position}
+                  onChange={(e) => handleLoadChange(index, 'position', e.target.value)}
                   required
                 />
               </div>

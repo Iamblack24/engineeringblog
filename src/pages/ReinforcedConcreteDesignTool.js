@@ -51,6 +51,7 @@ const ReinforcedConcreteDesignTool = () => {
 
     // Convert inputs to numbers
     const fck = parseFloat(concreteStrength); // Concrete Compressive Strength (MPa)
+    const fy = parseFloat(steelStrength); // Steel Yield Strength (MPa)
     const b = parseFloat(beamWidth); // Beam Width (mm)
     const d = parseFloat(effectiveDepth); // Effective Depth (mm)
     const D = parseFloat(beamDepth); // Beam Depth (mm)
@@ -68,10 +69,18 @@ const ReinforcedConcreteDesignTool = () => {
     const L = 6000; // Span Length (mm) - assumed value
     const deflection = (5 * P * Math.pow(L, 4)) / (384 * E * I);
 
+    // Required Area of Steel Reinforcement (Ast)
+    const Ast = (Mu * 10^6) / (0.87 * fy * d); // Mu in N·mm
+
+    // Check for beam design (simplified)
+    const beamDesignCheck = Mu < (0.87 * fy * Ast * (d - (Ast / (b * fy))));
+
     setResult({
       Mu: Mu.toFixed(2),
       Vu: Vu.toFixed(2),
       deflection: deflection.toFixed(2),
+      Ast: Ast.toFixed(2),
+      beamDesignCheck: beamDesignCheck ? 'Pass' : 'Fail',
     });
   };
 
@@ -173,6 +182,12 @@ const ReinforcedConcreteDesignTool = () => {
           </p>
           <p>
             <strong>Deflection:</strong> {result.deflection} mm
+          </p>
+          <p>
+            <strong>Required Area of Steel Reinforcement (Ast):</strong> {result.Ast} mm²
+          </p>
+          <p>
+            <strong>Beam Design Check:</strong> {result.beamDesignCheck}
           </p>
         </div>
       )}
