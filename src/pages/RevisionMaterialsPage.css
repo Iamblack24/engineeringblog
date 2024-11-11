@@ -6,14 +6,14 @@
 .materials-list {
   display: flex;
   flex-wrap: wrap;
-  gap: 20px;
-  justify-content: center;
+  gap: 16px;
+  justify-content: center; /* Center the items */
 }
 
 .material-link {
   text-decoration: none;
-  flex: 1 1 calc(33.333% - 20px);
-  max-width: calc(33.333% - 20px);
+  flex: 1 1 calc(33.333% - 16px); /* Three cards per row with gap */
+  max-width: calc(33.333% - 20px); /* Ensure max-width is set */
   box-sizing: border-box;
 }
 
@@ -49,12 +49,12 @@
 
 @media (max-width: 768px) {
   .material-link {
-    flex: 1 1 calc(50% - 20px);
+    flex: 1 1 calc(50% - 16px); /* Two cards per row on tablets */
   }
 }
 
 @media (max-width: 480px) {
   .material-link {
-    flex: 1 1 100%;
+    flex: 1 1 100%; /* One card per row on mobile devices */
   }
 }
