@@ -2,7 +2,7 @@
 .case-studies-page {
   padding: 20px;
   background-color: var(--background-color);
-  color: var(--secondary-color);
+  color: black;
 }
 
 .case-studies-page h1 {

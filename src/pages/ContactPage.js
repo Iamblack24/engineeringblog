@@ -13,6 +13,7 @@ const ContactPage = () => {
   });
   const [statusMessage, setStatusMessage] = useState('');
   const [recaptchaToken, setRecaptchaToken] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -34,6 +35,8 @@ const ContactPage = () => {
       return;
     }
 
+    setIsLoading(true);
+
     try {
       const response = await fetch('https://formsubmit.co/ajax/johnicarus2020@gmail.com', {
         method: 'POST',
@@ -47,6 +50,13 @@ const ContactPage = () => {
       const result = await response.json();
       if (result.success) {
         setStatusMessage('Your message has been sent successfully!');
+        setFormData({
+          name: '',
+          email: '',
+          phonenumber: '',
+          subject: '',
+          message: '',
+        });
       } else {
         setStatusMessage('There was an issue submitting the form. Please try again.');
       }
@@ -54,6 +64,8 @@ const ContactPage = () => {
       console.error('Error:', error);
       setStatusMessage('There was an issue submitting the form. Please try again.');
     }
+
+    setIsLoading(false);
   };
 
   return (
@@ -118,9 +130,11 @@ const ContactPage = () => {
           sitekey="8fe8093c-a358-4f64-aecc-be30a1da8298" // Replace with your hCaptcha site key
           onVerify={handleRecaptchaChange}
         />
-        <button type="submit">Send</button>
+        <button type="submit" disabled={isLoading}>
+          {isLoading ? 'Sending...' : 'Send'}
+        </button>
       </form>
-      {statusMessage && <p>{statusMessage}</p>}
+      {statusMessage && <p className="status-message">{statusMessage}</p>}
     </div>
   );
 };

@@ -90,8 +90,8 @@
   .next-button {
     position: absolute;
     top: 50%;
-    background-color: rgba(0,0,0,0.5);
-    color: #fff;
+    background-color: rgba(255, 255, 255, 0.7); /* Light background to avoid blurring */
+    color: #000;
     border: none;
     padding: 5px 10px;
     cursor: pointer;
@@ -99,14 +99,16 @@
   }
   
   .prev-button {
-    left: 5px;
+    left: 0; /* Position on the left side */
+    transform: translateY(-50%) translateX(-100%); /* Move outside the image */
   }
   
   .next-button {
-    right: 5px;
+    right: 0; /* Position on the right side */
+    transform: translateY(-50%) translateX(100%); /* Move outside the image */
   }
   
   .prev-button:hover,
   .next-button:hover {
-    background-color: rgba(0,0,0,0.7);
+    background-color: rgba(255, 255, 255, 0.9); /* Slightly darker on hover */
   }
