@@ -3,24 +3,33 @@ import React, { useState } from 'react';
 import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
-  sendPasswordResetEmail,
 } from 'firebase/auth';
-import { auth, db } from '../firebase'; // Import auth and db
+import { auth, db } from '../firebase';
 import { doc, setDoc } from 'firebase/firestore';
 import './AuthModal.css';
 
 const AuthModal = ({ onClose }) => {
-  const [isLogin, setIsLogin] = useState(true);
+  const [isSignup, setIsSignup] = useState(false);
   const [formData, setFormData] = useState({
-    name: '',
+    username: '',
     email: '',
     password: '',
+    phoneNumber: '',
+    gender: '',
+    schoolOrWorkplace: '',
   });
   const [error, setError] = useState('');
 
-  const toggleMode = () => {
-    setIsLogin(!isLogin);
-    setFormData({ name: '', email: '', password: '' });
+  const toggleAuthMode = () => {
+    setIsSignup(!isSignup);
+    setFormData({
+      username: '',
+      email: '',
+      password: '',
+      phoneNumber: '',
+      gender: '',
+      schoolOrWorkplace: '',
+    });
     setError('');
   };
 
@@ -28,45 +37,49 @@ const AuthModal = ({ onClose }) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = async (e) => {
+  const handleSignup = async (e) => {
     e.preventDefault();
     setError('');
-    if (isLogin) {
-      // **Login**
-      try {
-        await signInWithEmailAndPassword(auth, formData.email, formData.password);
-        onClose();
-      } catch (err) {
-        setError(err.message);
-      }
-    } else {
-      // **Signup**
-      try {
-        const userCredential = await createUserWithEmailAndPassword(
-          auth,
-          formData.email,
-          formData.password
-        );
-        const user = userCredential.user;
-        await setDoc(doc(db, 'users', user.uid), {
-          name: formData.name,
-          email: formData.email,
-        });
-        onClose();
-      } catch (err) {
-        setError(err.message);
-      }
+    const { username, email, password, phoneNumber, gender, schoolOrWorkplace } = formData;
+
+    if (!username || !email || !password || !phoneNumber || !gender || !schoolOrWorkplace) {
+      setError('Please fill in all fields.');
+      return;
+    }
+
+    try {
+      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      const user = userCredential.user;
+
+      // Save additional user info to Firestore
+      await setDoc(doc(db, 'users', user.uid), {
+        uid: user.uid,
+        username,
+        email,
+        phoneNumber,
+        gender,
+        schoolOrWorkplace,
+      });
+
+      onClose();
+    } catch (err) {
+      setError(err.message);
     }
   };
 
-  const handlePasswordReset = async () => {
-    if (!formData.email) {
-      setError('Please enter your email to reset the password.');
+  const handleLogin = async (e) => {
+    e.preventDefault();
+    setError('');
+    const { email, password } = formData;
+
+    if (!email || !password) {
+      setError('Please enter your email and password.');
       return;
     }
+
     try {
-      await sendPasswordResetEmail(auth, formData.email);
-      setError('Password reset email sent.');
+      await signInWithEmailAndPassword(auth, email, password);
+      onClose();
     } catch (err) {
       setError(err.message);
     }
@@ -74,53 +87,90 @@ const AuthModal = ({ onClose }) => {
 
   return (
     <div className="auth-modal">
-      <div className="auth-modal-content">
+      <div className="modal-content">
         <button className="close-button" onClick={onClose}>
-          ×
+          &times;
         </button>
-        <div className="tabs">
-          <button onClick={toggleMode} className={isLogin ? 'active' : ''}>
-            Login
-          </button>
-          <button onClick={toggleMode} className={!isLogin ? 'active' : ''}>
-            Signup
-          </button>
-        </div>
-        <form onSubmit={handleSubmit}>
-          {!isLogin && (
+        {isSignup ? (
+          <form onSubmit={handleSignup}>
+            <h2>Sign Up</h2>
+            {error && <p className="error">{error}</p>}
             <input
               type="text"
-              name="name"
-              placeholder="Name"
-              value={formData.name}
+              name="username"
+              placeholder="Username"
+              value={formData.username}
               onChange={handleChange}
-              required
             />
-          )}
-          <input
-            type="email"
-            name="email"
-            placeholder="Email"
-            value={formData.email}
-            onChange={handleChange}
-            required
-          />
-          <input
-            type="password"
-            name="password"
-            placeholder="Password (6+ characters)"
-            value={formData.password}
-            onChange={handleChange}
-            required
-          />
-          {error && <p className="error-message">{error}</p>}
-          <button type="submit">{isLogin ? 'Login' : 'Signup'}</button>
-          {isLogin && (
-            <p className="forgot-password" onClick={handlePasswordReset}>
-              Forgot Password?
+            <input
+              type="email"
+              name="email"
+              placeholder="Email Address"
+              value={formData.email}
+              onChange={handleChange}
+            />
+            <input
+              type="password"
+              name="password"
+              placeholder="Password"
+              value={formData.password}
+              onChange={handleChange}
+            />
+            <input
+              type="tel"
+              name="phoneNumber"
+              placeholder="Phone Number"
+              value={formData.phoneNumber}
+              onChange={handleChange}
+            />
+            <select name="gender" value={formData.gender} onChange={handleChange}>
+              <option value="">Select Gender</option>
+              <option value="male">Male</option>
+              <option value="female">Female</option>
+              <option value="other">Other</option>
+            </select>
+            <input
+              type="text"
+              name="schoolOrWorkplace"
+              placeholder="School or Workplace"
+              value={formData.schoolOrWorkplace}
+              onChange={handleChange}
+            />
+            <button type="submit">Sign Up</button>
+            <p>
+              Already have an account?{' '}
+              <span className="toggle-link" onClick={toggleAuthMode}>
+                Login
+              </span>
             </p>
-          )}
-        </form>
+          </form>
+        ) : (
+          <form onSubmit={handleLogin}>
+            <h2>Login</h2>
+            {error && <p className="error">{error}</p>}
+            <input
+              type="email"
+              name="email"
+              placeholder="Email Address"
+              value={formData.email}
+              onChange={handleChange}
+            />
+            <input
+              type="password"
+              name="password"
+              placeholder="Password"
+              value={formData.password}
+              onChange={handleChange}
+            />
+            <button type="submit">Login</button>
+            <p>
+              Don't have an account?{' '}
+              <span className="toggle-link" onClick={toggleAuthMode}>
+                Sign Up
+              </span>
+            </p>
+          </form>
+        )}
       </div>
     </div>
   );

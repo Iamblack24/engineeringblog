@@ -33,6 +33,7 @@ import ReinforcedConcreteDesignTool from './pages/ReinforcedConcreteDesignTool';
 import DownloadableRevisionMaterialsPage from './pages/materials/DownloadableRevisionMaterialsPage';
 import WelcomeOverlay from './components/WelcomeOverlay';
 import { AuthContext } from './contexts/AuthContext';
+import ScrollToTop from './ScrollToTop';
 import './App.css';
 
 function App() {
@@ -51,6 +52,7 @@ function App() {
 
   return (
     <Router>
+      <ScrollToTop /> 
       <Navbar />
       {showWelcome && currentUser && (
         <WelcomeOverlay name={currentUser.displayName || currentUser.email} onClose={closeWelcome} />

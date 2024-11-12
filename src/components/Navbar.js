@@ -45,6 +45,12 @@ const Navbar = () => {
     setIsDropdownOpen(!isDropdownOpen);
   };
 
+  useEffect(() => {
+    if (!currentUser) {
+      setShowAuthModal(true);
+    }
+  }, [currentUser]); 
+
   // Close dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -64,12 +70,40 @@ const Navbar = () => {
   return (
     <nav className="navbar">
       <div className="navbar-container">
-        {/* Logo or Brand Name */}
+        {/* Logo */}
         <Link to="/" className="navbar-logo" onClick={handleCloseMenu}>
           Engineering Blog
         </Link>
 
-        {/* Hamburger Menu Icon for Mobile */}
+        {/* User Authentication */}
+        <div className="user-auth">
+          {currentUser ? (
+            <div className="user-info" onClick={toggleDropdown} ref={dropdownRef}>
+              {currentUser.gender === 'female' ? (
+                <FaFemale className="user-icon" />
+              ) : (
+                <FaMale className="user-icon" />
+              )}
+              <span className="username">
+                {currentUser.displayName || currentUser.email}
+              </span>
+              <FaCaretDown />
+              {isDropdownOpen && (
+                <ul className="dropdown-menu">
+                  <li className="dropdown-item" onClick={handleLogout}>
+                    Logout
+                  </li>
+                </ul>
+              )}
+            </div>
+          ) : (
+            <span className="nav-links login-signup" onClick={openAuthModal}>
+              Login / Signup
+            </span>
+          )}
+        </div>
+
+        {/* Hamburger Menu Icon */}
         <div className="menu-icon" onClick={handleMenuToggle}>
           {isMenuOpen ? <FaTimes /> : <FaBars />}
         </div>
@@ -179,36 +213,6 @@ const Navbar = () => {
               Contact
             </NavLink>
           </li>
-
-          {/* User Authentication */}
-          {currentUser ? (
-            <li className="nav-item user-dropdown" ref={dropdownRef}>
-              <div className="user-info" onClick={toggleDropdown}>
-                {/* User Avatar */}
-                {currentUser.gender === 'female' ? (
-                  <FaFemale className="user-icon" />
-                ) : (
-                  <FaMale className="user-icon" />
-                )}
-                <span className="username">
-                  {currentUser.displayName || currentUser.email}
-                </span>
-                <FaCaretDown />
-              </div>
-              <ul className={isDropdownOpen ? 'dropdown-menu show' : 'dropdown-menu'}>
-                {/* Add more dropdown items if needed */}
-                <li className="dropdown-item" onClick={handleLogout}>
-                  Logout
-                </li>
-              </ul>
-            </li>
-          ) : (
-            <li className="nav-item">
-              <span className="nav-links login-signup" onClick={openAuthModal}>
-                Login / Signup
-              </span>
-            </li>
-          )}
         </ul>
       </div>
       {showAuthModal && <AuthModal onClose={closeAuthModal} />}
