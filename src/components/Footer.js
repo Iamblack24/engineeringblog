@@ -1,11 +1,12 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import './Footer.css'; // Import the CSS file for styling
+import { FaFacebook, FaTwitter, FaLinkedin } from 'react-icons/fa'; // Import icons from react-icons library
 
 const Footer = () => {
   return (
-    <footer>
-      <div className="footer-top">
+    <footer className="footer"> {/* Updated class name from "footer" */}
+      <div className="footer-content"> {/* Changed from "footer-top" to "footer-content" */}
         <div className="footer-section">
           <h3>About Us</h3>
           <p>
@@ -25,14 +26,29 @@ const Footer = () => {
         <div className="footer-section">
           <h3>Follow Us</h3>
           <div className="social-links">
-            <a href="https://facebook.com" target="_blank" rel="noopener noreferrer">
-              <img src="/icons/facebook-icon.png" alt="Facebook" />
+            <a
+              href="https://facebook.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="Facebook"
+            >
+              <FaFacebook className="social-icon" />
             </a>
-            <a href="https://twitter.com" target="_blank" rel="noopener noreferrer">
-              <img src="/icons/twitter-icon.png" alt="Twitter" />
+            <a
+              href="https://twitter.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="Twitter"
+            >
+              <FaTwitter className="social-icon" />
             </a>
-            <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer">
-              <img src="/icons/linkedin-icon.png" alt="LinkedIn" />
+            <a
+              href="https://linkedin.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="LinkedIn"
+            >
+              <FaLinkedin className="social-icon" />
             </a>
             {/* Add more social media links as needed */}
           </div>

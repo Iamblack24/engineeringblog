@@ -1,5 +1,5 @@
 // src/App.js
-import React from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
@@ -19,7 +19,7 @@ import SlopeStabilityCalculator from './pages/SlopeStabilityCalculator';
 import StructuralLoadCalculator from './pages/StructuralLoadCalculator';
 import CaseStudyDetailPage from './pages/CaseStudyDetailPage';
 import SoilBearingCapacityCalculator from './pages/SoilBearingCapacityCalculator';
-import HydraulicCalculator from './pages/HydraulicCalculator'; // Import the new component
+import HydraulicCalculator from './pages/HydraulicCalculator';
 import StructuralEngineeringFlashcards from './pages/materials/StructuralEngineeringFlashcards';
 import HydraulicsSummaryNotes from './pages/materials/HydraulicsSummaryNotes';
 import ConcreteTechnologyQuiz from './pages/materials/ConcreteTechnologyQuiz';
@@ -27,16 +27,34 @@ import GeotechnicalEngineeringFlashcards from './pages/materials/GeotechnicalEng
 import PileDesignTool from './pages/PileDesignTool';
 import EnvironmentalEngineeringSummaryNotes from './pages/materials/EnvironmentalEngineeringSummaryNotes';
 import TransportationEngineeringQuiz from './pages/materials/TransportationEngineeringQuiz';
-import RetainingWallDesignTool from './pages/RetainingWallDesignTool'; // Import the new component
-import SteelConnectionDesignTool from './pages/SteelConnectionDesignTool'; // Import the new component
-import ReinforcedConcreteDesignTool from './pages/ReinforcedConcreteDesignTool'; // Import the new component
-import DownloadableRevisionMaterialsPage from './pages/materials/DownloadableRevisionMaterialsPage'; // Import the new component
-import './App.css'; // Import global CSS
+import RetainingWallDesignTool from './pages/RetainingWallDesignTool';
+import SteelConnectionDesignTool from './pages/SteelConnectionDesignTool';
+import ReinforcedConcreteDesignTool from './pages/ReinforcedConcreteDesignTool';
+import DownloadableRevisionMaterialsPage from './pages/materials/DownloadableRevisionMaterialsPage';
+import WelcomeOverlay from './components/WelcomeOverlay';
+import { AuthContext } from './contexts/AuthContext';
+import './App.css';
 
 function App() {
+  const { currentUser } = useContext(AuthContext);
+  const [showWelcome, setShowWelcome] = useState(false);
+
+  useEffect(() => {
+    if (currentUser && currentUser.metadata.creationTime === currentUser.metadata.lastSignInTime) {
+      setShowWelcome(true);
+    }
+  }, [currentUser]);
+
+  const closeWelcome = () => {
+    setShowWelcome(false);
+  };
+
   return (
     <Router>
       <Navbar />
+      {showWelcome && currentUser && (
+        <WelcomeOverlay name={currentUser.displayName || currentUser.email} onClose={closeWelcome} />
+      )}
       <Routes>
         <Route path="/" element={<HomePage />} />
         <Route path="/articles" element={<ArticlesPage />} />
@@ -48,16 +66,16 @@ function App() {
         <Route path="/tools/beam-calculator" element={<BeamCalculator />} />
         <Route path="/tools/concrete-mix-design" element={<ConcreteMixDesignCalculator />} />
         <Route path="/tools/slope-stability" element={<SlopeStabilityCalculator />} />
-        <Route path="/tools/hydraulic-calculator" element={<HydraulicCalculator />} /> {/* Add this route */}
-        <Route path="/tools/retaining-wall-design" element={<RetainingWallDesignTool />} /> {/* Add this route */}
-        <Route path="/tools/steel-connection-design" element={<SteelConnectionDesignTool />} /> {/* Add this route */}
-        <Route path="/tools/reinforced-concrete-design" element={<ReinforcedConcreteDesignTool />} /> {/* Add this route */}
+        <Route path="/tools/hydraulic-calculator" element={<HydraulicCalculator />} />
+        <Route path="/tools/retaining-wall-design" element={<RetainingWallDesignTool />} />
+        <Route path="/tools/steel-connection-design" element={<SteelConnectionDesignTool />} />
+        <Route path="/tools/reinforced-concrete-design" element={<ReinforcedConcreteDesignTool />} />
         <Route path="/revision-materials" element={<RevisionMaterialsPage />} />
-        <Route path="/materials/downloadable-revision-materials" element={<DownloadableRevisionMaterialsPage />} /> {/* Add this route */}
+        <Route path="/materials/downloadable-revision-materials" element={<DownloadableRevisionMaterialsPage />} />
         <Route path="/career-guides" element={<CareerGuidesPage />} />
         <Route path="/tools/soil-bearing-capacity" element={<SoilBearingCapacityCalculator />} />
         <Route path="/tools/structural-load" element={<StructuralLoadCalculator />} />
-        <Route path="/career-guides/:guideId" element={<CareerGuideDetail />} /> {/* Add this route */}
+        <Route path="/career-guides/:guideId" element={<CareerGuideDetail />} />
         <Route path="/contact" element={<ContactPage />} />
         <Route path="/tools/pile-design" element={<PileDesignTool />} />
         <Route path="/materials/structural-engineering-flashcards" element={<StructuralEngineeringFlashcards />} />

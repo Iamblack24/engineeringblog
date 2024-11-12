@@ -1,101 +1,221 @@
+/* src/components/Navbar.css */
+
+/* Basic Navbar Styling */
 .navbar {
+  background-color: #2c3e50;
+  height: 70px;
   display: flex;
-  justify-content: space-between;
+  justify-content: center;
   align-items: center;
-  background-color: var(--navbar-bg-color);
-  padding: 10px 20px;
-  position: fixed; /* Keeps the navbar at the top */
+  font-size: 1rem;
+  position: sticky;
   top: 0;
-  width: 100%;
-  z-index: 999; /* Ensures navbar stays above other elements */
+  z-index: 999;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-.dark-navbar {
-  background-color: #333; /* Dark background */
-  color: #fff; /* White text */
-}
-
-.navbar-logo img {
-  height: 50px;
-}
-
-.navbar-logo h2 {
-  margin: 0;
-  color: var(--navbar-text-color);
-}
-
-.navbar-links {
-  list-style: none;
+.navbar-container {
   display: flex;
-  gap: 15px;
-  margin: 0;
+  justify-content: space-between;
+  height: 70px;
+  z-index: 1;
+  width: 100%;
+  max-width: 1500px;
+  padding: 0 24px;
 }
 
-.navbar-links li {
-  display: inline;
-}
-
-.navbar-links li a {
+/* Logo Styles */
+.navbar-logo {
+  color: #ecf0f1;
+  justify-self: start;
+  cursor: pointer;
   text-decoration: none;
-  color: var(--navbar-text-color);
+  font-size: 1.8rem;
+  display: flex;
+  align-items: center;
+  font-weight: bold;
+}
+
+.navbar-logo:hover {
+  color: #bdc3c7;
+}
+
+/* Hamburger Menu Icon */
+.menu-icon {
+  display: none;
+  color: #ecf0f1;
+  cursor: pointer;
+  font-size: 1.8rem;
+}
+
+.nav-menu {
+  display: flex;
+  align-items: center;
+  list-style: none;
+  text-align: center;
+}
+
+.nav-menu.active {
+  background: #2c3e50;
+  position: absolute;
+  top: 70px;
+  left: 0;
+  width: 100%;
+  height: calc(100vh - 70px);
+  flex-direction: column;
+  align-items: center;
+  transition: all 0.5s ease;
+  opacity: 1;
+  z-index: 1;
+}
+
+/* Navigation Links */
+.nav-links {
+  color: #ecf0f1;
+  text-decoration: none;
+  padding: 0.5rem 1rem;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  transition: background 0.3s ease, color 0.3s ease;
+  border-radius: 4px;
+}
+
+.nav-links:hover {
+  background-color: #34495e;
+  color: #fff;
+}
+
+/* Active Link Styling */
+.nav-links.active {
+  background-color: #1abc9c;
+  color: #fff;
+}
+
+/* Login/Signup Link Styling */
+.login-signup {
+  cursor: pointer;
+  color: #1abc9c;
+}
+
+.login-signup:hover {
+  color: #16a085;
+}
+
+/* User Dropdown Styles */
+.user-dropdown {
+  position: relative;
+}
+
+.user-info {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  position: relative;
+}
+
+.user-icon {
+  font-size: 1.5rem;
+  margin-right: 8px;
+}
+
+.username {
+  color: #ecf0f1;
+  margin-right: 6px;
   font-weight: 500;
 }
 
-.navbar-links li a:hover {
-  color: var(--accent-color);
+.user-dropdown .fas.fa-caret-down {
+  color: #ecf0f1;
+  transition: transform 0.3s ease;
 }
 
-.in-development-label {
-  background-color: #ffcc00; /* Yellow background */
-  color: #333333;           /* Dark text */
-  padding: 5px 10px;
-  border-radius: 12px;
-  font-weight: bold;
-  font-size: 0.9rem;
-}
-
-/* Responsive adjustments */
-.menu-icon {
+/* Dropdown Menu */
+.dropdown-menu {
+  position: absolute;
+  top: 60px;
+  right: 0;
+  background-color: #34495e;
+  border-radius: 4px;
+  width: 180px;
   display: none;
-  font-size: 1.5rem;
-  cursor: pointer;
-  color: var(--navbar-text-color);
+  flex-direction: column;
+  box-shadow: 0 8px 16px rgba(0,0,0,0.2);
 }
 
-@media (max-width: 768px) {
-  .navbar-links {
-    display: none;
-    flex-direction: column;
-    position: fixed;
-    top: 60px;
-    right: 0;
-    background-color: var(--navbar-bg-color);
-    width: 100%;
-    text-align: center;
-    z-index: 1000; /* Ensure it stays above other content */
-  }
+.dropdown-menu.show {
+  display: flex;
+}
 
-  .navbar-links.open {
-    display: flex;
+.dropdown-item {
+  padding: 12px 16px;
+  color: #ecf0f1;
+  cursor: pointer;
+  text-align: left;
+  transition: background 0.3s ease;
+}
+
+.dropdown-item:hover {
+  background-color: #1abc9c;
+  color: #fff;
+}
+
+/* Dropdown Hover Effect */
+.dropdown:hover .dropdown-menu {
+  display: flex;
+}
+
+/* Responsive Design */
+@media screen and (max-width: 992px) {
+  .navbar-container {
+    padding: 0 16px;
   }
 
   .menu-icon {
     display: block;
   }
 
-  .in-development-label {
-    font-size: 0.8rem; /* Smaller font size on mobile */
-    padding: 3px 8px;  /* Adjust padding on mobile */
+  .nav-menu {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    height: 0;
+    position: absolute;
+    top: 70px;
+    left: -100%;
+    opacity: 1;
+    transition: all 0.5s ease;
+    background: #2c3e50;
   }
 
-  .backdrop {
-    position: fixed;
-    top: 0;
+  .nav-menu.active {
+    background: #2c3e50;
     left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.5);
-    z-index: 999; /* Ensure it stays below the navbar but above other content */
+    height: calc(100vh - 70px);
+    opacity: 1;
+    transition: all 0.5s ease;
+    z-index: 1;
   }
+
+  .nav-links {
+    text-align: center;
+    padding: 2rem;
+    width: 100%;
+    display: table;
+  }
+
+  .dropdown-menu {
+    position: static;
+    box-shadow: none;
+    width: 100%;
+  }
+
+  .dropdown-item {
+    width: 100%;
+  }
+}
+
+/* Dropdown Toggle Icon Rotation */
+.user-dropdown .fas.fa-caret-down.show {
+  transform: rotate(180deg);
 }

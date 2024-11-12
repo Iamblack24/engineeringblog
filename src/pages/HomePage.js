@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import './HomePage.css'; // Import the CSS file for styling
 import NewsletterSignup from '../components/NewsletterSignup'; // Import the NewsletterSignup component
-import Navbar from '../components/Navbar'; // Import the Navbar component if not already imported
+//import Navbar from '../components/Navbar'; // Import the Navbar component if not already imported
 
 const HomePage = () => {
   const [randomFact, setRandomFact] = useState('');
@@ -20,7 +20,6 @@ const HomePage = () => {
 
   return (
     <>
-      <Navbar /> {/* Ensure Navbar is rendered first */}
       <div className="home-page">
         <section className="hero-section">
           <div className="hero-overlay">
@@ -87,7 +86,7 @@ const HomePage = () => {
             <p>"This blog has been an invaluable resource for my studies. The articles and tools are top-notch!"</p>
             <span>- Alex, Civil Engineering Student</span>
           </div>
-          <div class="testimonial">
+          <div className="testimonial">
             <p>"The case studies provide great insights into real-world engineering challenges and solutions."</p>
             <span>- Maria, Structural Engineer</span>
           </div>
