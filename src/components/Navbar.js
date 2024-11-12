@@ -17,6 +17,8 @@ const Navbar = () => {
 
   const handleMenuToggle = () => {
     setIsMenuOpen(!isMenuOpen);
+    // Add body overflow toggle to prevent background scrolling when menu is open
+    document.body.style.overflow = isMenuOpen ? 'auto' : 'hidden';
   };
 
   const handleCloseMenu = () => {
