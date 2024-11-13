@@ -25,3 +25,21 @@
   height: auto; /* Maintain aspect ratio */
   border-radius: 4px;
 }
+
+.article-stats button {
+  background-color: #007bff;
+  color: white;
+  border: none;
+  padding: 5px 10px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.article-stats button:hover {
+  background-color: #0056b3;
+}
+
+.article-stats .dislikes {
+  margin-left: 10px;
+}

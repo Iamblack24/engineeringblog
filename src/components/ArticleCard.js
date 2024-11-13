@@ -1,20 +1,28 @@
+// src/components/ArticleCard.js
 import React from 'react';
 import { Link } from 'react-router-dom';
-import './ArticleCard.css'; // Import the CSS file for styling
+import './ArticleCard.css';
 
-const ArticleCard = ({ id, title, author, date, likes, dislikes, photo }) => {
+const ArticleCard = ({ article, onLike }) => {
+  const { id, title, author, date, likes, dislikes, photo } = article;
+
   return (
     <div className="article-card">
-      <img src={photo} alt={title} className="article-photo" />
+      {photo && <img src={photo} alt={title} className="article-photo" />}
       <h2>
         <Link to={`/articles/${id}`}>{title}</Link>
       </h2>
       <p className="article-meta">
-        <span>By {author}</span> | <span>{date}</span>
+        <span>By {author}</span> |{' '}
+        <span>{new Date(date).toLocaleDateString()}</span>
       </p>
       <div className="article-stats">
-        <span role="img" aria-label="likes" onClick={() => alert('Liked!')}>👍</span> {likes} | 
-        <span role="img" aria-label="dislikes" onClick={() => alert('Disliked!')}>👎</span> {dislikes}
+        <button onClick={onLike}>
+          👍 {likes || 0}
+        </button>
+        <span className="dislikes">
+          👎 {dislikes || 0}
+        </span>
       </div>
     </div>
   );

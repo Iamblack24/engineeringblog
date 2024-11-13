@@ -25,3 +25,17 @@
     color: #555;
     margin-top: 20px;
   }
+
+.article-actions button {
+  background-color: #007bff;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.article-actions button:hover {
+  background-color: #0056b3;
+}

@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+// src/components/InteractiveAI.js
+import React, { useState, useEffect, useContext } from 'react';
 import axios from 'axios';
 import { Line, Bar, Pie } from 'react-chartjs-2';
 import {
@@ -13,6 +14,15 @@ import {
   Tooltip,
   Legend,
 } from 'chart.js';
+import { AuthContext } from '../contexts/AuthContext';
+import { db } from '../firebase';
+import {
+  doc,
+  getDoc,
+  setDoc,
+  updateDoc,
+  increment,
+} from 'firebase/firestore';
 import './InteractiveAI.css';
 
 // Register Chart.js components
@@ -29,23 +39,106 @@ ChartJS.register(
 );
 
 const InteractiveAI = () => {
+  const { currentUser } = useContext(AuthContext);
   const [question, setQuestion] = useState('');
   const [answer, setAnswer] = useState('');
   const [graphData, setGraphData] = useState(null);
   const [graphType, setGraphType] = useState('line'); // Default graph type
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
-  const [showResponse, setShowResponse] = useState(false); // New state variable
+  const [showResponse, setShowResponse] = useState(false); // State to control response visibility
+  const [aiUsage, setAiUsage] = useState(0); // Track AI usage count
+
+  // Function to get today's date in YYYY-MM-DD format
+  const getToday = () => {
+    const today = new Date();
+    const yyyy = today.getFullYear();
+    const mm = String(today.getMonth() + 1).padStart(2, '0'); // Months start at 0!
+    const dd = String(today.getDate()).padStart(2, '0');
+    return `${yyyy}-${mm}-${dd}`;
+  };
+
+  useEffect(() => {
+    const fetchAiUsage = async () => {
+      if (currentUser) {
+        const today = getToday();
+        const usageDocRef = doc(db, 'users', currentUser.uid, 'usage', 'ai');
+
+        try {
+          const usageDoc = await getDoc(usageDocRef);
+          if (usageDoc.exists()) {
+            const usageData = usageDoc.data();
+            if (usageData.date === today) {
+              setAiUsage(usageData.count);
+            } else {
+              // Reset usage count for a new day
+              await setDoc(usageDocRef, { date: today, count: 0 });
+              setAiUsage(0);
+            }
+          } else {
+            // Initialize usage document
+            await setDoc(usageDocRef, { date: today, count: 0 });
+            setAiUsage(0);
+          }
+        } catch (err) {
+          console.error('Error fetching AI usage:', err);
+          setError('Failed to fetch usage data. Please try again.');
+        }
+      }
+    };
+
+    fetchAiUsage();
+  }, [currentUser]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setLoading(true);
     setError('');
     setAnswer('');
     setGraphData(null);
     setShowResponse(false); // Hide response initially
 
+    if (!currentUser) {
+      setError('You need to be logged in to use the AI assistant.');
+      return;
+    }
+
+    // Define usage limits 
+    const USAGE_LIMIT = 50;
+
     try {
+      // Reference to user's AI usage document
+      const today = getToday();
+      const usageDocRef = doc(db, 'users', currentUser.uid, 'usage', 'ai');
+
+      // Get current usage
+      const usageDoc = await getDoc(usageDocRef);
+      let currentCount = 0;
+
+      if (usageDoc.exists()) {
+        const usageData = usageDoc.data();
+        if (usageData.date === today) {
+          currentCount = usageData.count;
+        } else {
+          // Reset usage count for a new day
+          await setDoc(usageDocRef, { date: today, count: 0 });
+          currentCount = 0;
+          setAiUsage(0);
+        }
+      } else {
+        // Initialize usage document
+        await setDoc(usageDocRef, { date: today, count: 0 });
+        currentCount = 0;
+        setAiUsage(0);
+      }
+
+      if (currentCount >= USAGE_LIMIT) {
+        setError('You have reached your daily AI usage limit. Please try again tomorrow.');
+        return;
+      }
+
+      setLoading(true);
+
+      // Send question to backend AI server
       const response = await axios.post('https://enginehub.onrender.com/api/ask', {
         question,
       });
@@ -54,7 +147,11 @@ const InteractiveAI = () => {
       setAnswer(aiResponse);
       setShowResponse(true); // Show response on success
 
-      // Attempt to extract JSON data from the AI response
+      // Increment usage count in Firestore
+      await updateDoc(usageDocRef, { count: increment(1) });
+      setAiUsage((prevCount) => prevCount + 1);
+
+      // Attempt to extract JSON data from the AI response for graphing
       const jsonDataMatch = aiResponse.match(/Graph Data:\s*(\{[\s\S]*\})/);
 
       if (jsonDataMatch && jsonDataMatch[1]) {
@@ -146,6 +243,14 @@ const InteractiveAI = () => {
             </select>
           </div>
           {renderGraph()}
+        </div>
+      )}
+      {/* Display AI Usage Information */}
+      {currentUser && (
+        <div className="ai-usage">
+          <p>
+            AI Usage Today: {aiUsage} / 50
+          </p>
         </div>
       )}
     </div>
