@@ -34,7 +34,6 @@ const careerGuides = [
 const CareerGuidesPage = () => {
   return (
     <div className="career-guides-page">
-      <h1>Career Guides</h1>
       <div className="guides-list">
         {careerGuides.map((guide, index) => (
           <CareerGuideCard

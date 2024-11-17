@@ -45,7 +45,6 @@ const revisionMaterials = [
 const RevisionMaterialsPage = () => {
   return (
     <div className="revision-materials-page">
-      <h1>Revision Materials</h1>
       <div className="materials-list">
         {revisionMaterials.map((material, index) => (
           <Link to={material.link} key={index} className="material-link">

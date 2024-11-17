@@ -64,7 +64,6 @@ const InteractiveToolsPage = () => {
   return (
     <div className="interactive-tools-page">
       <InteractiveAI />
-      <h1>Interactive Tools</h1>
       <div className="tools-list">
         {tools.map((tool, index) => (
           <InteractiveToolCard

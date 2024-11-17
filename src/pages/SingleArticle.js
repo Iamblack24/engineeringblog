@@ -11,6 +11,12 @@ import {
   increment,
 } from 'firebase/firestore';
 import './SingleArticle.css';
+import { Document, Page, pdfjs } from 'react-pdf/dist/esm/entry.webpack';
+import 'react-pdf/dist/esm/Page/AnnotationLayer.css';
+import 'react-pdf/dist/esm/Page/TextLayer.css'; // Import TextLayer CSS
+
+// Set worker source for pdfjs
+pdfjs.GlobalWorkerOptions.workerSrc = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.js`;
 
 const articlesData = [
   {
@@ -18,26 +24,20 @@ const articlesData = [
     title: 'Understanding Structural Engineering',
     author: 'John Doe',
     date: '2023-01-15',
-    content: `
-      Structural engineering is a sub-discipline of civil engineering in which structural engineers are trained to design the 'bones and muscles' that create the form and shape of man-made structures. Structural engineers need to understand and calculate the stability, strength, rigidity, and earthquake-susceptibility of built structures for buildings and nonbuilding structures. The structural designs are integrated with those of other designers such as architects and building services engineer and often supervise the construction of projects by contractors on site.
-
-      Structural engineering theory is based upon applied physical laws and empirical knowledge of the structural performance of different materials and geometries. Structural engineering design utilizes a number of relatively simple structural elements to build complex structural systems.
-    `,
+    content: '/hello.pdf', // Path to PDF in the public folder
     likes: 120,
     dislikes: 5,
+    photo: 'https://example.com/image1.jpg', // Optional
   },
   {
     id: '2',
-    title: 'Sustainable Construction Practices',
+    title: 'Advanced Architectural Designs',
     author: 'Jane Smith',
     date: '2023-02-10',
-    content: `
-      Sustainable construction is about using renewable and recyclable materials when building new structures, as well as reducing energy consumption and waste. It involves creating structures that are environmentally responsible and resource-efficient throughout a building's life-cycle.
-
-      This requires close cooperation of the design team, the architects, the engineers, and the client at all project stages. The goal is to reduce the overall environmental impact of the building.
-    `,
+    content: '/hello.pdf', // Path to PDF in the public folder
     likes: 98,
     dislikes: 2,
+    photo: 'https://example.com/image2.jpg', // Optional
   },
   // Add more articles as needed
 ];
@@ -47,6 +47,7 @@ const SingleArticle = () => {
   const { currentUser } = useContext(AuthContext);
   const [article, setArticle] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [numPages, setNumPages] = useState(null);
 
   useEffect(() => {
     const fetchArticle = async () => {
@@ -81,6 +82,10 @@ const SingleArticle = () => {
     fetchArticle();
   }, [id]);
 
+  const onDocumentLoadSuccess = ({ numPages }) => {
+    setNumPages(numPages);
+  };
+
   const handleLike = async () => {
     if (!currentUser) {
       alert('You need to be logged in to like an article.');
@@ -88,13 +93,7 @@ const SingleArticle = () => {
     }
 
     try {
-      const likeDocRef = doc(
-        db,
-        'articles',
-        id,
-        'likes',
-        currentUser.uid
-      );
+      const likeDocRef = doc(db, 'articles', id, 'likes', currentUser.uid);
       const likeDoc = await getDoc(likeDocRef);
       const articleDocRef = doc(db, 'articles', id);
 
@@ -106,11 +105,42 @@ const SingleArticle = () => {
           ...prevArticle,
           likes: (prevArticle.likes || 0) + 1,
         }));
+        console.log(`Article ${id} liked by user ${currentUser.uid}`);
       } else {
         alert('You have already liked this article.');
+        console.log(`Article ${id} already liked by user ${currentUser.uid}`);
       }
     } catch (error) {
       console.error('Error liking article:', error);
+    }
+  };
+
+  const handleDislike = async () => {
+    if (!currentUser) {
+      alert('You need to be logged in to dislike an article.');
+      return;
+    }
+
+    try {
+      const dislikeDocRef = doc(db, 'articles', id, 'dislikes', currentUser.uid);
+      const dislikeDoc = await getDoc(dislikeDocRef);
+      const articleDocRef = doc(db, 'articles', id);
+
+      if (!dislikeDoc.exists()) {
+        await setDoc(dislikeDocRef, { dislikedAt: new Date() });
+        await updateDoc(articleDocRef, { dislikes: increment(1) });
+        // Update local state
+        setArticle((prevArticle) => ({
+          ...prevArticle,
+          dislikes: (prevArticle.dislikes || 0) + 1,
+        }));
+        console.log(`Article ${id} disliked by user ${currentUser.uid}`);
+      } else {
+        alert('You have already disliked this article.');
+        console.log(`Article ${id} already disliked by user ${currentUser.uid}`);
+      }
+    } catch (error) {
+      console.error('Error disliking article:', error);
     }
   };
 
@@ -122,22 +152,46 @@ const SingleArticle = () => {
     return <p>Article not found.</p>;
   }
 
+  const isPDF = article.content.toLowerCase().endsWith('.pdf');
+
   return (
     <div className="single-article">
       <h1>{article.title}</h1>
       <p className="article-meta">
-        By {article.author} on{' '}
-        {new Date(article.date).toLocaleDateString()}
+        By {article.author} on {new Date(article.date).toLocaleDateString()}
       </p>
+
+      {isPDF ? (
+        <div className="pdf-container">
+          <Document
+            file={article.content}
+            onLoadSuccess={onDocumentLoadSuccess}
+            onLoadError={(error) => console.error('Error loading PDF:', error)}
+          >
+            {Array.from({ length: numPages }, (_, index) => (
+              <Page
+                key={`page_${index + 1}`}
+                pageNumber={index + 1}
+                width={1280}
+              />
+            ))}
+          </Document>
+        </div>
+      ) : (
+        <div
+          className="article-content"
+          dangerouslySetInnerHTML={{ __html: article.content }}
+        ></div>
+      )}
+
       <div className="article-actions">
-        <button onClick={handleLike}>
-          Like ({article.likes || 0})
+        <button onClick={handleLike} className="like-button">
+          👍 {article.likes || 0}
+        </button>
+        <button onClick={handleDislike} className="dislike-button">
+          👎 {article.dislikes || 0}
         </button>
       </div>
-      <div
-        className="article-content"
-        dangerouslySetInnerHTML={{ __html: article.content }}
-      ></div>
     </div>
   );
 };

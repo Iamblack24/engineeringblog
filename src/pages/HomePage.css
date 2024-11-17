@@ -22,8 +22,9 @@
   background-position: center;
   background-repeat: no-repeat;
   position: relative;
-  height: 400px;
+  height: 400px; /* Adjust hero section height */
   color: black;
+  text-decoration: solid;
 }
 
 .hero-overlay {

@@ -26,29 +26,49 @@
   
   .article-meta {
     font-size: 14px;
-    color: #f5f5f5;
+    color: #555;
     margin-bottom: 15px;
   }
   
   .article-stats {
-    font-size: 14px;
-    color: #fdfdfd;
+    display: flex;
+    gap: 10px;
   }
 
   .article-stats button {
-    background-color: #007bff;
-    color: white;
+    display: flex;
+    align-items: center;
+    background-color: #e9ecef;
+    color: #333;
     border: none;
-    padding: 5px 10px;
+    padding: 8px 12px;
     border-radius: 5px;
     cursor: pointer;
     transition: background-color 0.3s ease;
   }
   
   .article-stats button:hover {
-    background-color: #0056b3;
+    background-color: #ced4da;
   }
   
-  .article-stats .dislikes {
-    margin-left: 10px;
+ .article-stats .icon {
+    margin-right: 5px;
+  }
+
+  .like-button {
+    background-color: #28a745;
+    color: white;
+  }
+
+  .like-button:hover {
+    background-color: #218838;
+  }
+
+  .dislike-button {
+    background-color: #dc3545;
+    color: white;
+  }
+
+  .dislike-button:hover {
+    background-color: #c82333;
   }

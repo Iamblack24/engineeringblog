@@ -71,6 +71,39 @@ const ArticlesPage = () => {
     }
   };
 
+  const handleDislike = async (articleId) => {
+    if (!currentUser) {
+      alert('You need to be logged in to dislike an article.');
+      return;
+    }
+
+    try {
+      const dislikeDocRef = doc(
+        db,
+        'articles',
+        articleId,
+        'dislikes',
+        currentUser.uid
+      );
+      const dislikeDoc = await getDoc(dislikeDocRef);
+      const articleDocRef = doc(db, 'articles', articleId);
+
+      if (!dislikeDoc.exists()) {
+        await setDoc(dislikeDocRef, { dislikedAt: new Date() });
+        await updateDoc(articleDocRef, { dislikes: increment(1) });
+        console.log(`Article ${articleId} disliked by user ${currentUser.uid}`);
+        // No need to update local state as onSnapshot will refresh articles
+      } else {
+        alert('You have already disliked this article.');
+        console.log(
+          `Article ${articleId} already disliked by user ${currentUser.uid}`
+        );
+      }
+    } catch (error) {
+      console.error('Error disliking article:', error);
+    }
+  };
+
   if (loading) {
     return <p>Loading articles...</p>;
   }
@@ -85,6 +118,7 @@ const ArticlesPage = () => {
               key={article.id}
               article={article}
               onLike={() => handleLike(article.id)}
+              onDislike={() => handleDislike(article.id)}
             />
           ))
         ) : (

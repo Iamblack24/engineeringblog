@@ -1,9 +1,10 @@
 // src/components/ArticleCard.js
 import React from 'react';
 import { Link } from 'react-router-dom';
+import { FaThumbsDown, FaThumbsUp } from 'react-icons/fa';
 import './ArticleCard.css';
 
-const ArticleCard = ({ article, onLike }) => {
+const ArticleCard = ({ article, onLike, onDislike }) => {
   const { id, title, author, date, likes, dislikes, photo } = article;
 
   return (
@@ -17,12 +18,12 @@ const ArticleCard = ({ article, onLike }) => {
         <span>{new Date(date).toLocaleDateString()}</span>
       </p>
       <div className="article-stats">
-        <button onClick={onLike}>
-          👍 {likes || 0}
+        <button className="like-button" onClick={() => onLike(id, 'like')}>
+          <FaThumbsUp className='icon' /> {likes || 0}
         </button>
-        <span className="dislikes">
-          👎 {dislikes || 0}
-        </span>
+        <button className="dislike-button" onClick={onDislike}>
+          <FaThumbsDown className="icon" /> {dislikes || 0}
+        </button>
       </div>
     </div>
   );
