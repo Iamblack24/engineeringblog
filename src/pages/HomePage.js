@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import './HomePage.css'; // Import the CSS file for styling
 import NewsletterSignup from '../components/NewsletterSignup'; // Import the NewsletterSignup component
-//import Navbar from '../components/Navbar'; // Import the Navbar component if not already imported
-
+// i don't really know the relevance of this i just placed it maybe i need to animate something
 const HomePage = () => {
   const [randomFact, setRandomFact] = useState('');
 
@@ -24,7 +23,7 @@ const HomePage = () => {
         <section className="hero-section">
           <div className="hero-overlay">
             <h1>Welcome to the Engineering Hub</h1>
-            <p>Empowering Future Civil Engineers, Architects, Structural Engineers</p>
+            <p>Empowering Future and proffessional Civil Engineers, Architects, Structural Engineers</p>
           </div>
         </section>
         <section className="random-fact-section">
@@ -33,11 +32,19 @@ const HomePage = () => {
         </section>
         <section className="content-section">
           <div className="content-card">
-            <img src="/cad1.jpg" alt="Articles" className="content-image small-image" />
+            <img src="/articles.jpg" alt="Articles" className="content-image small-image" />
             <div className="content-text">
               <h2>Articles</h2>
               <p>Explore a wide range of articles on various civil engineering topics, including construction, sustainability, and project management.</p>
               <a href="/articles" className="content-link">Read More</a>
+            </div>
+          </div>
+          <div className="content-card">
+            <img src="/designmaterials.jpg" alt="Design materials" className="content-image small-image" />
+            <div className="content-text">
+              <h2>Design Materials</h2>
+              <p>Discover design materials, including cad designs, Cad tools, and learn about their properties and applications.</p>
+              <a href="/design-materials" className="content-link">Explore</a>
             </div>
           </div>
           <div className="content-card">
@@ -83,12 +90,12 @@ const HomePage = () => {
         <section className="testimonials-section">
           <h2>What Our Readers Say</h2>
           <div className="testimonial">
-            <p>"This blog has been an invaluable resource for my studies. The articles and tools are top-notch!"</p>
-            <span>- Alex, Civil Engineering Student</span>
+            <p>"This site has been an invaluable resource for my studies. The articles and tools are top-notch!"</p>
+            <span>- Bravin Michweya, Civil Engineering Student</span>
           </div>
           <div className="testimonial">
             <p>"The case studies provide great insights into real-world engineering challenges and solutions."</p>
-            <span>- Maria, Structural Engineer</span>
+            <span>- Fred Biya, Structural Engineer</span>
           </div>
         </section>
         <section className="featured-articles-section">

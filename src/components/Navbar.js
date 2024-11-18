@@ -74,7 +74,7 @@ const Navbar = () => {
       <div className="navbar-container">
         {/* Logo */}
         <Link to="/" className="navbar-logo" onClick={handleCloseMenu}>
-          Engineering Blog
+          Engineering Hub
         </Link>
 
         {/* User Authentication */}

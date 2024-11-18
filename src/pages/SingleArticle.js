@@ -145,11 +145,11 @@ const SingleArticle = () => {
   };
 
   if (loading) {
-    return <p>Loading article...</p>;
+    return <p>retrieving article...</p>;
   }
 
   if (!article) {
-    return <p>Article not found.</p>;
+    return <p>Oops! Article not found.</p>;
   }
 
   const isPDF = article.content.toLowerCase().endsWith('.pdf');

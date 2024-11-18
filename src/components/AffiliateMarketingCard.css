@@ -1,0 +1,53 @@
+.affiliate-marketing-card {
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 16px;
+    margin: 16px 0;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    transition: box-shadow 0.3s ease;
+}
+
+.affiliate-marketing-card:hover {
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.affiliate-marketing-card h2 {
+    font-size: 1.5em;
+    margin-bottom: 8px;
+}
+
+.affiliate-marketing-card p {
+    font-size: 1em;
+    margin-bottom: 16px;
+}
+
+.affiliate-marketing-card .images {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 16px;
+}
+
+.affiliate-marketing-card .images img {
+    max-width: 200px;
+    border-radius: 4px;
+}
+
+.affiliate-marketing-card .price {
+    font-size: 1.2em;
+    font-weight: bold;
+    margin-bottom: 16px;
+}
+
+.affiliate-marketing-card .affiliate-link {
+    display: inline-block;
+    padding: 8px 16px;
+    background-color: #007bff;
+    color: #fff;
+    text-decoration: none;
+    border-radius: 4px;
+    transition: background-color 0.3s ease;
+}
+
+.affiliate-marketing-card .affiliate-link:hover {
+    background-color: #0056b3;
+}

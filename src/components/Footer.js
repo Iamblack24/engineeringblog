@@ -10,17 +10,17 @@ const Footer = () => {
         <div className="footer-section">
           <h3>About Us</h3>
           <p>
-            We are a leading civil engineering blog providing resources, tools, and articles
+            We are a leading engineering hub providing resources, tools, case studies and articles
             for professionals and students.
           </p>
         </div>
         <div className="footer-section">
           <h3>Contact Information</h3>
           <p>
-            Technical University of Kenya<br />
+            Embakasi, Tassia<br />
             Nairobi, Kenya<br />
-            Phone: +123 456 7890<br />
-            Email: info@civilengineeringblog.com
+            Phone: +254 799 129 637<br />
+            Email: otienojohnmicheal2@gmail.com
           </p>
         </div>
         <div className="footer-section">
@@ -35,7 +35,7 @@ const Footer = () => {
               <FaFacebook className="social-icon" />
             </a>
             <a
-              href="https://twitter.com"
+              href="https://x.com/gacharua?t=QQ2R-UjV2VmgHnkVfBD8OQ&s=08"
               target="_blank"
               rel="noopener noreferrer"
               aria-label="Twitter"
@@ -43,7 +43,7 @@ const Footer = () => {
               <FaTwitter className="social-icon" />
             </a>
             <a
-              href="https://linkedin.com"
+              href="https://www.linkedin.com/in/john-micheal-736bb71b4"
               target="_blank"
               rel="noopener noreferrer"
               aria-label="LinkedIn"
@@ -55,7 +55,7 @@ const Footer = () => {
         </div>
       </div>
       <div className="footer-bottom">
-        <p>© 2023 Civil Engineering Blog. All rights reserved.</p>
+        <p>© 2024 Engineering hub. All rights reserved.</p>
         <ul className="footer-links">
           <li>
             <Link to="/privacy-policy">Privacy Policy</Link>

@@ -1,5 +1,6 @@
 import React from 'react';
 import DesignMaterialCard from '../components/DesignMaterialCard';
+import AffiliateMarketingCard from '../components/AffiliateMarketingcard';
 import './DesignMaterialsPage.css';
 
 const designMaterials = [
@@ -36,6 +37,21 @@ const designMaterials = [
   // Add more design materials as needed
 ];
 
+const affiliatemarketing = [
+  {
+    id: '1',
+    title: 'archicad 24-27',
+    description: 'Archicad is a desktop software that can go a long way helping you in your design projects',
+    price: 'free',
+    images: [
+      '/cad1.jpg',
+      '/cad2.jpg',
+      '/build.jpg'
+    ],
+    link: 'an affiliate link'
+  }
+];
+
 const DesignMaterialsPage = () => {
   return (
     <div className="design-materials-page">
@@ -43,6 +59,12 @@ const DesignMaterialsPage = () => {
       <div className="materials-list">
         {designMaterials.map((material) => (
           <DesignMaterialCard key={material.id} material={material} />
+        ))}
+      </div>
+      <h1>Affiliate Marketing</h1>
+      <div className="affiliate-marketing-list">
+        {affiliatemarketing.map((marketing) => (
+          <AffiliateMarketingCard key={marketing.id} marketing={marketing} />
         ))}
       </div>
     </div>

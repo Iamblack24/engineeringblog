@@ -26,6 +26,14 @@
   color: black;
   text-decoration: solid;
 }
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
 
 .hero-overlay {
   /* Semi-transparent dark blue overlay */
@@ -39,6 +47,8 @@
   justify-content: center;
   align-items: center;
   text-align: center;
+  background-color: rgba(10, 25, 47, 0.8);
+  animation: fadeIn 3s ease-in-out;
 }
 
 .search-section {

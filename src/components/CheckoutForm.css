@@ -1,0 +1,10 @@
+
+.card-error {
+  color: red;
+  margin-top: 10px;
+}
+
+.card-success {
+  color: green;
+  margin-top: 10px;
+}

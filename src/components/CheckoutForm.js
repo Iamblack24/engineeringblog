@@ -2,6 +2,7 @@
 import React, { useState } from 'react';
 import { CardElement, useStripe, useElements } from '@stripe/react-stripe-js';
 import axios from 'axios';
+import './CheckoutForm.css'; // Import the CSS file
 
 const CheckoutForm = ({ material }) => {
   const stripe = useStripe();
@@ -44,7 +45,7 @@ const CheckoutForm = ({ material }) => {
       }
     } catch (error) {
       console.error('Error during payment request:', error);
-      setError('Payment failed');
+      setError('Payment failed: ' + error.message); // Display detailed error message
     }
 
     setProcessing(false);
@@ -56,8 +57,8 @@ const CheckoutForm = ({ material }) => {
       <button type="submit" disabled={!stripe || processing || succeeded}>
         {processing ? 'Processing...' : 'Pay'}
       </button>
-      {error && <div className="card-error" role="alert">{error}</div>}
-      {succeeded && <div className="card-success" role="alert">Payment succeeded!</div>}
+      {error && <div className="card-error" role="alert" style={{ color: 'red', marginTop: '10px' }}>{error}</div>}
+      {succeeded && <div className="card-success" role="alert" style={{ color: 'green', marginTop: '10px' }}>Payment succeeded!</div>}
     </form>
   );
 };
