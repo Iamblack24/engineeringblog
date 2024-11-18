@@ -51,3 +51,36 @@
 .affiliate-marketing-card .affiliate-link:hover {
     background-color: #0056b3;
 }
+
+@media (max-width: 600px) {
+    .affiliate-marketing-card {
+        padding: 12px;
+        margin: 12px 0;
+    }
+
+    .affiliate-marketing-card h2 {
+        font-size: 1.2em;
+    }
+
+    .affiliate-marketing-card p {
+        font-size: 0.9em;
+    }
+
+    .affiliate-marketing-card .images {
+        flex-direction: column;
+        gap: 4px;
+    }
+
+    .affiliate-marketing-card .images img {
+        max-width: 100%;
+    }
+
+    .affiliate-marketing-card .price {
+        font-size: 1em;
+    }
+
+    .affiliate-marketing-card .affiliate-link {
+        padding: 6px 12px;
+        font-size: 0.9em;
+    }
+}

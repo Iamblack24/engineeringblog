@@ -48,7 +48,7 @@
   align-items: center;
   text-align: center;
   background-color: rgba(10, 25, 47, 0.8);
-  animation: fadeIn 3s ease-in-out;
+  animation: fadeIn 6s ease-in-out;
 }
 
 .search-section {
