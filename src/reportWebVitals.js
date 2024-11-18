@@ -1,6 +1,6 @@
 /* global gtag */
 const reportWebVitals = (onPerfEntry) => {
-  if (onPerfEntry && onPerfEntry instanceof Function) {
+  if (onPerfEntry && typeof onPerfEntry === 'function') {
     import('web-vitals').then(({ getCLS, getFID, getFCP, getLCP, getTTFB }) => {
       getCLS(onPerfEntry);
       getFID(onPerfEntry);
@@ -23,7 +23,7 @@ const sendToAnalytics = ({ name, delta, id }) => {
 const report = (onPerfEntry) => {
   reportWebVitals((metric) => {
     sendToAnalytics(metric);
-    if (onPerfEntry) {
+    if (onPerfEntry && typeof onPerfEntry === 'function') {
       onPerfEntry(metric);
     }
   });

@@ -20,7 +20,7 @@ const WelcomeOverlay = ({ name, onClose }) => {
   return (
     <CSSTransition
       in={showOverlay}
-      timeout={300}
+      timeout={700}
       classNames="overlay"
       unmountOnExit
       onExited={onClose}

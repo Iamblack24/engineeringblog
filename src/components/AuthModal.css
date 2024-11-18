@@ -25,6 +25,12 @@
     text-align: center;
   }
   
+  /* Modal Scroll */
+  .modal-scroll {
+    max-height: 90vh;
+    overflow-y: auto;
+  }
+  
   /* Close Button */
   .close-button {
     position: absolute;
@@ -80,3 +86,15 @@
   .toggle-link:hover {
     text-decoration: underline;
   }
+
+/* Forgot Password Link */
+.forgot-password-link {
+  color: #1abc9c;
+  cursor: pointer;
+  display: block;
+  margin-bottom: 10px;
+}
+
+.forgot-password-link:hover {
+  text-decoration: underline;
+}

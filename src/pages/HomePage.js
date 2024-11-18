@@ -35,7 +35,7 @@ const HomePage = () => {
             <img src="/articles.jpg" alt="Articles" className="content-image small-image" />
             <div className="content-text">
               <h2>Articles</h2>
-              <p>Explore a wide range of articles on various civil engineering topics, including construction, sustainability, and project management.</p>
+              <p>Explore a wide range of articles on various built environment topics, including construction, sustainability, and project management.</p>
               <a href="/articles" className="content-link">Read More</a>
             </div>
           </div>

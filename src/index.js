@@ -21,9 +21,9 @@ root.render(
 
 document.title = "Engineering Hub"; // Change the document title
 
-//const logWebVitals = (metric) => {
- // console.log(metric);
-//};
+const logWebVitals = (metric) => {
+  console.log(metric);
+};
 // to log results (for example: reportWebVitals(console.log))
 // or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
-reportWebVitals();
+reportWebVitals(logWebVitals);
