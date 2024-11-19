@@ -5,6 +5,7 @@
   "dependencies": {
     "@babel/plugin-transform-private-property-in-object": "^7.25.9",
     "@fortawesome/fontawesome-free": "^6.6.0",
+    "@fullhuman/postcss-purgecss": "^6.0.0",
     "@hcaptcha/react-hcaptcha": "^1.11.0",
     "@stripe/react-stripe-js": "^2.8.1",
     "@stripe/stripe-js": "^4.9.0",

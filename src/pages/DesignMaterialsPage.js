@@ -1,7 +1,9 @@
-import React from 'react';
+import React, { useContext, useState } from 'react';
 import DesignMaterialCard from '../components/DesignMaterialCard';
 import AffiliateMarketingCard from '../components/AffiliateMarketingcard';
+import AuthModal from '../components/AuthModal';
 import './DesignMaterialsPage.css';
+import { AuthContext } from '../contexts/AuthContext';
 
 const designMaterials = [
   {
@@ -53,12 +55,26 @@ const affiliatemarketing = [
 ];
 
 const DesignMaterialsPage = () => {
+  const { currentUser } = useContext(AuthContext);
+  const [showAuthModal, setShowAuthModal] = useState(false);
+
+  const handleInteraction = () => {
+    if (!currentUser) {
+      setShowAuthModal(true);
+      return false;
+    }
+    return true;
+  };
+
   return (
     <div className="design-materials-page">
+      {showAuthModal && (
+        <AuthModal onClose={() => setShowAuthModal(false)} />
+      )}
       <h1>Design Materials for Purchase</h1>
       <div className="materials-list">
         {designMaterials.map((material) => (
-          <DesignMaterialCard key={material.id} material={material} />
+          <DesignMaterialCard key={material.id} material={material} onInteraction={handleInteraction} />
         ))}
       </div>
       <h1>Affiliate Marketing</h1>

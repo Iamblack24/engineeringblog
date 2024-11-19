@@ -17,15 +17,49 @@
 }
 
 .hero-section {
-  background-image: url('/public/interior1.jpg'); /* Add the background image */
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
   position: relative;
   height: 400px; /* Adjust hero section height */
-  color: black;
-  text-decoration: solid;
+  overflow: hidden;
 }
+
+
+.hero-overlay {
+  /* Semi-transparent dark blue overlay */
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  background-color: rgba(10, 25, 47, 0.8);
+  transition: opacity 1s ease-in-out;
+  opacity: 0;
+  color: white;
+}
+
+.hero-overlay.active {
+  opacity: 1;
+}
+
+.hero-image {
+  position:absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0;
+  transition: opacity 1s ease-in-out;
+}
+
+.hero-image.active {
+  opacity: 1;
+}
+
 @keyframes fadeIn {
   from {
     opacity: 0;
@@ -33,22 +67,6 @@
   to {
     opacity: 1;
   }
-}
-
-.hero-overlay {
-  /* Semi-transparent dark blue overlay */
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  text-align: center;
-  background-color: rgba(10, 25, 47, 0.8);
-  animation: fadeIn 6s ease-in-out;
 }
 
 .search-section {

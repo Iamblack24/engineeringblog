@@ -1,7 +1,9 @@
-import React from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import InteractiveToolCard from '../components/InteractiveToolCard';
 import InteractiveAI from '../components/InteractiveAI';
+import AuthModal from '../components/AuthModal';
 import './InteractiveToolsPage.css'; // Import the CSS file for styling
+import { AuthContext } from '../contexts/AuthContext';
 
 const tools = [
   {
@@ -61,9 +63,30 @@ const tools = [
 ];
 
 const InteractiveToolsPage = () => {
+  const { currentUser } = useContext(AuthContext); // Get authentication status from context
+  const [showAuthModal, setShowAuthModal] = useState(false);
+  
+  const handleToolClick = (tool) => {
+    if (!currentUser) {
+      setShowAuthModal(true);
+    } else {
+      window.location.href = tool.link;
+    }
+  };
+
+  useEffect(() => {
+    if (currentUser) {
+      setShowAuthModal(false);
+    }
+  }, [currentUser]);
+
   return (
     <div className="interactive-tools-page">
       <InteractiveAI />
+      {showAuthModal && (
+        <AuthModal onClose={() => setShowAuthModal(false)} />
+      )}
+      <h1>Interactive Tools</h1>
       <div className="tools-list">
         {tools.map((tool, index) => (
           <InteractiveToolCard
@@ -71,6 +94,7 @@ const InteractiveToolsPage = () => {
             title={tool.title}
             description={tool.description}
             link={tool.link}
+            onClick={() => handleToolClick(tool)}
           />
         ))}
       </div>

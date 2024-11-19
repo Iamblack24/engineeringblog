@@ -5,7 +5,7 @@ import StripeSetup from '../StripeSetup';
 import CheckoutForm from './CheckoutForm';
 import './DesignMaterialCard.css';
 
-const DesignMaterialCard = ({ material }) => {
+const DesignMaterialCard = ({ material, onInteraction }) => {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [showCheckout, setShowCheckout] = useState(false);
 
@@ -21,6 +21,11 @@ const DesignMaterialCard = ({ material }) => {
     const interval = setInterval(nextSlide, 3000); // Change slide every 3 seconds
     return () => clearInterval(interval); // Cleanup interval on component unmount
   }, [nextSlide]);
+
+  const handlePurchaseClick = () => {
+    onInteraction();
+    setShowCheckout(true);
+  };
 
   return (
     <div className="material-card">
@@ -43,8 +48,8 @@ const DesignMaterialCard = ({ material }) => {
         <p><strong>Price:</strong> {material.price}</p>
         <p>{material.description}</p>
         <div className="material-actions">
-          <button className="purchase-button" onClick={() => setShowCheckout(true)}>Purchase</button>
-          <Link to={material.contactLink} className="contact-button">Contact Us</Link>
+        <button className="purchase-button" onClick={handlePurchaseClick}>Purchase</button>
+          <Link to={material.contactLink} className="contact-button" onClick={onInteraction}>Contact Us</Link>
         </div>
         {showCheckout && (
           <StripeSetup>

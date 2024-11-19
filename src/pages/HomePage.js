@@ -4,6 +4,14 @@ import NewsletterSignup from '../components/NewsletterSignup'; // Import the New
 // i don't really know the relevance of this i just placed it maybe i need to animate something
 const HomePage = () => {
   const [randomFact, setRandomFact] = useState('');
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [showOverlay, setShowOverlay] = useState(true);
+
+  const images = [
+    '/interior1.jpg',
+    '/interior2.jpg',
+    '/interior3.jpg',
+  ];  
 
   useEffect(() => {
     const facts = [
@@ -15,13 +23,34 @@ const HomePage = () => {
     ];
     const randomIndex = Math.floor(Math.random() * facts.length);
     setRandomFact(facts[randomIndex]);
-  }, []); // Removed 'facts' from dependency array
+  
+    const interval = setInterval(() => {
+      setShowOverlay(false);
+      setTimeout(() => {
+        setShowOverlay(true);
+        setTimeout(() => {
+          setCurrentImageIndex((prevIndex) => (prevIndex + 1) % images.length);
+        }, 3000); // Show overlay for 3 seconds
+      }, 3000); // Show image without overlay for 3 seconds
+    }, 6000); // Change image every 6 seconds
+
+    return () => clearInterval(interval);
+  }, [images.length]);
+
 
   return (
     <>
       <div className="home-page">
         <section className="hero-section">
-          <div className="hero-overlay">
+        {images.map((image, index) => (
+            <img
+              key={index}
+              src={image}
+              alt={`Hero ${index + 1}`}
+              className={`hero-image ${index === currentImageIndex ? 'active' : ''}`}
+            />
+          ))}
+          <div className={`hero-overlay ${showOverlay ? 'active' : ''}`}>
             <h1>Welcome to the Engineering Hub</h1>
             <p>Empowering Future and proffessional Civil Engineers, Architects, Structural Engineers</p>
           </div>

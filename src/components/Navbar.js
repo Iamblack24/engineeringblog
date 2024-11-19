@@ -72,6 +72,11 @@ const Navbar = () => {
   return (
     <nav className="navbar">
       <div className="navbar-container">
+        {/* Hamburger Menu Icon */}
+        <div className="menu-icon" onClick={handleMenuToggle}>
+          {isMenuOpen ? <FaTimes /> : <FaBars />}
+        </div>
+
         {/* Logo */}
         <Link to="/" className="navbar-logo" onClick={handleCloseMenu}>
           Engineering Hub
@@ -103,11 +108,6 @@ const Navbar = () => {
               Login / Signup
             </span>
           )}
-        </div>
-
-        {/* Hamburger Menu Icon */}
-        <div className="menu-icon" onClick={handleMenuToggle}>
-          {isMenuOpen ? <FaTimes /> : <FaBars />}
         </div>
 
         {/* Navigation Links */}

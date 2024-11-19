@@ -1,12 +1,12 @@
 import React from 'react';
-import './InteractiveToolCard.css'; // Import the CSS file for styling
+import './InteractiveToolCard.css';
 
-const InteractiveToolCard = ({ title, description, link }) => {
+const InteractiveToolCard = ({ title, description, link, onClick }) => {
   return (
-    <div className="interactive-tool-card">
+    <div className="interactive-tool-card" onClick={onClick}>
       <h2>{title}</h2>
       <p>{description}</p>
-      <a href={link} className="tool-link">Use Tool</a>
+      <a href={link} onClick={(e) => e.preventDefault()}>Use Tool</a>
     </div>
   );
 };
