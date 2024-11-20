@@ -173,7 +173,7 @@ const Navbar = () => {
               }
               onClick={handleCloseMenu}
             >
-              Interactive Tools
+              Engineering Tools
             </NavLink>
           </li>
 

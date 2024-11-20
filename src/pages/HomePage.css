@@ -89,11 +89,15 @@
 }
 
 .content-section {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
   background-color: var(--secondary-color);
   padding: 20px;
 }
 
 .content-card {
+  flex: 1 1 45%; /* Take up 45% of the container */
   display: flex;
   flex-direction: column; /* Stack items vertically on mobile */
   background-color: var(--primary-color);
@@ -204,4 +208,71 @@
 /* Optional: Adjust body padding if navbar is fixed */
 body {
   padding-top: 60px; /* Adjust based on navbar height */
+}
+
+/* Events Section Styles */
+.events-section {
+  background-color: var(--primary-color);
+  padding: 40px 20px;
+}
+
+.events-section h2 {
+  text-align: center;
+  color: var(--accent-color);
+  margin-bottom: 30px;
+}
+
+.featured-events {
+  display: flex;
+  justify-content: space-around;
+  flex-wrap: wrap;
+}
+
+.event-card {
+  flex: 1 1 45%;
+  background-color: var(--secondary-color);
+  padding: 20px;
+  margin: 10px;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.event-image {
+  width: 100%;
+  max-width: 300px;
+  height: auto;
+  border-radius: 8px;
+  margin-bottom: 20px;
+}
+
+.event-card h3 {
+  color: var(--accent-color);
+  margin-bottom: 10px;
+  text-align: center;
+}
+
+.event-card p {
+  color: var(--text-color);
+  margin-bottom: 15px;
+  text-align: center;
+}
+
+.event-card .content-link {
+  color: var(--accent-color);
+  text-decoration: none;
+  font-weight: bold;
+}
+
+.event-card .content-link:hover {
+  text-decoration: underline;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .event-card {
+    flex: 1 1 100%;
+  }
 }

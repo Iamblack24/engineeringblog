@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom'; // Import the Link component
 import './HomePage.css'; // Import the CSS file for styling
 import NewsletterSignup from '../components/NewsletterSignup'; // Import the NewsletterSignup component
 // i don't really know the relevance of this i just placed it maybe i need to animate something
@@ -113,6 +114,31 @@ const HomePage = () => {
               <h2>Newsletter</h2>
               <p>Stay updated with the latest news and articles by signing up for our newsletter.</p>
               <NewsletterSignup />
+            </div>
+          </div>
+        </section>
+        <section className="events-section">
+          <h2>Events and Webinars</h2>
+          <div className="featured-events">
+            <div className="event-card">
+              <img
+                src="/front.jpeg"
+                alt="sustainable engineering practices"
+                className="event-image"
+              />
+              <h3>Upcoming Webinar: Sustainable Engineering Practices</h3>
+              <p>Join us for an in-depth discussion on sustainable engineering solutions.</p>
+              <Link to="/webinars" className="content-link">View Webinars</Link>
+            </div>
+            <div className="event-card">
+              <img
+                src="/interior4.jpg"
+                alt="Annual Engineering Conference 2024"
+                className="event-image"
+              />
+              <h3>Annual Engineering Conference 2024</h3>
+              <p>Participate in our annual conference to connect with industry leaders.</p>
+              <Link to="/events" className="content-link">View Events</Link>
             </div>
           </div>
         </section>

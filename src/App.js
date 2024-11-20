@@ -32,7 +32,11 @@ import SteelConnectionDesignTool from './pages/SteelConnectionDesignTool';
 import ReinforcedConcreteDesignTool from './pages/ReinforcedConcreteDesignTool';
 import DownloadableRevisionMaterialsPage from './pages/materials/DownloadableRevisionMaterialsPage';
 import WelcomeOverlay from './components/WelcomeOverlay';
+import EventsPage from './pages/EventsPage';
+import InstallPrompt from './components/InstallPrompt';
+import WebinarsPage from './pages/WebinarsPage';
 import PrivacyPolicy from './pages/PrivacyPolicy';
+import TermsOfService from './pages/TermsOfService';
 import { AuthContext } from './contexts/AuthContext';
 import ScrollToTop from './ScrollToTop';
 import './App.css';
@@ -80,6 +84,9 @@ function App() {
         <Route path="/tools/structural-load" element={<StructuralLoadCalculator />} />
         <Route path="/career-guides/:guideId" element={<CareerGuideDetail />} />
         <Route path="/contact" element={<ContactPage />} />
+        <Route path="/events" element={<EventsPage />} />
+        <Route path="/webinars" element={<WebinarsPage />} />
+        <Route path="/terms-of-service" element={<TermsOfService />} />
         <Route path="/privacy-policy" element={<PrivacyPolicy />} />
         <Route path="/tools/pile-design" element={<PileDesignTool />} />
         <Route path="/materials/structural-engineering-flashcards" element={<StructuralEngineeringFlashcards />} />
@@ -89,6 +96,7 @@ function App() {
         <Route path="/materials/environmental-engineering-summary-notes" element={<EnvironmentalEngineeringSummaryNotes />} />
         <Route path="/materials/transportation-engineering-quiz" element={<TransportationEngineeringQuiz />} />
       </Routes>
+      <InstallPrompt />
       <Footer />
     </Router>
   );

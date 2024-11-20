@@ -6,7 +6,7 @@ const PrivacyPolicy = () => {
         <div className="privacy-policy">
             <h1>Privacy Policy</h1>
             <p>
-                At Engineering Hub, accessible from engineeringhub.com, one of our main priorities is the privacy of our visitors. This Privacy Policy document contains types of information that is collected and recorded by Engineering Hub and how we use it.
+                At Engineering Hub, accessible from engineeringhub.engineer, one of our main priorities is the privacy of our visitors. This Privacy Policy document contains types of information that is collected and recorded by Engineering Hub and how we use it.
             </p>
             <h2>Information we collect</h2>
             <p>

@@ -16,8 +16,8 @@ const downloadableMaterials = [
     title: 'Soil Mechanics 1A',
     description: 'Download notes on soil mechanics for third year civil students.',
     fileLinks: [
-      '/utils/EECQ 3171-Soil Mechanics IA-Slides 1-49.pdf',
-      '/utils/EECQ 3171-Soil Mechanics IA - slides 50-76.pdf',
+      '/src/utils/EECQ 3171-Soil Mechanics IA-Slides 1-49.pdf',
+      '/src/utils/EECQ 3171-Soil Mechanics IA - slides 50-76.pdf',
     ],
   },
   // Add more downloadable materials here with multiple fileLinks

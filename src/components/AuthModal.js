@@ -7,6 +7,7 @@ import {
 } from 'firebase/auth';
 import { auth, db } from '../firebase';
 import { doc, setDoc } from 'firebase/firestore';
+import { Link } from 'react-router-dom';
 import './AuthModal.css';
 
 const AuthModal = ({ onClose }) => {
@@ -19,181 +20,188 @@ const AuthModal = ({ onClose }) => {
     gender: '',
     schoolOrWorkplace: '',
   });
+  const [acceptTerms, setAcceptTerms] = useState(false);
   const [error, setError] = useState('');
 
   const toggleAuthMode = () => {
     setIsSignup(!isSignup);
-    setFormData({
-      username: '',
-      email: '',
-      password: '',
-      phoneNumber: '',
-      gender: '',
-      schoolOrWorkplace: '',
-    });
     setError('');
+    setAcceptTerms(false); // Reset the checkbox when toggling
   };
 
-  const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prevData) => ({
+      ...prevData,
+      [name]: value,
+    }));
   };
 
-  const handleSignup = async (e) => {
+  const handleCheckboxChange = (e) => {
+    setAcceptTerms(e.target.checked);
+  };
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    setError('');
-    const { username, email, password, phoneNumber, gender, schoolOrWorkplace } = formData;
-
-    if (!username || !email || !password || !phoneNumber || !gender || !schoolOrWorkplace) {
-      setError('Please fill in all fields.');
+    if (isSignup && !acceptTerms) {
+      setError('You must accept the Terms of Service and Privacy Policy.');
       return;
     }
 
     try {
-      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-      const user = userCredential.user;
-
-      // Save additional user info to Firestore
-      await setDoc(doc(db, 'users', user.uid), {
-        uid: user.uid,
-        username,
-        email,
-        phoneNumber,
-        gender,
-        schoolOrWorkplace,
-      });
-
-      alert('Signup successful! Closing the overlay...');
-      setTimeout(onClose, 2000); // Close the overlay after 2 seconds
-    } catch (err) {
-      setError(err.message);
-    }
-  };
-
-  const handleLogin = async (e) => {
-    e.preventDefault();
-    setError('');
-    const { email, password } = formData;
-
-    if (!email || !password) {
-      setError('Please enter your email and password.');
-      return;
-    }
-
-    try {
-      await signInWithEmailAndPassword(auth, email, password);
+      if (isSignup) {
+        const userCredential = await createUserWithEmailAndPassword(auth, formData.email, formData.password);
+        const user = userCredential.user;
+        await setDoc(doc(db, 'users', user.uid), {
+          username: formData.username,
+          email: formData.email,
+          phoneNumber: formData.phoneNumber,
+          gender: formData.gender,
+          schoolOrWorkplace: formData.schoolOrWorkplace,
+        });
+      } else {
+        await signInWithEmailAndPassword(auth, formData.email, formData.password);
+      }
       onClose();
-    } catch (err) {
-      setError(err.message);
+    } catch (error) {
+      setError(error.message);
     }
   };
 
   const handleForgotPassword = async () => {
-    const { email } = formData;
-    if (!email) {
-      setError('Please enter your email address to reset your password.');
+    if (!formData.email) {
+      setError('Please enter your email address.');
       return;
     }
     try {
-      await sendPasswordResetEmail(auth, email);
-      alert('Password reset email sent! Please check your inbox.');
-    } catch (err) {
-      setError(err.message);
+      await sendPasswordResetEmail(auth, formData.email);
+      setError('Password reset email sent.');
+    } catch (error) {
+      setError(error.message);
     }
   };
 
   return (
     <div className="auth-modal">
-      <div className="modal-scroll">
-        <div className="modal-content">
-          <button className="close-button" onClick={onClose}>
-            &times;
-          </button>
-          {isSignup ? (
-            <form onSubmit={handleSignup}>
-              <h2>Sign Up</h2>
-              {error && <p className="error">{error}</p>}
-              <input
-                type="text"
-                name="username"
-                placeholder="Username"
-                value={formData.username}
-                onChange={handleChange}
-              />
-              <input
-                type="email"
-                name="email"
-                placeholder="Email Address"
-                value={formData.email}
-                onChange={handleChange}
-              />
-              <input
-                type="password"
-                name="password"
-                placeholder="Password"
-                value={formData.password}
-                onChange={handleChange}
-              />
-              <input
-                type="tel"
-                name="phoneNumber"
-                placeholder="Phone Number"
-                value={formData.phoneNumber}
-                onChange={handleChange}
-              />
-              <select name="gender" value={formData.gender} onChange={handleChange}>
-                <option value="">Select Gender</option>
-                <option value="male">Male</option>
-                <option value="female">Female</option>
-                <option value="other">Other</option>
-              </select>
-              <input
-                type="text"
-                name="schoolOrWorkplace"
-                placeholder="School or Workplace"
-                value={formData.schoolOrWorkplace}
-                onChange={handleChange}
-              />
-              <button type="submit">Sign Up</button>
-              <p>
-                Already have an account?{' '}
-                <span className="toggle-link" onClick={toggleAuthMode}>
-                  Login
-                </span>
-              </p>
-            </form>
-          ) : (
-            <form onSubmit={handleLogin}>
-              <h2>Login</h2>
-              {error && <p className="error">{error}</p>}
-              <input
-                type="email"
-                name="email"
-                placeholder="Email Address"
-                value={formData.email}
-                onChange={handleChange}
-              />
-              <input
-                type="password"
-                name="password"
-                placeholder="Password"
-                value={formData.password}
-                onChange={handleChange}
-              />
-              <button type="submit">Login</button>
-              <p>
-                <span className="forgot-password-link" onClick={handleForgotPassword}>
-                  Forgot Password?
-                </span>
-              </p>
-              <p>
-                Don't have an account?{' '}
-                <span className="toggle-link" onClick={toggleAuthMode}>
-                  Sign Up
-                </span>
-              </p>
-            </form>
+      <div className="auth-modal-content">
+        <button className="close-button" onClick={onClose}>
+          &times;
+        </button>
+        <h2>{isSignup ? 'Sign Up' : 'Log In'}</h2>
+        {error && <p className="error-message">{error}</p>}
+        <form onSubmit={handleSubmit}>
+          {isSignup && (
+            <>
+              <div className="form-group">
+                <label htmlFor="username">Username</label>
+                <input
+                  type="text"
+                  id="username"
+                  name="username"
+                  value={formData.username}
+                  onChange={handleInputChange}
+                  required
+                />
+              </div>
+              <div className="form-group">
+                <label htmlFor="phoneNumber">Phone Number</label>
+                <input
+                  type="text"
+                  id="phoneNumber"
+                  name="phoneNumber"
+                  value={formData.phoneNumber}
+                  onChange={handleInputChange}
+                  required
+                />
+              </div>
+              <div className="form-group">
+                <label htmlFor="gender">Gender</label>
+                <select
+                  id="gender"
+                  name="gender"
+                  value={formData.gender}
+                  onChange={handleInputChange}
+                  required
+                >
+                  <option value="">Select Gender</option>
+                  <option value="male">Male</option>
+                  <option value="female">Female</option>
+                  <option value="other">Other</option>
+                </select>
+              </div>
+              <div className="form-group">
+                <label htmlFor="schoolOrWorkplace">School or Workplace</label>
+                <input
+                  type="text"
+                  id="schoolOrWorkplace"
+                  name="schoolOrWorkplace"
+                  value={formData.schoolOrWorkplace}
+                  onChange={handleInputChange}
+                  required
+                />
+              </div>
+            </>
           )}
-        </div>
+          <div className="form-group">
+            <label htmlFor="email">Email</label>
+            <input
+              type="email"
+              id="email"
+              name="email"
+              value={formData.email}
+              onChange={handleInputChange}
+              required
+            />
+          </div>
+          <div className="form-group">
+            <label htmlFor="password">Password</label>
+            <input
+              type="password"
+              id="password"
+              name="password"
+              value={formData.password}
+              onChange={handleInputChange}
+              required
+            />
+          </div>
+          {isSignup && (
+            <div className="form-group terms-group">
+              <input
+                type="checkbox"
+                id="acceptTerms"
+                checked={acceptTerms}
+                onChange={handleCheckboxChange}
+                required
+              />
+              <label htmlFor="acceptTerms">
+                I accept the{' '}
+                <Link to="/terms-of-service" target="_blank" rel="noopener noreferrer">
+                  Terms of Service
+                </Link>{' '}
+                and{' '}
+                <Link to="/privacy-policy" target="_blank" rel="noopener noreferrer">
+                  Privacy Policy
+                </Link>.
+              </label>
+            </div>
+          )}
+          <button type="submit" className="submit-button">
+            {isSignup ? 'Sign Up' : 'Login'}
+          </button>
+          {!isSignup && (
+            <p>
+              <span className="forgot-password-link" onClick={handleForgotPassword}>
+                Forgot Password?
+              </span>
+            </p>
+          )}
+          <p>
+            {isSignup ? 'Already have an account? ' : "Don't have an account? "}
+            <span className="toggle-link" onClick={toggleAuthMode}>
+              {isSignup ? 'Log In' : 'Sign Up'}
+            </span>
+          </p>
+        </form>
       </div>
     </div>
   );

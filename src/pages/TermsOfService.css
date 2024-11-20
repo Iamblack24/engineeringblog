@@ -1,0 +1,34 @@
+/* src/pages/TermsOfService.css */
+
+.terms-of-service {
+    padding: 80px 20px; /* Adjust padding to account for fixed navbar */
+    background-color: #f9f9f9;
+    min-height: 100vh;
+    font-family: Arial, sans-serif;
+    color: #333;
+  }
+  
+  .terms-of-service h1 {
+    text-align: center;
+    color: #2c3e50;
+    margin-bottom: 40px;
+  }
+  
+  .terms-of-service h2 {
+    color: #2c3e50;
+    margin-top: 20px;
+  }
+  
+  .terms-of-service p {
+    margin-bottom: 20px;
+    line-height: 1.6;
+  }
+  
+  .terms-of-service a {
+    color: #1abc9c;
+    text-decoration: none;
+  }
+  
+  .terms-of-service a:hover {
+    text-decoration: underline;
+  }
