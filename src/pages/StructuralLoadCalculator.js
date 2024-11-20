@@ -110,15 +110,16 @@ const StructuralLoadCalculator = () => {
         pointLoads.forEach((load) => {
           centroid += load.value * load.position;
         });
-
+         
         udls.forEach((udl) => {
           const length = udl.end - udl.start;
           const totalUdLoad = udl.w * length;
           const udlCentroid = udl.start + length / 2;
           centroid += totalUdLoad * udlCentroid;
         });
-
-        RB = centroid / L;
+        
+        centroid /= totalLoad;
+        RB = (totalLoad * centroid) / L;
         RA = totalLoad - RB;
         break;
 
@@ -140,9 +141,14 @@ const StructuralLoadCalculator = () => {
           const udlCentroid = udl.start + length / 2;
           centroid += totalUdLoad * udlCentroid;
         });
-
-        RB = centroid / L;
+        
+        centroid /= totalLoad;
+        RB = (totalLoad * centroid) / L;
         RA = totalLoad - RB;
+        
+        //add calculations for fixed end moments
+        const MA = (totalLoad * centroid * (L - centroid)) / (2 * L);
+        const MB = MA;
         break;
 
       case 'cantilever':
@@ -206,7 +212,7 @@ const StructuralLoadCalculator = () => {
 
     // Validate inputs
     if (!beam.mainSpan || (beamType === 'overhanging' && beam.overhang === '')) {
-      alert('Please enter beam geometry.');
+      alert('Uhm we may need valuuess.');
       return;
     }
 
@@ -277,7 +283,7 @@ const StructuralLoadCalculator = () => {
     setShearForce(shear);
     setBendingMoment(momentArr);
   };
-
+  //after this calculations are over
   // Prepare Chart Data for Shear Force and Bending Moment
   const prepareChartData = () => {
     const shearLabels = shearForce.map((point) => point.x);

@@ -96,7 +96,7 @@ const Navbar = () => {
               </span>
               <FaCaretDown />
               {isDropdownOpen && (
-                <ul className="dropdown-menu">
+                <ul className={`dropdown-menu ${isDropdownOpen ? 'show' : ''}`}>
                   <li className="dropdown-item" onClick={handleLogout}>
                     Logout
                   </li>

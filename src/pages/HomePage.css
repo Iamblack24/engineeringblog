@@ -38,11 +38,15 @@
   background-color: rgba(10, 25, 47, 0.8);
   transition: opacity 1s ease-in-out;
   opacity: 0;
-  color: white;
+  color: black;
 }
 
 .hero-overlay.active {
   opacity: 1;
+}
+
+.hero-overlay h1 {
+  color: black;
 }
 
 .hero-image {

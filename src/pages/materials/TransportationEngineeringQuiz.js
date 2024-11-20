@@ -28,6 +28,41 @@ const TransportationEngineeringQuiz = () => {
       options: ['Integrated Traffic System', 'Intelligent Transportation Systems', 'Internal Transit Strategy', 'International Transport Standards'],
       answer: 'Intelligent Transportation Systems',
     },
+    {
+      question: 'What is the primary purpose of a geotextile in road construction?',
+      options: ['To provide drainage', 'To reinforce the soil', 'To prevent erosion', 'All of the above'],
+      answer: 'All of the above',
+    },
+    {
+      question: 'Which method is commonly used for traffic flow analysis?',
+      options: ['Hydraulic modeling', 'Microscopic simulation', 'Finite element analysis', 'Geospatial analysis'],
+      answer: 'Microscopic simulation',
+    },
+    {
+      question: 'What is the significance of the AASHTO Green Book in transportation engineering?',
+      options: ['It provides guidelines for highway design', 'It sets standards for traffic signals', 'It outlines procedures for environmental impact assessments', 'It defines regulations for public transportation systems'],
+      answer: 'It provides guidelines for highway design',
+    },
+    {
+      question: 'In pavement design, what does the term "subgrade" refer to?',
+      options: ['The top layer of the pavement', 'The underlying soil layer', 'The layer of asphalt', 'The concrete base'],
+      answer: 'The underlying soil layer',
+    },
+    {
+      question: 'What is the primary function of a traffic signal controller?',
+      options: ['To control the speed of vehicles', 'To manage the timing of traffic signals', 'To monitor traffic flow', 'To enforce traffic laws'],
+      answer: 'To manage the timing of traffic signals',
+    },
+    {
+      question: 'Which of the following is a key factor in determining the level of service (LOS) for a roadway?',
+      options: ['Roadway width', 'Traffic volume', 'Pavement material', 'Weather conditions'],
+      answer: 'Traffic volume',
+    },
+    {
+      question: 'What is the purpose of a roundabout in traffic management?',
+      options: ['To reduce traffic speed', 'To eliminate the need for traffic signals', 'To improve traffic flow and reduce accidents', 'All of the above'],
+      answer: 'All of the above',
+    },
   ];
 
   const [currentQuestion, setCurrentQuestion] = useState(0);
