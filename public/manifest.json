@@ -3,18 +3,18 @@
   "name": "Engineering Hub",
   "icons": [
     {
-      "src": "log.jpg",
+      "src": "log.webp",
       "sizes": "64x64 32x32 24x24 16x16",
-      "type": "image/jpg"
+      "type": "image/webp"
     },
     {
-      "src": "log.jpg",
-      "type": "image/jpg",
+      "src": "log.webp",
+      "type": "image/webp",
       "sizes": "192x192"
     },
     {
-      "src": "log.jpg",
-      "type": "image/jpg",
+      "src": "log.webp",
+      "type": "image/webp",
       "sizes": "512x512"
     }
   ],

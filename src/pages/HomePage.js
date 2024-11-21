@@ -9,9 +9,9 @@ const HomePage = () => {
   const [showOverlay, setShowOverlay] = useState(true);
 
   const images = [
-    '/interior1.jpg',
-    '/interior2.jpg',
-    '/interior3.jpg',
+    '/interior1.webp',
+    '/interior2.webp',
+    '/interior3.webp',
   ];  
 
   useEffect(() => {
@@ -49,6 +49,7 @@ const HomePage = () => {
               src={image}
               alt={`Hero ${index + 1}`}
               className={`hero-image ${index === currentImageIndex ? 'active' : ''}`}
+              loading='lazy'
             />
           ))}
           <div className={`hero-overlay ${showOverlay ? 'active' : ''}`}>

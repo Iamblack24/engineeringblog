@@ -39,16 +39,31 @@ import PrivacyPolicy from './pages/PrivacyPolicy';
 import TermsOfService from './pages/TermsOfService';
 import { AuthContext } from './contexts/AuthContext';
 import ScrollToTop from './ScrollToTop';
+import { requestForToken, onMessageListener } from './firebase';
 import './App.css';
 
 function App() {
   const { currentUser } = useContext(AuthContext);
   const [showWelcome, setShowWelcome] = useState(false);
+  const [notification, setNotification] = useState(null);
 
   useEffect(() => {
     if (currentUser && currentUser.metadata.creationTime === currentUser.metadata.lastSignInTime) {
       setShowWelcome(true);
     }
+
+    // Request permission and get token
+    requestForToken();
+
+    // Listen for foreground messages
+    onMessageListener()
+      .then((payload) => {
+        setNotification({
+          title: payload.notification.title,
+          body: payload.notification.body,
+        });
+      })
+      .catch((err) => console.log('failed: ', err));
   }, [currentUser]);
 
   const closeWelcome = () => {
@@ -61,6 +76,12 @@ function App() {
       <Navbar />
       {showWelcome && currentUser && (
         <WelcomeOverlay name={currentUser.displayName || currentUser.email} onClose={closeWelcome} />
+      )}
+      {notification && (
+        <div className="notification">
+          <h3>{notification.title}</h3>
+          <p>{notification.body}</p>
+        </div>
       )}
       <Routes>
         <Route path="/" element={<HomePage />} />
