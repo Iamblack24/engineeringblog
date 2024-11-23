@@ -167,6 +167,39 @@ const HomePage = () => {
             <a href="/featured-article-2" className="content-link">Read More</a>
           </div>
         </section>
+        <section className="founders-developers-section">
+          <h2>Team</h2>
+          <div className="founder-developer">
+            <h3>John Micheal</h3>
+            <p>Founder and developer of Engineering Hub</p>
+            <div className="social-links">
+              <a href="www.linkedin.com/in/john-micheal-736bb71b4" target="_blank" rel="noreferrer">
+                <i className='fab fa-linkedin'></i>
+              </a>
+              <a href="https://x.com/gacharua?t=QQ2R-UjV2VmgHnkVfBD8OQ&s=08" target="_blank" rel="noreferrer">
+                <i className='fab fa-twitter'></i>
+              </a>
+              <a href="https://www.instagram.com/john.michael4228?igsh=YzljYTk1ODg3Zg==" target='_blank' rel="noreferrer">
+                <i className='fab fa-instagram'></i>
+              </a>
+            </div>
+          </div>
+          <div className="founder-developer">
+            <h3>Owen Richard</h3>
+            <p>Co-founder of Engineering Hub</p>
+            <div className="social-links">
+              <a href="https://www.linkedin.com/in/owen-richard-93737433a?utm_source=share&utm_campaign=share_via&utm_content=profile&utm_medium=android_app" target="_blank" rel="noreferrer">
+                <i className='fab fa-linkedin'></i>
+              </a>
+              <a href="https://x.com/richar94366?t=Btpo4QaAI6j_zGtEGw73PA&s=09" target='_blank' rel="noreferrer">
+                <i className='fab fa-twitter'></i>
+              </a>
+              <a href="https://www.instagram.com/_si.lento/profilecard/?igsh=d2ZlMm55ZG9xdHVy" target='_blank' rel="noreferrer">
+                <i className='fab fa-instagram'></i>
+              </a>
+            </div>
+          </div>
+          </section>
       </div>
     </>
   );

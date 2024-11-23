@@ -77,7 +77,7 @@ const DesignMaterialsPage = () => {
           <DesignMaterialCard key={material.id} material={material} onInteraction={handleInteraction} />
         ))}
       </div>
-      <h1>Affiliate Marketing</h1>
+      <h1>Engineering Software</h1>
       <div className="affiliate-marketing-list">
         {affiliatemarketing.map((marketing) => (
           <AffiliateMarketingCard key={marketing.id} marketing={marketing} />

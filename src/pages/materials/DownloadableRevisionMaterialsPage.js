@@ -7,9 +7,9 @@ const downloadableMaterials = [
     title: 'Structural Engineering Notes',
     description: 'Download comprehensive notes on structural engineering.',
     fileLinks: [
-      '/DCE 073_THEORY OF STRUCTURES I.pdf',
-      '/downloads/structural-engineering-notes-part2.pdf',
-      '/downloads/structural-engineering-notes-part3.pdf',
+      'https://drive.google.com/uc?export=download&id=1DUc2S_4zZ97OH3dVQWBFSQd2HRfx7pu7',
+      'https://drive.google.com/uc?export=download&id=1pmkwKiOWrPBxoqWR0e2c-DSRqkGQKfww',
+      'https://drive.google.com/uc?export=download&id=1NXh1UNHOlOh6osCMi4YOKEW9Tvw9DHRZ',
     ],
   },
   {
@@ -20,6 +20,16 @@ const downloadableMaterials = [
       '/EECQ 3171-Soil Mechanics IA - slides 50-76.pdf',
     ],
   },
+  {
+    title: 'Engineering Graphics B',
+    description: 'Download notes on engineering graphics for second year civil students.',
+    fileLinks: [
+      'https://drive.google.com/uc?export=download&id=1dyMbBsDNvCq5mgoOVxEcwbiosTBIaRiB',
+      'https://drive.google.com/uc?export=download&id=1blA1CaCsqM8GFm2qX1iu5waL6UiUKVVc',
+      'https://drive.google.com/uc?export=download&id=1bU0HhxDoPw-w9-JuUuh5MN5BfD3j91hk',
+    ],
+  }
+
   // Add more downloadable materials here with multiple fileLinks
 ];
 
@@ -62,5 +72,7 @@ const DownloadableRevisionMaterialsPage = () => {
     </div>
   );
 };
+
+
 
 export default DownloadableRevisionMaterialsPage;

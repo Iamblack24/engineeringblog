@@ -120,6 +120,20 @@ const ConcreteTechnologyQuiz = () => {
           <p>
             You scored {score} out of {questions.length}
           </p>
+          <h3>Correct Answers:</h3>
+          <ul>
+            {questions.map((question, index) => (
+              userAnswers[index] !== question.answer && (
+              <li key={index}>
+                <strong>Q: {question.question}</strong>
+                <br />
+                <span>Your Answer: {userAnswers[index]} </span>
+                <br />
+                <span>Correct Answer: {question.answer}</span>
+              </li>
+              )
+            ))}
+          </ul>
           <button onClick={handleRetake}>Retake Quiz</button>
         </div>
       )}
