@@ -19,16 +19,26 @@ The **Burj Khalifa** in Dubai stands at an astounding 828 meters, making it the 
 - **Structural Stability:** Designing a structure that can withstand high wind speeds and seismic activities.
 - **Foundation Construction:** Dealing with the weak and porous soil conditions in Dubai.
 - **Material Transportation:** Pumping concrete to unprecedented heights.
+- **Thermal Expansion:** Managing the effects of temperature variations on the building's structure.
+- **Vertical Transportation:** Ensuring efficient and rapid movement of people and materials within the building.
 
 ### Solutions
 
-- **Buttressed Core Structural System:** A unique design that provides stability and reduces wind forces.
-- **Deep Pile Foundations:** Using reinforced concrete piles extending 50 meters into the ground.
-- **High-Strength Concrete:** Developing a special concrete mix that retains workability during pumping to great heights.
+- **Buttressed Core Structural System:** A unique design that provides stability and reduces wind forces. The Y-shaped plan also maximizes views and floor space.
+- **Deep Pile Foundations:** Using reinforced concrete piles extending 50 meters into the ground to ensure stability on the weak soil.
+- **High-Strength Concrete:** Developing a special concrete mix that retains workability during pumping to great heights. The concrete was pumped to a record height of 606 meters.
+- **Cladding System:** A high-performance exterior cladding system that withstands Dubai's extreme temperatures and reduces thermal expansion.
+- **Advanced Elevator Systems:** Incorporating double-deck elevators and the world's fastest elevators, traveling at speeds of up to 10 meters per second.
+
+### Construction Techniques
+
+- **Jump Form System:** Utilizing a jump form system for the core walls, which allowed for continuous and rapid construction.
+- **Prefabrication:** Prefabricating sections of the building off-site to improve construction speed and quality.
+- **Wind Tunnel Testing:** Conducting extensive wind tunnel testing to refine the building's shape and ensure stability under high wind conditions.
 
 ### Conclusion
 
-The Burj Khalifa represents a pinnacle of modern engineering, demonstrating how innovative solutions can overcome significant structural challenges.
+The Burj Khalifa represents a pinnacle of modern engineering, demonstrating how innovative solutions can overcome significant structural challenges. It stands as a testament to human ingenuity and the possibilities of architectural and engineering advancements.
     `,
   },
   {

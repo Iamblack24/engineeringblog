@@ -37,6 +37,7 @@ import InstallPrompt from './components/InstallPrompt';
 import WebinarsPage from './pages/WebinarsPage';
 import PrivacyPolicy from './pages/PrivacyPolicy';
 import TermsOfService from './pages/TermsOfService';
+import EducationalResourcesPage from './pages/EducationalResourcesPage';
 import { AuthContext } from './contexts/AuthContext';
 import ScrollToTop from './ScrollToTop';
 import { requestForToken, onMessageListener } from './firebase';
@@ -107,6 +108,7 @@ function App() {
         <Route path="/contact" element={<ContactPage />} />
         <Route path="/events" element={<EventsPage />} />
         <Route path="/webinars" element={<WebinarsPage />} />
+        <Route path="/educational-resources" element={<EducationalResourcesPage />} />
         <Route path="/terms-of-service" element={<TermsOfService />} />
         <Route path="/privacy-policy" element={<PrivacyPolicy />} />
         <Route path="/tools/pile-design" element={<PileDesignTool />} />

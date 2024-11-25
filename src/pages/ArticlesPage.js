@@ -1,17 +1,9 @@
 // src/pages/ArticlesPage.js
-import React, { useState, useEffect, useContext } from 'react';
-import ArticleCard from '../components/ArticleCard';
-import { AuthContext } from '../contexts/AuthContext';
+import React, { useEffect, useState, useContext } from 'react';
+import { collection, onSnapshot, doc, getDoc, setDoc, updateDoc, deleteDoc, increment } from 'firebase/firestore';
 import { db } from '../firebase';
-import {
-  doc,
-  getDoc,
-  setDoc,
-  updateDoc,
-  increment,
-  collection,
-  onSnapshot,
-} from 'firebase/firestore';
+import { AuthContext } from '../contexts/AuthContext';
+import ArticleCard from '../components/ArticleCard';
 import './ArticlesPage.css';
 
 const ArticlesPage = () => {
@@ -20,25 +12,15 @@ const ArticlesPage = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Fetch articles from Firestore and listen for real-time updates
-    const articlesRef = collection(db, 'articles');
-    const unsubscribe = onSnapshot(
-      articlesRef,
-      (snapshot) => {
-        const articlesData = snapshot.docs.map((doc) => ({
-          id: doc.id,
-          ...doc.data(),
-        }));
-        setArticles(articlesData);
-        setLoading(false);
-      },
-      (error) => {
-        console.error('Error fetching articles:', error);
-        setLoading(false);
-      }
-    );
+    const unsubscribe = onSnapshot(collection(db, 'articles'), (snapshot) => {
+      const articlesData = snapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
+      setArticles(articlesData);
+      setLoading(false);
+    });
 
-    // Clean up the listener on unmount
     return () => unsubscribe();
   }, []);
 
@@ -48,26 +30,34 @@ const ArticlesPage = () => {
       return;
     }
 
-    try {
-      const likeDocRef = doc(
-        db,
-        'articles',
-        articleId,
-        'likes',
-        currentUser.uid
-      );
-      const likeDoc = await getDoc(likeDocRef);
-      const articleDocRef = doc(db, 'articles', articleId);
+    const likeDocRef = doc(db, 'articles', articleId, 'likes', currentUser.uid);
+    const dislikeDocRef = doc(db, 'articles', articleId, 'dislikes', currentUser.uid);
+    const articleDocRef = doc(db, 'articles', articleId);
 
-      if (!likeDoc.exists()) {
+    try {
+      const likeDoc = await getDoc(likeDocRef);
+      const dislikeDoc = await getDoc(dislikeDocRef);
+
+      if (likeDoc.exists()) {
+        // If already liked, remove the like
+        await deleteDoc(likeDocRef);
+        await updateDoc(articleDocRef, { likes: increment(-1) });
+      } else {
+        // If not liked, add the like
         await setDoc(likeDocRef, { likedAt: new Date() });
         await updateDoc(articleDocRef, { likes: increment(1) });
-        // No need to update local state as onSnapshot will update articles
-      } else {
-        alert('You have already liked this article.');
+
+        // If previously disliked, remove the dislike
+        if (dislikeDoc.exists()) {
+          await deleteDoc(dislikeDocRef);
+          await updateDoc(articleDocRef, { dislikes: increment(-1) });
+        }
       }
+
+      // No need to update local state as onSnapshot will handle real-time updates
     } catch (error) {
-      console.error('Error liking article:', error);
+      console.error('Error handling like:', error);
+      alert('There was an error processing your like. Please try again.');
     }
   };
 
@@ -77,54 +67,51 @@ const ArticlesPage = () => {
       return;
     }
 
-    try {
-      const dislikeDocRef = doc(
-        db,
-        'articles',
-        articleId,
-        'dislikes',
-        currentUser.uid
-      );
-      const dislikeDoc = await getDoc(dislikeDocRef);
-      const articleDocRef = doc(db, 'articles', articleId);
+    const dislikeDocRef = doc(db, 'articles', articleId, 'dislikes', currentUser.uid);
+    const likeDocRef = doc(db, 'articles', articleId, 'likes', currentUser.uid);
+    const articleDocRef = doc(db, 'articles', articleId);
 
-      if (!dislikeDoc.exists()) {
+    try {
+      const dislikeDoc = await getDoc(dislikeDocRef);
+      const likeDoc = await getDoc(likeDocRef);
+
+      if (dislikeDoc.exists()) {
+        // If already disliked, remove the dislike
+        await deleteDoc(dislikeDocRef);
+        await updateDoc(articleDocRef, { dislikes: increment(-1) });
+      } else {
+        // If not disliked, add the dislike
         await setDoc(dislikeDocRef, { dislikedAt: new Date() });
         await updateDoc(articleDocRef, { dislikes: increment(1) });
-        console.log(`Article ${articleId} disliked by user ${currentUser.uid}`);
-        // No need to update local state as onSnapshot will refresh articles
-      } else {
-        alert('You have already disliked this article.');
-        console.log(
-          `Article ${articleId} already disliked by user ${currentUser.uid}`
-        );
+
+        // If previously liked, remove the like
+        if (likeDoc.exists()) {
+          await deleteDoc(likeDocRef);
+          await updateDoc(articleDocRef, { likes: increment(-1) });
+        }
       }
+
+      // No need to update local state as onSnapshot will handle real-time updates
     } catch (error) {
-      console.error('Error disliking article:', error);
+      console.error('Error handling dislike:', error);
+      alert('There was an error processing your dislike. Please try again.');
     }
   };
 
-  if (loading) {
-    return <p>Loading articles...</p>;
-  }
-
   return (
     <div className="articles-page">
-      <h1>Articles</h1>
-      <div className="articles-list">
-        {articles.length > 0 ? (
-          articles.map((article) => (
-            <ArticleCard
-              key={article.id}
-              article={article}
-              onLike={() => handleLike(article.id)}
-              onDislike={() => handleDislike(article.id)}
-            />
-          ))
-        ) : (
-          <p>No articles available.</p>
-        )}
-      </div>
+      {loading ? (
+        <p>Fetching from the bowels of intellect</p>
+      ) : (
+        articles.map(article => (
+          <ArticleCard
+            key={article.id}
+            article={article}
+            onLike={handleLike}
+            onDislike={handleDislike}
+          />
+        ))
+      )}
     </div>
   );
 };

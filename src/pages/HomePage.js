@@ -20,7 +20,12 @@ const HomePage = () => {
       "The Great Wall of China is not visible from space.",
       "The Burj Khalifa is the tallest building in the world.",
       "The Panama Canal uses a system of locks to raise and lower ships.",
-      "The Hoover Dam was built during the Great Depression."
+      "The Hoover Dam was built during the Great Depression.",
+      "The Leaning Tower of Pisa is tilted due to unstable foundation soil.",
+      "The Golden Gate Bridge is painted in a color called 'International Orange'.",
+      "The Sydney Opera House has over 1 million roof tiles.",
+      "The Shard in London is the tallest building in the UK.",
+      "The Petronas Towers in Malaysia were the tallest buildings in the world from 1998 to 2004."
     ];
     const randomIndex = Math.floor(Math.random() * facts.length);
     setRandomFact(facts[randomIndex]);
@@ -79,7 +84,7 @@ const HomePage = () => {
             </div>
           </div>
           <div className="content-card">
-            <img src="/cad2.jpg" alt="Case Studies" className="content-image small-image" />
+            <img src="/cad2.jpg" alt="Case Studies" className="content-image small-image" loading='lazy' />
             <div className="content-text">
               <h2>Case Studies</h2>
               <p>Dive into detailed case studies of famous engineering projects, showcasing innovative solutions and best practices.</p>
@@ -87,7 +92,7 @@ const HomePage = () => {
             </div>
           </div>
           <div className="content-card">
-            <img src="/cad3.jpg" alt="Engineering Tools" className="content-image small-image" />
+            <img src="/cad3.jpg" alt="Engineering Tools" className="content-image small-image" loading='lazy'/>
             <div className="content-text">
               <h2>Engineering Tools</h2>
               <p>Utilize our interactive tools, including calculators and visualizers, to enhance your learning and project planning.</p>
