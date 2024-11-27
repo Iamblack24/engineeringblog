@@ -215,6 +215,18 @@ const Navbar = () => {
               Contact
             </NavLink>
           </li>
+          {/* about us page */}
+          <li className="nav-item">
+            <NavLink
+              to="/about-us"
+              className={({ isActive }) =>
+                isActive ? 'nav-links active' : 'nav-links'
+              }
+              onClick={handleCloseMenu}
+            >
+              About Us
+            </NavLink>
+          </li>
         </ul>
       </div>
       {showAuthModal && <AuthModal onClose={closeAuthModal} />}

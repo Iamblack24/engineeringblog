@@ -37,6 +37,7 @@ import InstallPrompt from './components/InstallPrompt';
 import WebinarsPage from './pages/WebinarsPage';
 import PrivacyPolicy from './pages/PrivacyPolicy';
 import TermsOfService from './pages/TermsOfService';
+import AboutUsPage from './pages/AboutUsPage';
 import EducationalResourcesPage from './pages/EducationalResourcesPage';
 import { AuthContext } from './contexts/AuthContext';
 import ScrollToTop from './ScrollToTop';
@@ -106,6 +107,7 @@ function App() {
         <Route path="/tools/structural-load" element={<StructuralLoadCalculator />} />
         <Route path="/career-guides/:guideId" element={<CareerGuideDetail />} />
         <Route path="/contact" element={<ContactPage />} />
+        <Route path="/about-us" element={<AboutUsPage />} />
         <Route path="/events" element={<EventsPage />} />
         <Route path="/webinars" element={<WebinarsPage />} />
         <Route path="/educational-resources" element={<EducationalResourcesPage />} />

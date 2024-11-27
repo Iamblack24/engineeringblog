@@ -52,6 +52,78 @@ const affiliatemarketing = [
       '/build.jpg'
     ],
     link: 'an affiliate link'
+  },
+  {
+    id: '2',
+    title: 'Revit 2024',
+    description: 'Revit is a powerful BIM software for architects, structural engineers, and contractors.',
+    price: 'free',
+    images: [
+      '/revit.png',
+      '/revit2.jpeg',
+      '/revit3.jpeg'
+    ],
+    link: 'an affiliate link'
+  },
+  {
+    id: '3',
+    title: 'SketchUp Pro',
+    description: 'SketchUp Pro offers 3D modeling tools for architects and designers.',
+    price: 'free',
+    images: [
+      '/sketchup1.jpeg',
+      '/sketchup2.jpeg',
+      '/sketchup.jpeg'
+    ],
+    link: 'an affiliate link'
+  },
+  {
+    id: '4',
+    title: 'AutoCAD Architecture',
+    description: 'AutoCAD Architecture provides architectural design and documentation tools.',
+    price: 'free',
+    images: [
+      '/autocad1.jpeg',
+      '/autocad2.jpeg',
+      '/autocad.jpeg'
+    ],
+    link: 'an affiliate link'
+  },
+  {
+    id: '5',
+    title: 'Vectorworks Architect',
+    description: 'Vectorworks Architect offers integrated BIM tools for professional architects.',
+    price: 'free',
+    images: [
+      '/vectorworks1.png',
+      '/vectorworks2.jpeg',
+      '/vectorworks.jpeg'
+    ],
+    link: 'an affiliate link'
+  },
+  {
+    id: '7',
+    title: 'Lumion',
+    description: 'Lumion transforms your 3D models into stunning visualizations quickly.',
+    price: 'free',
+    images: [
+      '/lumion1.jpeg',
+      '/lumion2.jpeg',
+      '/lumion.jpeg'
+    ],
+    link: 'an affiliate link'
+  },
+  {
+    id: '8',
+    title: 'Navisworks',
+    description: 'Navisworks enables comprehensive project review and coordination for BIM projects.',
+    price: 'free',
+    images: [
+      '/naviswork1.jpeg',
+      '/naviswork2.jpeg',
+      '/naviswork.jpeg'
+    ],
+    link: 'an affiliate link'
   }
 ];
 

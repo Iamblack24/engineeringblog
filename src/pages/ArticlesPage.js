@@ -103,14 +103,16 @@ const ArticlesPage = () => {
       {loading ? (
         <p>Fetching from the bowels of intellect</p>
       ) : (
-        articles.map(article => (
-          <ArticleCard
-            key={article.id}
-            article={article}
-            onLike={handleLike}
-            onDislike={handleDislike}
-          />
-        ))
+        <div className="articles-list">
+          {articles.map(article => (
+            <ArticleCard
+              key={article.id}
+              article={article}
+              onLike={handleLike}
+              onDislike={handleDislike}
+            />
+          ))}
+        </div>
       )}
     </div>
   );

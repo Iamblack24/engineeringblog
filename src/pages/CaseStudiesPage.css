@@ -16,3 +16,40 @@
   gap: 20px;
   justify-content: center;
 }
+
+.case-studies-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  justify-content: center;
+}
+
+@media (min-width: 768px) {
+  .case-studies-container {
+    flex-direction: row;
+  }
+}
+
+@media (max-width: 767px) {
+  .case-studies-container {
+    flex-direction: column;
+  }
+
+  .case-studies-page {
+    padding: 10px;
+  }
+
+  .case-studies-page h1 {
+    font-size: 24px;
+    margin-bottom: 20px;
+  }
+
+  .case-studies-container {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .case-study-card {
+    width: 100%;
+  }
+}

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom'; // Import the Link component
 import './HomePage.css'; // Import the CSS file for styling
 import NewsletterSignup from '../components/NewsletterSignup'; // Import the NewsletterSignup component
-// i don't really know the relevance of this i just placed it maybe i need to animate something
+// This useEffect hook handles the animation of the hero images and overlay
 const HomePage = () => {
   const [randomFact, setRandomFact] = useState('');
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
@@ -46,6 +46,14 @@ const HomePage = () => {
 
   return (
     <>
+      {/* Preload the hero image */}
+      <link
+        rel="preload"
+        href={images[currentImageIndex]}
+        as="image"
+        type="image/webp"
+        crossOrigin="anonymous"
+      />
       <div className="home-page">
         <section className="hero-section">
         {images.map((image, index) => (
@@ -54,7 +62,6 @@ const HomePage = () => {
               src={image}
               alt={`Hero ${index + 1}`}
               className={`hero-image ${index === currentImageIndex ? 'active' : ''}`}
-              loading='lazy'
             />
           ))}
           <div className={`hero-overlay ${showOverlay ? 'active' : ''}`}>
@@ -178,7 +185,7 @@ const HomePage = () => {
             <h3>John Micheal</h3>
             <p>Founder and developer of Engineering Hub</p>
             <div className="social-links">
-              <a href="www.linkedin.com/in/john-micheal-736bb71b4" target="_blank" rel="noreferrer">
+              <a href="https://www.linkedin.com/in/john-micheal-736bb71b4" target="_blank" rel="noreferrer">
                 <i className='fab fa-linkedin'></i>
               </a>
               <a href="https://x.com/gacharua?t=QQ2R-UjV2VmgHnkVfBD8OQ&s=08" target="_blank" rel="noreferrer">
