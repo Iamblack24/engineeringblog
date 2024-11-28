@@ -21,7 +21,7 @@ firebase.initializeApp(firebaseConfig);
 const messaging = firebase.messaging();
 
 // Caching Logic
-const CACHE_NAME = 'enghub-cache-v13';
+const CACHE_NAME = 'enghub-cache-v14';
 const urlsToCache = [
   '/',
   '/index.html',
