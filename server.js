@@ -2,6 +2,8 @@ const express = require('express');
 const path = require('path');
 const helmet = require('helmet');
 const bodyParser = require('body-parser');
+const { db } = require('./firebase'); // Add this import at top
+const { doc, setDoc, Timestamp } = require('firebase/firestore');
 
 const app = express();
 
@@ -39,17 +41,26 @@ app.get('/firebase-messaging-sw.js', (req, res) => {
 });
 
 // Endpoint to save the FCM token
-app.post('/api/save-token', (req, res) => {
-  const { token } = req.body;
+app.post('/api/save-token', async (req, res) => {
+  const { token, userId } = req.body;
   if (!token) {
     return res.status(400).json({ error: 'Token is required' });
   }
 
-  // TODO: Save the token to your database or any storage
-  console.log('Received FCM token:', token);
+  try {
+    // Save token to Firestore
+    await setDoc(doc(db, 'fcm_tokens', token), {
+      token,
+      userId: userId || 'anonymous',
+      createdAt: Timestamp.now(),
+      lastUpdated: Timestamp.now()
+    });
 
-  // For demonstration, we'll just send a success response
-  res.status(200).json({ message: 'Token saved successfully' });
+    res.status(200).json({ message: 'Token saved successfully' });
+  } catch (error) {
+    console.error('Error saving token:', error);
+    res.status(500).json({ error: 'Failed to save token' });
+  }
 });
 
 // Endpoint to send notifications

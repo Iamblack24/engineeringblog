@@ -1,51 +1,144 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <!-- Main Pages -->
   <url>
     <loc>https://engineeringhub.engineer/</loc>
-    <lastmod>2024-11-18</lastmod>
+    <lastmod>2024-03-18</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
   </url>
+
+  <!-- Alternative Domains (will be redirected) -->
   <url>
-    <loc>https://engineeringhub.engineer/articles</loc>
-    <lastmod>2024-11-18</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
+    <loc>https://www.engineeringhub.engineer/</loc>
+    <lastmod>2024-03-18</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.1</priority>
   </url>
-  <url>
-    <loc>https://engineeringhub.engineer/design-materials</loc>
-    <lastmod>2024-11-18</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://engineeringhub.engineer/case-studies</loc>
-    <lastmod>2024-11-18</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
+  
+  <!-- Tools Section -->
   <url>
     <loc>https://engineeringhub.engineer/tools</loc>
-    <lastmod>2024-11-18</lastmod>
+    <lastmod>2024-03-18</lastmod>
     <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://engineeringhub.engineer/tools/beam-calculator</loc>
+    <lastmod>2024-03-18</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://engineeringhub.engineer/tools/concrete-mix-design</loc>
+    <lastmod>2024-03-18</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://engineeringhub.engineer/tools/slope-stability</loc>
+    <lastmod>2024-03-18</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://engineeringhub.engineer/tools/retaining-wall-design</loc>
+    <lastmod>2024-03-18</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://engineeringhub.engineer/tools/steel-connection-design</loc>
+    <lastmod>2024-03-18</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://engineeringhub.engineer/tools/pile-design</loc>
+    <lastmod>2024-03-18</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <!-- Educational Resources -->
+  <url>
+    <loc>https://engineeringhub.engineer/educational-resources</loc>
+    <lastmod>2024-03-18</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
   </url>
   <url>
     <loc>https://engineeringhub.engineer/revision-materials</loc>
-    <lastmod>2024-11-18</lastmod>
+    <lastmod>2024-03-18</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
+  <url>
+    <loc>https://engineeringhub.engineer/materials/structural-engineering-flashcards</loc>
+    <lastmod>2024-03-18</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://engineeringhub.engineer/materials/hydraulics-summary-notes</loc>
+    <lastmod>2024-03-18</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+
+  <!-- Design Materials -->
+  <url>
+    <loc>https://engineeringhub.engineer/design-materials</loc>
+    <lastmod>2024-03-18</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  
+  <!-- Career Resources -->
   <url>
     <loc>https://engineeringhub.engineer/career-guides</loc>
-    <lastmod>2024-11-18</lastmod>
+    <lastmod>2024-03-18</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
+
+  <!-- Articles and Case Studies -->
+  <url>
+    <loc>https://engineeringhub.engineer/articles</loc>
+    <lastmod>2024-03-18</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://engineeringhub.engineer/case-studies</loc>
+    <lastmod>2024-03-18</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <!-- Support Pages -->
   <url>
     <loc>https://engineeringhub.engineer/contact</loc>
-    <lastmod>2024-11-18</lastmod>
+    <lastmod>2024-03-18</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://engineeringhub.engineer/about-us</loc>
+    <lastmod>2024-03-18</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://engineeringhub.engineer/terms-of-service</loc>
+    <lastmod>2024-03-18</lastmod>
     <changefreq>yearly</changefreq>
-    <priority>0.5</priority>
+    <priority>0.4</priority>
+  </url>
+  <url>
+    <loc>https://engineeringhub.engineer/privacy-policy</loc>
+    <lastmod>2024-03-18</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.4</priority>
   </url>
 </urlset>
