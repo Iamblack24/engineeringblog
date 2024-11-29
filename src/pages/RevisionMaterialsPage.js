@@ -1,5 +1,7 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
+import EducationalResourcesCard from '../components/EducationalResourcesCard';
+import AuthModal from '../components/AuthModal';
 import RevisionMaterialCard from '../components/RevisionMaterialCard';
 import './RevisionMaterialsPage.css'; // Import the CSS file for styling
 
@@ -39,12 +41,48 @@ const revisionMaterials = [
     description: 'Access and download various revision materials.',
     link: '/materials/downloadable-revision-materials', // Link to the new page
   },
+  {
+    title: 'Structural Analysis Flashcards',
+    description: 'Review key concepts and formulas with these flashcards.',
+    link: '/materials/structural-analysis-flashcards',
+  },
+  {
+    title: 'Fluid Mechanics Summary Notes',
+    description: 'Summarized notes covering the essential topics in fluid mechanics.',
+    link: '/materials/fluid-mechanics-summary-notes',
+  },
+  {
+    title: 'Steel Structures Quiz',
+    description: 'Test your knowledge with this quiz on steel structures.',
+    link: '/materials/steel-structures-quiz',
+  },
+  {
+    title: 'Soil Mechanics Flashcards',
+    description: 'Review key concepts and formulas with these flashcards.',
+    link: '/materials/soil-mechanics-flashcards',
+  },
+  {
+    title: 'Water Resources Engineering Summary Notes',
+    description: 'Summarized notes covering the essential topics in water resources engineering.',
+    link: '/materials/water-resources-engineering-summary-notes',
+  },
   // Add more revision materials here
 ];
 
 const RevisionMaterialsPage = () => {
+  const [showAuthModal, setShowAuthModal] = useState(false);
+
+  const handleAuthRequired = () => {
+    setShowAuthModal(true);
+  };
+
   return (
     <div className="revision-materials-page">
+      {showAuthModal && (
+        <AuthModal onClose={() => setShowAuthModal(false)} />
+      )}
+      {/* New Educational Resources Card */}
+      <EducationalResourcesCard onAuthRequired={handleAuthRequired} />
       <div className="materials-list">
         {revisionMaterials.map((material, index) => (
           <Link to={material.link} key={index} className="material-link">

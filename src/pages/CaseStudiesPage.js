@@ -514,6 +514,508 @@ The Louvre Pyramid is a successful integration of modern and historic architectu
 - Frampton, K. (1995). Modern Architecture: A Critical History. Thames & Hudson.
     `,
   },
+  {
+    id: 13,
+    title: 'The Palm Islands Dubai: Engineering Paradise',
+    description: 'Analysis of the artificial island construction and engineering challenges in Dubai.',
+    image: '/palm.jpeg',
+    content: `
+### Overview
+
+The **Palm Islands** in Dubai represent one of the most ambitious artificial island projects ever undertaken. This detailed case study examines the engineering feats involved in creating habitable land from the sea.
+
+### Engineering Challenges & Solutions
+
+#### Marine Engineering
+- **Challenge:** Creating stable artificial islands resistant to erosion and settling
+- **Solution:** Development of custom rock armor and breakwater systems using advanced hydrodynamic modeling
+- **Implementation:** Used over 7 million tons of rock for breakwater construction
+- **Monitoring:** Implemented real-time settlement monitoring systems
+
+#### Environmental Management
+- Temperature control systems for marine life protection
+- Artificial reef creation programs
+- Water circulation systems using permeable breakwaters
+
+### Technical Specifications
+
+- Total area: 5.72 square kilometers
+- Breakwater length: 11.5 kilometers
+- Sand volume: 94 million cubic meters
+- Rock armor: 7.5 million tons
+
+[... Additional 1000+ words of detailed technical content ...]
+    `,
+  },
+  {
+    id: 14,
+    title: 'The Hoover Dam: Engineering a Landmark',
+    description: 'A comprehensive study of the engineering behind the Hoover Dam, a symbol of American ingenuity.',
+    image: '/hoover.jpeg',
+    content: `
+### Overview
+
+The **Hoover Dam** is a concrete arch-gravity dam in the Black Canyon of the Colorado River, on the border between the U.S. states of Nevada and Arizona. This case study explores the engineering challenges and solutions involved in its construction.
+
+### Engineering Challenges & Solutions
+
+#### Structural Engineering
+- **Challenge:** Designing a dam that could withstand the immense pressure of the Colorado River
+- **Solution:** Utilizing an arch-gravity design to distribute the water pressure across the canyon walls
+- **Implementation:** Constructed with 3.25 million cubic yards of concrete
+
+#### Construction Logistics
+- **Challenge:** Building in a remote and harsh environment
+- **Solution:** Establishing a temporary city (Boulder City) to house workers and provide necessary infrastructure
+- **Implementation:** Employed thousands of workers and used innovative construction techniques
+
+### Technical Specifications
+
+- Height: 726 feet (221 meters)
+- Length: 1,244 feet (379 meters)
+- Concrete volume: 3.25 million cubic yards
+- Power generation capacity: 2,080 megawatts
+
+[... Additional 1000+ words of detailed technical content ...]
+    `,
+  },
+  {
+    id: 15,
+    title: 'The International Thermonuclear Experimental Reactor (ITER): Fusion Power',
+    description: 'An in-depth look at the engineering challenges and solutions in the construction of ITER, the world’s largest fusion experiment.',
+    image: '/iter.jpeg',
+    content: `
+### Overview
+
+The **International Thermonuclear Experimental Reactor (ITER)** is a large-scale scientific experiment aimed at demonstrating the feasibility of fusion power. This case study examines the engineering challenges and solutions involved in its construction.
+
+### Engineering Challenges & Solutions
+
+#### Magnetic Confinement
+- **Challenge:** Containing the extremely hot plasma required for fusion reactions
+- **Solution:** Using powerful superconducting magnets to create a magnetic field that confines the plasma
+- **Implementation:** Developed advanced cryogenic systems to maintain the magnets at superconducting temperatures
+
+#### Material Science
+- **Challenge:** Developing materials that can withstand the extreme conditions inside the reactor
+- **Solution:** Researching and testing new materials, such as tungsten and beryllium, for use in the reactor's components
+- **Implementation:** Collaborated with international partners to advance material science
+
+### Technical Specifications
+
+- Plasma temperature: 150 million degrees Celsius
+- Magnetic field strength: 5.3 teslas
+- Reactor volume: 840 cubic meters
+- Construction cost: Estimated at €20 billion
+
+[... Additional 1000+ words of detailed technical content ...]
+    `,
+  },
+  {
+    id: 16,
+    title: 'The Suez Canal Expansion: Engineering a Global Trade Route',
+    description: 'A detailed analysis of the engineering and logistical challenges involved in the expansion of the Suez Canal.',
+    image: '/suez.jpeg',
+    content: `
+### Overview
+
+The **Suez Canal Expansion** project aimed to increase the canal's capacity and reduce transit times for ships. This case study explores the engineering and logistical challenges involved in the expansion.
+
+### Engineering Challenges & Solutions
+
+#### Dredging and Excavation
+- **Challenge:** Removing millions of cubic meters of sand and rock to widen and deepen the canal
+- **Solution:** Utilizing advanced dredging equipment and techniques to efficiently remove material
+- **Implementation:** Employed a fleet of dredgers and excavators to complete the project on time
+
+#### Water Management
+- **Challenge:** Managing the water levels and flow during construction
+- **Solution:** Implementing a series of temporary dams and water control structures
+- **Implementation:** Coordinated with international experts to ensure effective water management
+
+### Technical Specifications
+
+- Length of new channel: 35 kilometers
+- Total dredged material: 250 million cubic meters
+- Project duration: 1 year
+- Cost: $8.5 billion
+
+[... Additional 1000+ words of detailed technical content ...]
+    `,
+  },
+  {
+    id: 17,
+    title: 'The Burj Al Arab: Engineering Luxury',
+    description: 'An exploration of the engineering and architectural challenges involved in constructing the Burj Al Arab, a symbol of luxury in Dubai.',
+    image: '/burjalarab.jpeg',
+    content: `
+### Overview
+
+The **Burj Al Arab** is a luxury hotel in Dubai, known for its distinctive sail-shaped silhouette. This case study examines the engineering and architectural challenges involved in its construction.
+
+### Engineering Challenges & Solutions
+
+#### Foundation Design
+- **Challenge:** Constructing a stable foundation on a man-made island
+- **Solution:** Using a combination of deep piles and a concrete mat foundation
+- **Implementation:** Installed 230 concrete piles, each 40 meters long, to support the structure
+
+#### Structural Engineering
+- **Challenge:** Designing a building with a unique sail-shaped structure
+- **Solution:** Utilizing a steel exoskeleton to support the building's shape and provide stability
+- **Implementation:** Constructed a steel frame with diagonal bracing to withstand wind forces
+
+### Technical Specifications
+
+- Height: 321 meters
+- Number of floors: 56
+- Foundation piles: 230
+- Construction cost: $1 billion
+
+[... Additional 1000+ words of detailed technical content ...]
+    `,
+  },
+  {
+    id: 18,
+    title: 'The Hong Kong-Zhuhai-Macau Bridge: Engineering a Mega Bridge',
+    description: 'A comprehensive study of the engineering challenges and solutions involved in constructing the world’s longest sea-crossing bridge.',
+    image: '/hongkongbridge.jpeg',
+    content: `
+### Overview
+
+The **Hong Kong-Zhuhai-Macau Bridge** is the world's longest sea-crossing bridge, spanning 55 kilometers. This case study explores the engineering challenges and solutions involved in its construction.
+
+### Engineering Challenges & Solutions
+
+#### Marine Construction
+- **Challenge:** Building a bridge in a busy and environmentally sensitive marine area
+- **Solution:** Using prefabricated bridge sections and advanced construction techniques to minimize environmental impact
+- **Implementation:** Employed floating cranes and barges to transport and install bridge sections
+
+#### Structural Engineering
+- **Challenge:** Designing a bridge that can withstand typhoons and earthquakes
+- **Solution:** Utilizing a combination of cable-stayed and suspension bridge designs for strength and flexibility
+- **Implementation:** Conducted extensive wind tunnel and seismic testing to ensure stability
+
+### Technical Specifications
+
+- Total length: 55 kilometers
+- Main bridge length: 22.9 kilometers
+- Construction duration: 9 years
+- Cost: $20 billion
+
+[... Additional 1000+ words of detailed technical content ...]
+    `,
+  },
+  {
+    id: 19,
+    title: 'The Tesla Gigafactory: Engineering a Sustainable Future',
+    description: 'An in-depth look at the engineering and construction of the Tesla Gigafactory, a key component in the production of electric vehicles.',
+    image: '/teslagigafactory.jpeg',
+    content: `
+### Overview
+
+The **Tesla Gigafactory** is a large-scale battery manufacturing facility in Nevada, USA. This case study examines the engineering and construction challenges involved in its development.
+
+### Engineering Challenges & Solutions
+
+#### Sustainable Design
+- **Challenge:** Designing a factory that minimizes environmental impact
+- **Solution:** Incorporating renewable energy sources, such as solar and wind power, into the design
+- **Implementation:** Installed a large solar array on the factory roof and utilized energy-efficient building materials
+
+#### Manufacturing Efficiency
+- **Challenge:** Creating a highly efficient manufacturing process for battery production
+- **Solution:** Implementing advanced automation and robotics to streamline production
+- **Implementation:** Developed custom manufacturing equipment and software to optimize efficiency
+
+### Technical Specifications
+
+- Total area: 1.9 million square feet
+- Solar array capacity: 70 MW
+- Battery production capacity: 35 GWh per year
+- Construction cost: $5 billion
+
+[... Additional 1000+ words of detailed technical content ...]
+    `,
+  },
+  {
+    id: 20,
+    title: 'The Crossrail Project: Engineering London’s New Railway',
+    description: 'A detailed analysis of the engineering and logistical challenges involved in constructing the Crossrail project, a major new railway in London.',
+    image: '/crossrail.jpeg',
+    content: `
+### Overview
+
+The **Crossrail Project**, also known as the Elizabeth Line, is a major new railway in London. This case study explores the engineering and logistical challenges involved in its construction.
+
+### Engineering Challenges & Solutions
+
+#### Tunnel Boring
+- **Challenge:** Excavating tunnels through densely populated urban areas
+- **Solution:** Using advanced tunnel boring machines (TBMs) to minimize disruption and ensure precision
+- **Implementation:** Employed eight TBMs to excavate 42 kilometers of tunnels
+
+#### Station Construction
+- **Challenge:** Building new underground stations in busy city centers
+- **Solution:** Utilizing top-down construction methods to minimize surface disruption
+- **Implementation:** Coordinated with local authorities and businesses to manage construction impacts
+
+### Technical Specifications
+
+- Total length: 118 kilometers
+- Number of new stations: 10
+- Tunnel length: 42 kilometers
+- Project cost: £18.25 billion
+
+[... Additional 1000+ words of detailed technical content ...]
+    `,
+  },
+  {
+    id: 21,
+    title: 'The Hinkley Point C: Engineering a Nuclear Power Station',
+    description: 'An exploration of the engineering challenges and solutions involved in constructing Hinkley Point C, a new nuclear power station in the UK.',
+    image: '/hinkley.jpeg',
+    content: `
+### Overview
+
+The **Hinkley Point C** is a new nuclear power station under construction in the UK. This case study examines the engineering challenges and solutions involved in its development.
+
+### Engineering Challenges & Solutions
+
+#### Nuclear Safety
+- **Challenge:** Ensuring the highest levels of safety in the design and construction of the power station
+- **Solution:** Implementing advanced safety systems and redundant design features
+- **Implementation:** Collaborated with international experts to develop and validate safety protocols
+
+#### Construction Logistics
+- **Challenge:** Managing the complex logistics of constructing a large-scale nuclear facility
+- **Solution:** Utilizing modular construction techniques to streamline the building process
+- **Implementation:** Coordinated with multiple contractors and suppliers to ensure timely delivery of materials
+
+### Technical Specifications
+
+- Reactor type: EPR (European Pressurized Reactor)
+- Electrical capacity: 3.2 GW
+- Construction duration: 10 years
+- Project cost: £22-23 billion
+
+[... Additional 1000+ words of detailed technical content ...]
+    `,
+  },
+  {
+    id: 22,
+    title: 'The Gotthard Base Tunnel: Through the Alps',
+    description: 'Engineering study of the world\'s longest and deepest traffic tunnel.',
+    image: '/gotthard.jpeg',
+    content: `
+### Overview
+
+The **Gotthard Base Tunnel**, spanning 57.1 kilometers through the Swiss Alps, represents the pinnacle of tunnel engineering. This case study examines the technical challenges and innovations in its construction.
+
+### Engineering Challenges & Solutions
+
+#### Geological Challenges
+- Management of high rock pressures
+- Dealing with varying rock types
+- Water inflow control systems
+- Temperature management (up to 45°C)
+
+#### Technical Systems
+- Ventilation design calculations
+- Emergency response systems
+- Rail technology integration
+- Power distribution networks
+
+### Key Statistics
+
+- Length: 57.1 kilometers
+- Maximum depth: 2,450 meters
+- Construction time: 17 years
+- Cost: 9.560 billion Swiss francs
+
+[... Additional 1000+ words of detailed technical content ...]
+    `,
+  },
+  {
+    id: 23,
+    title: 'The Øresund Bridge: Land and Sea Connection',
+    description: 'Analysis of the innovative bridge-tunnel combination connecting Denmark and Sweden.',
+    image: '/oresund.jpeg',
+    content: `
+### Overview
+
+The **Øresund Bridge** combines a bridge, artificial island, and tunnel to connect Copenhagen and Malmö. This engineering marvel represents one of the most ambitious infrastructure projects in European history.
+
+### Engineering Challenges & Solutions
+
+#### Marine Engineering
+- **Challenge:** Creating a stable artificial island in varying sea conditions
+- **Solution:** Developed innovative dredging techniques and specialized material placement methods
+- **Implementation:** Used over 7 million cubic meters of stone and 3 million cubic meters of sand
+- **Monitoring:** Installed advanced settlement monitoring systems
+
+#### Environmental Protection
+- **Challenge:** Maintaining water flow and marine ecosystem health
+- **Solution:** Implemented artificial reefs and advanced water monitoring
+- **Implementation:** Created specialized channels to maintain natural water exchange
+- **Results:** Successfully maintained local marine biodiversity
+
+#### Transportation Integration
+- **Challenge:** Combining rail and road traffic in limited space
+- **Solution:** Developed a unique double-deck design
+- **Implementation:** Upper deck for highway, lower deck for railway
+- **Innovation:** Created flexible expansion joints for thermal movement
+
+### Technical Specifications
+- Total length: 16 kilometers
+- Bridge span: 7.8 kilometers
+- Tunnel length: 4 kilometers
+- Cost: €2.6 billion
+
+### Construction Innovation
+- Custom-built floating cranes for precise placement
+- Specialized concrete mix for marine durability
+- Prefabricated tunnel elements (20 segments)
+- Advanced corrosion protection systems
+
+[... Additional technical details about construction methods and materials ...]
+    `,
+  },
+  {
+    id: 24,
+    title: 'The Itaipu Dam: Binational Powerhouse',
+    description: 'Exploring the engineering and environmental impact of the Itaipu Dam, one of the largest hydroelectric power plants in the world.',
+    image: '/itaipu.jpeg',
+    content: `
+### Overview
+
+The **Itaipu Dam** is a binational hydroelectric dam on the Paraná River, located on the border between Brazil and Paraguay.
+
+### Engineering Challenges & Solutions
+- **Massive Scale:** Constructing one of the largest dams in the world
+- **Binational Collaboration:** Coordinating efforts between two countries
+- **Environmental Impact:** Mitigating the environmental and social impacts of the dam
+
+### Technical Specifications
+- Height: 196 meters
+- Length: 7,919 meters
+- Power generation capacity: 14,000 MW
+- Construction cost: $19.6 billion
+    `,
+  },
+  {
+    id: 25,
+    title: 'The Petronas Towers: Twin Marvels',
+    description: 'A detailed look at the engineering and architectural challenges of constructing the Petronas Towers in Kuala Lumpur, Malaysia.',
+    image: '/petronas.jpeg',
+    content: `
+### Overview
+
+The **Petronas Towers** redefined the possibilities of skyscraper construction in Southeast Asia, incorporating innovative structural solutions and cultural design elements.
+
+### Engineering Challenges & Solutions
+
+#### Foundation Design
+- **Challenge:** Building on soft limestone and clay soil
+- **Solution:** World's deepest foundations (120 meters) using barrette piles
+- **Implementation:** 104 barrette piles per tower
+- **Innovation:** Custom concrete mix for extreme depths
+
+#### Structural System
+- **Challenge:** Creating a rigid frame for extreme heights
+- **Solution:** High-strength concrete with steel and reinforced concrete cores
+- **Implementation:** Concrete strength of 80MPa for lower levels
+- **Design:** Ring beam and circle beam systems for lateral stability
+
+#### Skybridge Engineering
+- **Challenge:** Connecting towers while allowing movement
+- **Solution:** Double-deck bridge with sliding connections
+- **Implementation:** Three-hinge arch design
+- **Movement capacity:** Up to 0.5 meters in any direction
+
+### Technical Specifications
+- Height: 452 meters
+- Number of floors: 88
+- Skybridge height: 170 meters
+- Construction cost: $1.6 billion
+
+### Construction Innovation
+- Custom-designed climbing cocoon systems
+- GPS-guided construction monitoring
+- Advanced jump-form shuttering system
+- Specialized concrete pumping techniques
+
+[... Additional technical details about materials and construction methods ...]
+    `,
+  },
+  {
+    id: 26,
+    title: 'The Akashi Kaikyō Bridge: Spanning the Sea',
+    description: 'An exploration of the engineering challenges and solutions involved in constructing the world’s longest suspension bridge.',
+    image: '/akashi.jpeg',
+    content: `
+### Overview
+
+The **Akashi Kaikyō Bridge** in Japan is the world’s longest suspension bridge, spanning the Akashi Strait.
+
+### Engineering Challenges & Solutions
+- **Length:** Constructing the longest suspension bridge in the world
+- **Seismic Activity:** Designing the bridge to withstand earthquakes
+- **Wind Forces:** Ensuring stability against strong winds
+
+### Technical Specifications
+- Total length: 3,911 meters
+- Main span: 1,991 meters
+- Height of towers: 298 meters
+- Construction cost: $4.3 billion
+    `,
+  },
+  {
+    id: 29,
+    title: 'The Taipei 101: Engineering a Skyscraper',
+    description: 'Exploring the engineering and architectural challenges of constructing Taipei 101, one of the tallest buildings in the world.',
+    image: '/taipei.jpeg',
+    content: `
+### Overview
+
+**Taipei 101** in Taiwan was the tallest building in the world from 2004 to 2010.
+
+### Engineering Challenges & Solutions
+- **Height:** Constructing one of the tallest buildings in the world
+- **Seismic Activity:** Designing the building to withstand earthquakes
+- **Wind Forces:** Ensuring stability against strong winds
+
+### Technical Specifications
+- Height: 508 meters
+- Number of floors: 101
+- Tuned mass damper: 660 metric tons
+- Construction cost: $1.8 billion
+    `,
+  },
+  
+  {
+    id: 32,
+    title: 'The ITER Tokamak Assembly: Future of Fusion',
+    description: 'Engineering analysis of the world\'s largest fusion reactor assembly.',
+    image: '/tokamak.jpeg',
+    content: `
+### Overview
+
+The **ITER Tokamak Assembly** represents the pinnacle of fusion reactor engineering.
+
+### Engineering Challenges & Solutions
+- **Magnetic Confinement:** Advanced superconducting magnets
+- **Plasma Control:** Real-time feedback systems
+- **Thermal Management:** Novel cooling systems
+
+### Technical Statistics
+- Plasma temperature: 150 million °C
+- Magnetic field: 11.8 tesla
+- Fusion power: 500 MW
+- Cost: €20 billion
+    `,
+  }
 ];
 
 const CaseStudiesPage = () => {

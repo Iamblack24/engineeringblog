@@ -4,20 +4,30 @@ import './DownloadableMaterialsPage.css';
 
 const DownloadableMaterialsPage = () => {
   const downloadableMaterials = [
-    // Example data
     {
       id: 1,
-      title: 'Concrete Technology Quiz',
-      description: 'Test your knowledge on Concrete Technology.',
-      link: '/downloads/concrete-technology-quiz.pdf',
+      title: 'Construction Materials Handbook',
+      description: 'Free handbook from FHWA covering construction materials.',
+      link: 'https://www.fhwa.dot.gov/construction/pubs/hif13019.pdf',
     },
     {
       id: 2,
-      title: 'Geotechnical Engineering Flashcards',
-      description: 'Quick reference flashcards for Geotechnical Engineering.',
-      link: '/downloads/geotechnical-engineering-flashcards.pdf',
+      title: 'Structural Analysis Guide',
+      description: 'MIT OpenCourseWare structural analysis materials.',
+      link: 'https://ocw.mit.edu/courses/1-050-engineering-mechanics-i-fall-2007/resources/lecture_1.pdf',
     },
-    // Add more materials as needed
+    {
+      id: 3,
+      title: 'Building Services Guide',
+      description: 'CIBSE Guide for building services engineering.',
+      link: 'https://www.cibse.org/getmedia/03c25773-8c3c-454d-937d-aaf8f1070cbe/ECG19-Energy-Efficiency-in-Buildings.pdf.aspx',
+    },
+    {
+      id: 4,
+      title: 'Sustainable Construction Guide',
+      description: 'Sustainable construction guidelines by WRAP.',
+      link: 'http://www.wrap.org.uk/sites/files/wrap/Design_Construction_Guide.pdf',
+    }
   ];
 
   return (

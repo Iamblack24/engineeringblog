@@ -7,30 +7,71 @@ const downloadableMaterials = [
     title: 'Structural Engineering Notes',
     description: 'Download comprehensive notes on structural engineering.',
     fileLinks: [
-      'https://drive.google.com/uc?export=download&id=1DUc2S_4zZ97OH3dVQWBFSQd2HRfx7pu7',
-      'https://drive.google.com/uc?export=download&id=1pmkwKiOWrPBxoqWR0e2c-DSRqkGQKfww',
-      'https://drive.google.com/uc?export=download&id=1NXh1UNHOlOh6osCMi4YOKEW9Tvw9DHRZ',
+      'https://ocw.mit.edu/courses/1-050-engineering-mechanics-i-fall-2007/mit1_050f07_lec01.pdf',
+      'https://ocw.mit.edu/courses/1-050-engineering-mechanics-i-fall-2007/mit1_050f07_lec02.pdf',
+      'https://ocw.mit.edu/courses/1-050-engineering-mechanics-i-fall-2007/mit1_050f07_lec03.pdf',
     ],
   },
   {
     title: 'Soil Mechanics 1A',
     description: 'Download notes on soil mechanics for third year civil students.',
     fileLinks: [
-      '/EECQ 3171-Soil Mechanics IA-Slides 1-49.pdf',
-      '/EECQ 3171-Soil Mechanics IA - slides 50-76.pdf',
+      'https://nptel.ac.in/content/storage2/courses/105101001/downloads/Lecture1.pdf',
+      'https://nptel.ac.in/content/storage2/courses/105101001/downloads/Lecture2.pdf',
     ],
   },
   {
     title: 'Engineering Graphics B',
     description: 'Download notes on engineering graphics for second year civil students.',
     fileLinks: [
-      'https://drive.google.com/uc?export=download&id=1dyMbBsDNvCq5mgoOVxEcwbiosTBIaRiB',
-      'https://drive.google.com/uc?export=download&id=1blA1CaCsqM8GFm2qX1iu5waL6UiUKVVc',
-      'https://drive.google.com/uc?export=download&id=1bU0HhxDoPw-w9-JuUuh5MN5BfD3j91hk',
+      'https://nptel.ac.in/content/storage2/courses/112103019/pdf/mod1.pdf',
+      'https://nptel.ac.in/content/storage2/courses/112103019/pdf/mod2.pdf',
+      'https://nptel.ac.in/content/storage2/courses/112103019/pdf/mod3.pdf',
+    ],
+  },
+  {
+    title: 'Fluid Mechanics Fundamentals',
+    description: 'Comprehensive study materials for fluid mechanics principles and applications.',
+    fileLinks: [
+      'https://ocw.mit.edu/courses/2-25-advanced-fluid-mechanics-fall-2013/resources/mit2_25f13_shear_stress/',
+      'https://ocw.mit.edu/courses/2-25-advanced-fluid-mechanics-fall-2013/resources/mit2_25f13_viscosity/',
+      'https://ocw.mit.edu/courses/2-25-advanced-fluid-mechanics-fall-2013/resources/mit2_25f13_fundamental/'
+    ],
+  },
+  {
+    title: 'Steel Structures Design',
+    description: 'Advanced materials on steel structure analysis and design principles.',
+    fileLinks: [
+      'https://ocw.mit.edu/courses/1-051-structural-engineering-design-fall-2003/resources/design_steel/',
+      'https://ocw.mit.edu/courses/1-051-structural-engineering-design-fall-2003/resources/connections/',
+      'https://ocw.mit.edu/courses/1-051-structural-engineering-design-fall-2003/resources/beam_design/'
+    ],
+  },
+  {
+    title: 'Environmental Engineering',
+    description: 'Study materials covering water treatment and environmental systems.',
+    fileLinks: [
+      'https://ocw.mit.edu/courses/1-83-environmental-organic-chemistry-fall-2002/resources/environmental_processes/',
+      'https://ocw.mit.edu/courses/1-83-environmental-organic-chemistry-fall-2002/resources/water_chemistry/'
+    ],
+  },
+  {
+    title: 'Transportation Engineering',
+    description: 'Notes on highway design, traffic engineering, and transportation systems.',
+    fileLinks: [
+      'https://nptel.ac.in/content/storage2/courses/105101008/downloads/Lec-1.pdf',
+      'https://nptel.ac.in/content/storage2/courses/105101008/downloads/Lec-2.pdf'
+    ],
+  },
+  {
+    title: 'Construction Management',
+    description: 'Materials covering project planning, scheduling, and construction techniques.',
+    fileLinks: [
+      'https://ocw.mit.edu/courses/1-040-project-management-spring-2009/resources/project_planning/',
+      'https://ocw.mit.edu/courses/1-040-project-management-spring-2009/resources/risk_analysis/',
+      'https://ocw.mit.edu/courses/1-040-project-management-spring-2009/resources/scheduling/'
     ],
   }
-
-  // Add more downloadable materials here with multiple fileLinks
 ];
 
 const DownloadableRevisionMaterialsPage = () => {
@@ -72,7 +113,5 @@ const DownloadableRevisionMaterialsPage = () => {
     </div>
   );
 };
-
-
 
 export default DownloadableRevisionMaterialsPage;

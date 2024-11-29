@@ -1,0 +1,56 @@
+/* StructuralAnalysisFlashcards.css */
+
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f9f9f9;
+    margin: 0;
+}
+
+.container {
+    max-width: 800px;
+    margin: auto;
+    padding: 20px;
+}
+
+.flashcard {
+    background-color: #ffffff;
+    border: 1px solid #dddddd;
+    border-radius: 5px;
+    padding: 15px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.flashcard h2 {
+    margin-top: 0;
+}
+
+.flashcard p {
+    color: #333333;
+}
+
+.flashcard .question {
+    font-weight: bold;
+}
+
+.flashcard .answer {
+    display: none;
+    margin-top: 10px;
+}
+
+.flashcard.show .answer {
+    display: block;
+}
+
+.toggle-button {
+    background-color: #007acc;
+    color: #ffffff;
+    border: none;
+    padding: 10px 15px;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+.toggle-button:hover {
+    background-color: #005f99;
+}

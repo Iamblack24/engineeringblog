@@ -1,0 +1,30 @@
+/* WaterResourcesEngineeringSummaryNotes.css */
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.header {
+    font-size: 2rem;
+    color: #333;
+    margin-bottom: 20px;
+}
+
+.section {
+    margin-bottom: 15px;
+}
+
+.section-title {
+    font-size: 1.5rem;
+    color: #555;
+}
+
+.text {
+    font-size: 1rem;
+    color: #666;
+    line-height: 1.6;
+}
+
+/* Add more styles as needed */

@@ -1,12 +1,12 @@
-import React, { useContext, useState } from 'react';
-import DesignMaterialCard from '../components/DesignMaterialCard';
+import React, { useState } from 'react';
+//import DesignMaterialCard from '../components/DesignMaterialCard';
 import AffiliateMarketingCard from '../components/AffiliateMarketingcard';
-import EducationalResourcesCard from '../components/EducationalResourcesCard';
+// import EducationalResourcesCard from '../components/EducationalResourcesCard';
 import AuthModal from '../components/AuthModal';
 import './DesignMaterialsPage.css';
-import { AuthContext } from '../contexts/AuthContext';
+//import { AuthContext } from '../contexts/AuthContext';
 
-const designMaterials = [
+/*const designMaterials = [
   {
     id: 1,
     title: 'Structural CAD Design for Multi-Storey Building',
@@ -38,7 +38,7 @@ const designMaterials = [
     contactLink: '/contact',
   }
   // Add more design materials as needed
-];
+]; */
 
 const affiliatemarketing = [
   {
@@ -51,7 +51,7 @@ const affiliatemarketing = [
       '/cad2.jpg',
       '/build.jpg'
     ],
-    link: 'an affiliate link'
+    link: 'https://graphisoft.com/solutions/archicad'
   },
   {
     id: '2',
@@ -63,7 +63,7 @@ const affiliatemarketing = [
       '/revit2.jpeg',
       '/revit3.jpeg'
     ],
-    link: 'an affiliate link'
+    link: 'https://www.autodesk.com/products/revit/overview'
   },
   {
     id: '3',
@@ -75,7 +75,7 @@ const affiliatemarketing = [
       '/sketchup2.jpeg',
       '/sketchup.jpeg'
     ],
-    link: 'an affiliate link'
+    link: 'https://www.sketchup.com/products/sketchup-pro'
   },
   {
     id: '4',
@@ -87,7 +87,7 @@ const affiliatemarketing = [
       '/autocad2.jpeg',
       '/autocad.jpeg'
     ],
-    link: 'an affiliate link'
+    link: 'https://www.autodesk.com/products/autocad/overview'
   },
   {
     id: '5',
@@ -99,7 +99,7 @@ const affiliatemarketing = [
       '/vectorworks2.jpeg',
       '/vectorworks.jpeg'
     ],
-    link: 'an affiliate link'
+    link: 'https://www.vectorworks.net/architect'
   },
   {
     id: '7',
@@ -111,7 +111,7 @@ const affiliatemarketing = [
       '/lumion2.jpeg',
       '/lumion.jpeg'
     ],
-    link: 'an affiliate link'
+    link: 'https://lumion.com/'
   },
   {
     id: '8',
@@ -123,25 +123,25 @@ const affiliatemarketing = [
       '/naviswork2.jpeg',
       '/naviswork.jpeg'
     ],
-    link: 'an affiliate link'
+    link: 'https://www.autodesk.com/products/navisworks/overview'
   }
 ];
 
 const DesignMaterialsPage = () => {
-  const { currentUser } = useContext(AuthContext);
+  //const { currentUser } = useContext(AuthContext);
   const [showAuthModal, setShowAuthModal] = useState(false);
 
-  const handleInteraction = () => {
+  /*const handleInteraction = () => {
     if (!currentUser) {
       setShowAuthModal(true);
       return false;
     }
     return true;
-  };
+  };*/
 
-  const handleAuthRequired = () => {
-    setShowAuthModal(true);
-  };
+  // const handleAuthRequired = () => {
+  //   setShowAuthModal(true);
+  // };
 
 
 
@@ -150,14 +150,13 @@ const DesignMaterialsPage = () => {
       {showAuthModal && (
         <AuthModal onClose={() => setShowAuthModal(false)} />
       )}
-      {/* New Educational Resources Card */}
-      <EducationalResourcesCard onAuthRequired={handleAuthRequired} />
+      {/*}
       <h1>Design Materials for Purchase</h1>
       <div className="materials-list">
         {designMaterials.map((material) => (
           <DesignMaterialCard key={material.id} material={material} onInteraction={handleInteraction} />
         ))}
-      </div>
+      </div> */}
       {/* New Affiliate Marketing Section */}
       <h1>Engineering Software</h1>
       <div className="affiliate-marketing-list">
