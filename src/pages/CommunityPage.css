@@ -1,0 +1,233 @@
+/* General Body Styling */
+body {
+  font-family: 'Roboto', sans-serif;
+  margin: 0;
+  padding: 0;
+  background-color: #f9fafc;
+}
+
+/* Main Container */
+.container {
+  width: 90%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+/* Header Section */
+.header {
+  text-align: center;
+  padding: 20px 0;
+  background: linear-gradient(90deg, #007bff, #4e9cff);
+  color: #fff;
+  border-bottom: 5px solid #0056b3;
+}
+
+.header h1 {
+  margin: 0;
+  font-size: 3em;
+  font-weight: bold;
+  letter-spacing: 1px;
+  line-height: 1.2;
+}
+
+/* Community Page Container */
+.community-page {
+  padding: 40px 30px;
+  max-width: 900px;
+  margin: 40px auto;
+  background-color: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  animation: fadeIn 0.6s ease-in-out;
+}
+
+.community-page h1 {
+  text-align: center;
+  color: #2c3e50;
+  margin-bottom: 30px;
+  font-size: 30px;
+}
+
+/* New Post Form */
+.new-post-form {
+  margin-bottom: 30px;
+  display: flex;
+  flex-direction: column;
+}
+
+.new-post-form textarea {
+  width: 100%;
+  padding: 15px;
+  margin-bottom: 15px;
+  border-radius: 8px;
+  border: 1px solid #ced4da;
+  font-size: 16px;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  transition: border 0.3s ease, box-shadow 0.3s ease;
+}
+
+.new-post-form textarea:focus {
+  border-color: #80bdff;
+  box-shadow: 0 0 8px rgba(0, 123, 255, 0.25);
+  outline: none;
+}
+
+.new-post-form button {
+  padding: 10px 20px;
+  background-color: #007bff;
+  color: #ffffff;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 16px;
+  align-self: flex-end;
+  transition: background-color 0.3s ease, transform 0.3s ease;
+}
+
+.new-post-form button:hover {
+  background-color: #0056b3;
+  transform: translateY(-2px);
+}
+
+/* Posts List */
+.posts-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 25px;
+  margin-top: 30px;
+  padding: 0;
+}
+
+/* Post Cards */
+.post-card {
+  background-color: #ffffff;
+  border: 1px solid #e3e6ea;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+  text-align: center;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  cursor: pointer;
+  overflow: hidden;
+}
+
+.post-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 12px 20px rgba(0, 0, 0, 0.2);
+}
+
+.post-card h3 {
+  font-size: 1.6em;
+  color: #333;
+  margin-bottom: 10px;
+  text-transform: capitalize;
+}
+
+.post-card p {
+  font-size: 1em;
+  color: #555;
+  margin-bottom: 20px;
+  line-height: 1.6;
+}
+
+.post-card a {
+  display: inline-block;
+  padding: 10px 20px;
+  font-size: 0.9em;
+  font-weight: bold;
+  color: #ffffff;
+  background-color: #28a745;
+  border-radius: 5px;
+  text-decoration: none;
+  transition: background-color 0.3s ease, transform 0.3s ease;
+}
+
+.post-card a:hover {
+  background-color: #218838;
+  transform: translateY(-3px);
+}
+
+/* Create New Thread Button */
+.create-thread {
+  display: block;
+  width: fit-content;
+  margin: 40px auto;
+  padding: 15px 30px;
+  font-size: 1.2em;
+  color: #ffffff;
+  background-color: #007bff;
+  border: none;
+  border-radius: 6px;
+  text-align: center;
+  font-weight: bold;
+  box-shadow: 0 6px 10px rgba(0, 0, 0, 0.1);
+  text-decoration: none;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.3s ease;
+}
+
+.create-thread:hover {
+  background-color: #0056b3;
+  transform: translateY(-5px);
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from {
+      opacity: 0;
+      transform: translateY(20px);
+  }
+  to {
+      opacity: 1;
+      transform: translateY(0);
+  }
+}
+
+@media (max-width: 600px) {
+  .container {
+    width: 100%;
+    padding: 15px;
+  }
+
+  .header h1 {
+    font-size: 2em;
+  }
+
+  .community-page {
+    padding: 20px;
+    margin: 20px 10px;
+  }
+
+  .new-post-form textarea {
+    font-size: 14px;
+  }
+
+  .new-post-form button {
+    font-size: 14px;
+    padding: 8px 15px;
+  }
+
+  .posts-list {
+    grid-template-columns: 1fr;
+  }
+
+  .post-card h3 {
+    font-size: 1.4em;
+  }
+
+  .post-card p {
+    font-size: 0.9em;
+  }
+
+  .post-card a {
+    font-size: 0.8em;
+    padding: 8px 15px;
+  }
+
+  .create-thread {
+    font-size: 1em;
+    padding: 10px 20px;
+  }
+}

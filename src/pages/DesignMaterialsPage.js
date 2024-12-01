@@ -1,12 +1,12 @@
-import React, { useState } from 'react';
-//import DesignMaterialCard from '../components/DesignMaterialCard';
+import React, { useState, useContext } from 'react';
+import DesignMaterialCard from '../components/DesignMaterialCard';
 import AffiliateMarketingCard from '../components/AffiliateMarketingcard';
-// import EducationalResourcesCard from '../components/EducationalResourcesCard';
+//import EducationalResourcesCard from '../components/EducationalResourcesCard';
 import AuthModal from '../components/AuthModal';
 import './DesignMaterialsPage.css';
-//import { AuthContext } from '../contexts/AuthContext';
+import { AuthContext } from '../contexts/AuthContext';
 
-/*const designMaterials = [
+const designMaterials = [
   {
     id: 1,
     title: 'Structural CAD Design for Multi-Storey Building',
@@ -38,7 +38,7 @@ import './DesignMaterialsPage.css';
     contactLink: '/contact',
   }
   // Add more design materials as needed
-]; */
+]; 
 
 const affiliatemarketing = [
   {
@@ -124,24 +124,144 @@ const affiliatemarketing = [
       '/naviswork.jpeg'
     ],
     link: 'https://www.autodesk.com/products/navisworks/overview'
-  }
+  },
+  {
+    id: 9,
+    title: 'AutoCAD',
+    description: 'Industry-leading CAD software for 2D and 3D design and drafting.',
+    price: 'Ksh 25,000/year',
+    images: [
+      '/autocad1.jpg',
+      '/autocad2.jpg',
+      '/autocad3.jpg',
+    ],
+    link: 'https://www.autodesk.com/products/autocad/overview',
+  },
+  {
+    id: 10,
+    title: 'SolidWorks',
+    description: 'Comprehensive 3D CAD software for product design and engineering.',
+    price: 'Ksh 30,000/year',
+    images: [
+      '/solidworks1.jpg',
+      '/solidworks2.jpg',
+      '/solidworks3.jpg',
+    ],
+    link: 'https://www.solidworks.com/',
+  },
+  {
+    id: 11,
+    title: 'MATLAB',
+    description: 'High-performance language for technical computing and algorithm development.',
+    price: 'Ksh 20,000/year',
+    images: [
+      '/matlab1.jpg',
+      '/matlab2.jpg',
+      '/matlab3.jpg',
+    ],
+    link: 'https://www.mathworks.com/products/matlab.html',
+  },
+  {
+    id: 12,
+    title: 'ANSYS',
+    description: 'Engineering simulation software for structural, fluid, and thermal analysis.',
+    price: 'Ksh 50,000/year',
+    images: [
+      '/ansys1.jpg',
+      '/ansys2.jpg',
+      '/ansys3.jpg',
+    ],
+    link: 'https://www.ansys.com/',
+  },
+  {
+    id: 13,
+    title: 'SAP2000',
+    description: 'Versatile structural analysis and design software for engineers.',
+    price: 'Ksh 40,000/year',
+    images: [
+      '/sap20001.jpg',
+      '/sap20002.jpg',
+      '/sap20003.jpg',
+    ],
+    link: 'https://www.csiamerica.com/products/sap2000',
+  },
+  {
+    id: 14,
+    title: 'ETABS',
+    description: 'Integrated software for building analysis and design.',
+    price: 'Ksh 45,000/year',
+    images: [
+      '/etabs1.jpg',
+      '/etabs2.jpg',
+      '/etabs3.jpg',
+    ],
+    link: 'https://www.csiamerica.com/products/etabs',
+  },
+  {
+    id: 15,
+    title: 'Rhino 3D',
+    description: 'Advanced 3D modeling software for architects and engineers.',
+    price: 'Ksh 15,000/year',
+    images: [
+      '/rhino1.jpg',
+      '/rhino2.jpg',
+      '/rhino3.jpg',
+    ],
+    link: 'https://www.rhino3d.com/',
+  },
+  {
+    id: 16,
+    title: 'SketchUp',
+    description: 'User-friendly 3D modeling tool for quick architectural designs.',
+    price: 'Ksh 10,000/year',
+    images: [
+      '/sketchup1.jpg',
+      '/sketchup2.jpg',
+      '/sketchup3.jpg',
+    ],
+    link: 'https://www.sketchup.com/',
+  },
+  {
+    id: 17,
+    title: 'ArcGIS',
+    description: 'Comprehensive GIS software for spatial analysis and mapping.',
+    price: 'Ksh 35,000/year',
+    images: [
+      '/arcgis1.jpg',
+      '/arcgis2.jpg',
+      '/arcgis3.jpg',
+    ],
+    link: 'https://www.esri.com/en-us/arcgis/products/index',
+  },
+  {
+    id: 18,
+    title: 'Bluebeam Revu',
+    description: 'PDF creation, editing, markup, and collaboration technology for design workflows.',
+    price: 'Ksh 12,000/year',
+    images: [
+      '/bluebeam1.jpg',
+      '/bluebeam2.jpg',
+      '/bluebeam3.jpg',
+    ],
+    link: 'https://www.bluebeam.com/solutions/revu',
+  },
 ];
 
 const DesignMaterialsPage = () => {
-  //const { currentUser } = useContext(AuthContext);
+  const { currentUser } = useContext(AuthContext);
   const [showAuthModal, setShowAuthModal] = useState(false);
 
-  /*const handleInteraction = () => {
+  const handleInteraction = () => {
     if (!currentUser) {
       setShowAuthModal(true);
       return false;
     }
     return true;
-  };*/
+  };
 
-  // const handleAuthRequired = () => {
-  //   setShowAuthModal(true);
-  // };
+   const handleAuthRequired = () => {
+     setShowAuthModal(true);
+   };
 
 
 
@@ -150,15 +270,15 @@ const DesignMaterialsPage = () => {
       {showAuthModal && (
         <AuthModal onClose={() => setShowAuthModal(false)} />
       )}
-      {/*}
+      {}
       <h1>Design Materials for Purchase</h1>
       <div className="materials-list">
         {designMaterials.map((material) => (
-          <DesignMaterialCard key={material.id} material={material} onInteraction={handleInteraction} />
+          <DesignMaterialCard key={material.id} material={material} onInteraction={() => { handleInteraction(); handleAuthRequired(); }} />
         ))}
-      </div> */}
+      </div> 
       {/* New Affiliate Marketing Section */}
-      <h1>Engineering Software</h1>
+      <h1>Recommended Engineering Software</h1>
       <div className="affiliate-marketing-list">
         {affiliatemarketing.map((marketing) => (
           <AffiliateMarketingCard key={marketing.id} marketing={marketing} />

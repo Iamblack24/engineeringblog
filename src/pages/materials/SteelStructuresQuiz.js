@@ -20,297 +20,228 @@ const SteelStructuresQuiz = () => {
       type: "text",
       options: [
         "To connect beams and columns",
-        "To provide decorative elements",
-        "To increase load capacity",
-        "To reduce material usage"
+        "To provide additional support at joints",
+        "To increase the load-bearing capacity",
+        "To reduce the weight of the structure"
       ],
-      correctAnswer: "To connect beams and columns"
+      correctAnswer: "To provide additional support at joints"
     },
     {
-      question: "Determine the axial load capacity of a column.",
-      type: "math",
-      options: ["150 kN", "200 kN", "250 kN", "300 kN"],
-      correctAnswer: "200 kN"
+      question: "What is the typical modulus of elasticity for structural steel?",
+      type: "text",
+      options: ["200 GPa", "250 GPa", "300 GPa", "350 GPa"],
+      correctAnswer: "200 GPa"
     },
     {
-      question: "What is the difference between hot-rolled and cold-rolled steel?",
+      question: "What is the main advantage of using high-strength bolts in steel connections?",
       type: "text",
       options: [
-        "Hot-rolled is stronger than cold-rolled",
-        "Cold-rolled has a smoother finish",
-        "Hot-rolled is more expensive",
-        "Cold-rolled cannot be welded"
+        "Increased load-bearing capacity",
+        "Reduced cost",
+        "Ease of installation",
+        "Corrosion resistance"
       ],
-      correctAnswer: "Cold-rolled has a smoother finish"
+      correctAnswer: "Increased load-bearing capacity"
     },
     {
-      question: "Calculate the shear force in a beam subjected to a point load.",
-      type: "math",
-      options: ["50 kN", "75 kN", "100 kN", "125 kN"],
-      correctAnswer: "75 kN"
-    },
-    {
-      question: "Explain the concept of buckling in columns.",
+      question: "What is the purpose of a base plate in a steel column?",
       type: "text",
       options: [
-        "Sudden lateral deflection",
-        "Increase in load capacity",
-        "Reduction in length",
-        "Increase in stiffness"
-      ],
-      correctAnswer: "Sudden lateral deflection"
-    },
-    {
-      question: "Find the centroid of a composite section.",
-      type: "math",
-      options: ["10 cm", "15 cm", "20 cm", "25 cm"],
-      correctAnswer: "15 cm"
-    },
-    {
-      question: "What are the advantages of using steel in construction?",
-      type: "text",
-      options: [
-        "High strength-to-weight ratio",
-        "Corrosion resistance",
-        "Low cost",
-        "Ease of fabrication"
-      ],
-      correctAnswer: "High strength-to-weight ratio"
-    },
-    {
-      question: "Calculate the bending stress in a beam.",
-      type: "math",
-      options: ["5 MPa", "10 MPa", "15 MPa", "20 MPa"],
-      correctAnswer: "10 MPa"
-    },
-    {
-      question: "Describe the process of welding in steel structures.",
-      type: "text",
-      options: [
-        "Joining metals by melting",
-        "Using adhesives",
-        "Bolting components",
-        "Riveting parts"
-      ],
-      correctAnswer: "Joining metals by melting"
-    },
-    {
-      question: "Determine the deflection of a simply supported beam.",
-      type: "math",
-      options: ["2 mm", "4 mm", "6 mm", "8 mm"],
-      correctAnswer: "4 mm"
-    },
-    {
-      question: "What is the role of bracing in steel structures?",
-      type: "text",
-      options: [
+        "To distribute the load from the column to the foundation",
+        "To connect the column to the beam",
         "To provide lateral stability",
-        "To increase load capacity",
-        "To reduce material usage",
-        "To provide decorative elements"
+        "To reduce the weight of the column"
       ],
-      correctAnswer: "To provide lateral stability"
+      correctAnswer: "To distribute the load from the column to the foundation"
     },
     {
-      question: "Calculate the torsional stress in a shaft.",
-      type: "math",
-      options: ["30 MPa", "45 MPa", "60 MPa", "75 MPa"],
-      correctAnswer: "45 MPa"
-    },
-    {
-      question: "Explain the term 'fatigue' in the context of steel structures.",
+      question: "What is the difference between a moment connection and a shear connection?",
       type: "text",
       options: [
-        "Failure due to repeated loading",
-        "Sudden lateral deflection",
-        "Increase in load capacity",
-        "Reduction in length"
+        "Moment connection resists bending moments, shear connection resists shear forces",
+        "Moment connection resists shear forces, shear connection resists bending moments",
+        "Moment connection is used for columns, shear connection is used for beams",
+        "Moment connection is used for beams, shear connection is used for columns"
       ],
-      correctAnswer: "Failure due to repeated loading"
+      correctAnswer: "Moment connection resists bending moments, shear connection resists shear forces"
     },
     {
-      question: "Find the section modulus of a given cross-section.",
-      type: "math",
-      options: ["50 cm³", "75 cm³", "100 cm³", "125 cm³"],
-      correctAnswer: "75 cm³"
-    },
-    {
-      question: "What is the significance of the modulus of elasticity for steel?",
+      question: "What is the purpose of using stiffeners in steel beams?",
       type: "text",
       options: [
-        "Measure of stiffness",
-        "Measure of strength",
-        "Measure of ductility",
-        "Measure of toughness"
+        "To increase the load-bearing capacity",
+        "To reduce the weight of the beam",
+        "To prevent local buckling",
+        "To connect beams and columns"
       ],
-      correctAnswer: "Measure of stiffness"
+      correctAnswer: "To prevent local buckling"
     },
     {
-      question: "Calculate the load distribution in a truss.",
-      type: "math",
-      options: ["20 kN", "40 kN", "60 kN", "80 kN"],
-      correctAnswer: "40 kN"
+      question: "What is the typical unit weight of structural steel?",
+      type: "text",
+      options: ["77 kN/m³", "78.5 kN/m³", "79 kN/m³", "80 kN/m³"],
+      correctAnswer: "78.5 kN/m³"
     },
     {
-      question: "Describe the process of galvanizing steel.",
+      question: "What is the purpose of using a splice plate in steel construction?",
       type: "text",
       options: [
-        "Coating with zinc",
-        "Painting with primer",
-        "Applying adhesive",
-        "Bolting components"
+        "To connect two sections of a steel member",
+        "To provide additional support at joints",
+        "To increase the load-bearing capacity",
+        "To reduce the weight of the structure"
       ],
-      correctAnswer: "Coating with zinc"
+      correctAnswer: "To connect two sections of a steel member"
     },
     {
-      question: "Determine the critical load for a column using Euler's formula.",
-      type: "math",
-      options: ["500 kN", "750 kN", "1000 kN", "1250 kN"],
-      correctAnswer: "750 kN"
-    },
-    {
-      question: "What are the common types of steel used in construction?",
+      question: "What is the significance of the slenderness ratio in steel design?",
       type: "text",
       options: [
-        "Carbon steel, alloy steel, stainless steel",
-        "Aluminum, copper, brass",
-        "Wood, concrete, plastic",
-        "Glass, ceramic, rubber"
+        "It determines the buckling strength of a member",
+        "It determines the tensile strength of a member",
+        "It determines the shear strength of a member",
+        "It determines the bending strength of a member"
       ],
-      correctAnswer: "Carbon steel, alloy steel, stainless steel"
+      correctAnswer: "It determines the buckling strength of a member"
     },
     {
-      question: "Calculate the strain in a steel member under tension.",
-      type: "math",
-      options: ["0.001", "0.002", "0.003", "0.004"],
-      correctAnswer: "0.002"
-    },
-    {
-      question: "Explain the concept of plastic design in steel structures.",
+      question: "What is the purpose of using a moment-resisting frame in steel structures?",
       type: "text",
       options: [
-        "Design beyond elastic limit",
-        "Design within elastic limit",
-        "Design for corrosion resistance",
-        "Design for aesthetic appeal"
+        "To resist lateral loads",
+        "To resist vertical loads",
+        "To reduce the weight of the structure",
+        "To increase the load-bearing capacity"
       ],
-      correctAnswer: "Design beyond elastic limit"
+      correctAnswer: "To resist lateral loads"
     },
     {
-      question: "Find the radius of gyration for a given section.",
-      type: "math",
-      options: ["5 cm", "7 cm", "9 cm", "11 cm"],
-      correctAnswer: "7 cm"
+      question: "What is the typical yield strength of high-strength structural steel?",
+      type: "text",
+      options: ["350 MPa", "450 MPa", "550 MPa", "650 MPa"],
+      correctAnswer: "350 MPa"
     },
     {
-      question: "What is the purpose of using high-strength bolts in steel connections?",
+      question: "What is the purpose of using a braced frame in steel structures?",
       type: "text",
       options: [
-        "To provide greater load capacity",
-        "To reduce material usage",
-        "To provide decorative elements",
-        "To increase stiffness"
+        "To resist lateral loads",
+        "To resist vertical loads",
+        "To reduce the weight of the structure",
+        "To increase the load-bearing capacity"
       ],
-      correctAnswer: "To provide greater load capacity"
+      correctAnswer: "To resist lateral loads"
     },
     {
-      question: "Calculate the buckling load for a column with fixed ends.",
-      type: "math",
-      options: ["600 kN", "800 kN", "1000 kN", "1200 kN"],
-      correctAnswer: "800 kN"
-    },
-    {
-      question: "Describe the term 'creep' in steel structures.",
+      question: "What is the purpose of using a composite beam in steel construction?",
       type: "text",
       options: [
-        "Slow deformation over time",
-        "Sudden lateral deflection",
-        "Increase in load capacity",
-        "Reduction in length"
+        "To combine the strength of steel and concrete",
+        "To reduce the weight of the beam",
+        "To increase the load-bearing capacity",
+        "To provide additional support at joints"
       ],
-      correctAnswer: "Slow deformation over time"
+      correctAnswer: "To combine the strength of steel and concrete"
     },
     {
-      question: "Determine the moment capacity of a steel beam.",
-      type: "math",
-      options: ["4000 Nm", "5000 Nm", "6000 Nm", "7000 Nm"],
-      correctAnswer: "5000 Nm"
-    },
-    {
-      question: "What are the different types of steel connections?",
+      question: "What is the purpose of using a shear stud in composite construction?",
       type: "text",
       options: [
-        "Bolted, welded, riveted",
-        "Adhesive, mechanical, thermal",
-        "Magnetic, chemical, electrical",
-        "Friction, gravity, pressure"
+        "To transfer shear forces between the steel beam and concrete slab",
+        "To increase the load-bearing capacity",
+        "To reduce the weight of the structure",
+        "To provide additional support at joints"
       ],
-      correctAnswer: "Bolted, welded, riveted"
+      correctAnswer: "To transfer shear forces between the steel beam and concrete slab"
     },
     {
-      question: "Calculate the lateral-torsional buckling capacity of a beam.",
-      type: "math",
-      options: ["1500 Nm", "2000 Nm", "2500 Nm", "3000 Nm"],
-      correctAnswer: "2000 Nm"
+      question: "What is the purpose of using a castellated beam in steel construction?",
+      type: "text",
+      options: [
+        "To increase the depth of the beam without increasing its weight",
+        "To reduce the weight of the beam",
+        "To provide additional support at joints",
+        "To increase the load-bearing capacity"
+      ],
+      correctAnswer: "To increase the depth of the beam without increasing its weight"
+    },
+    {
+      question: "What is the purpose of using a haunched beam in steel construction?",
+      type: "text",
+      options: [
+        "To increase the moment capacity at the supports",
+        "To reduce the weight of the beam",
+        "To provide additional support at joints",
+        "To increase the load-bearing capacity"
+      ],
+      correctAnswer: "To increase the moment capacity at the supports"
+    },
+    {
+      question: "What is the purpose of using a steel truss in construction?",
+      type: "text",
+      options: [
+        "To span large distances with minimal material",
+        "To reduce the weight of the structure",
+        "To provide additional support at joints",
+        "To increase the load-bearing capacity"
+      ],
+      correctAnswer: "To span large distances with minimal material"
+    },
+    {
+      question: "What is the purpose of using a steel diaphragm in construction?",
+      type: "text",
+      options: [
+        "To transfer lateral loads to the vertical resisting elements",
+        "To reduce the weight of the structure",
+        "To provide additional support at joints",
+        "To increase the load-bearing capacity"
+      ],
+      correctAnswer: "To transfer lateral loads to the vertical resisting elements"
     }
   ];
 
-  const [currentQuestion, setCurrentQuestion] = useState(0);
-  const [selectedOption, setSelectedOption] = useState('');
-  const [showResult, setShowResult] = useState(false);
+  const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [score, setScore] = useState(0);
+  const [showScore, setShowScore] = useState(false);
 
-  const handleOptionChange = (e) => {
-    setSelectedOption(e.target.value);
-  };
-
-  const handleNext = () => {
-    if (selectedOption === questions[currentQuestion].correctAnswer) {
+  const handleAnswerOptionClick = (isCorrect) => {
+    if (isCorrect) {
       setScore(score + 1);
     }
-    setSelectedOption('');
-    if (currentQuestion + 1 < questions.length) {
-      setCurrentQuestion(currentQuestion + 1);
+
+    const nextQuestion = currentQuestionIndex + 1;
+    if (nextQuestion < questions.length) {
+      setCurrentQuestionIndex(nextQuestion);
     } else {
-      setShowResult(true);
+      setShowScore(true);
     }
   };
 
   return (
-    <div className="quiz-container">
-      <h1>Steel Structures Quiz</h1>
-      <p>Test your knowledge with this quiz on steel structures.</p>
-      {showResult ? (
-        <div className="quiz-result">
+    <div className="steel-structures-quiz">
+      {showScore ? (
+        <div className="score-section">
           You scored {score} out of {questions.length}
         </div>
       ) : (
-        <div className="quiz-question">
-          <p>{questions[currentQuestion].question}</p>
-          <ul className="quiz-options">
-            {questions[currentQuestion].options.map((option, index) => (
-              <li key={index} className="quiz-option">
-                <label>
-                  <input
-                    type="radio"
-                    name="option"
-                    value={option}
-                    checked={selectedOption === option}
-                    onChange={handleOptionChange}
-                  />
-                  {option}
-                </label>
-              </li>
+        <>
+          <div className="question-section">
+            <div className="question-count">
+              <span>Question {currentQuestionIndex + 1}</span>/{questions.length}
+            </div>
+            <div className="question-text">{questions[currentQuestionIndex].question}</div>
+          </div>
+          <div className="answer-section">
+            {questions[currentQuestionIndex].options.map((option, index) => (
+              <button
+                key={index}
+                onClick={() => handleAnswerOptionClick(option === questions[currentQuestionIndex].correctAnswer)}
+              >
+                {option}
+              </button>
             ))}
-          </ul>
-          <button
-            className="quiz-button"
-            onClick={handleNext}
-            disabled={!selectedOption}
-          >
-            {currentQuestion + 1 === questions.length ? 'Finish' : 'Next'}
-          </button>
-        </div>
+          </div>
+        </>
       )}
     </div>
   );

@@ -67,6 +67,9 @@ const HomePage = () => {
           <div className={`hero-overlay ${showOverlay ? 'active' : ''}`}>
             <h1>Welcome to the Engineering Hub</h1>
             <p>Empowering Future and proffessional Civil Engineers, Architects, Structural Engineers</p>
+            <Link to="/community" className="community-link">
+            <button className="community-button">Join the Community</button>
+          </Link>
           </div>
         </section>
         <section className="random-fact-section">

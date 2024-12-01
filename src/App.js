@@ -38,6 +38,12 @@ import WebinarsPage from './pages/WebinarsPage';
 import PrivacyPolicy from './pages/PrivacyPolicy';
 import TermsOfService from './pages/TermsOfService';
 import AboutUsPage from './pages/AboutUsPage';
+import CommunityPage from './pages/CommunityPage';
+import ThreadDetail from './pages/ThreadDetail';
+import NewThreadPage from './pages/NewThreadPage'; 
+import CategoriesPage from './pages/CategoriesPage';
+import CreateCategoryPage from './pages/CreateCategoryPage';
+//import ConstructionManagementFlashcards from './pages/materials/ConstructionManagementFlashcards';
 import EducationalResourcesPage from './pages/EducationalResourcesPage';
 import { AuthContext } from './contexts/AuthContext';
 import ScrollToTop from './ScrollToTop';
@@ -74,7 +80,7 @@ function App() {
 
   return (
     <Router>
-      <ScrollToTop /> 
+      <ScrollToTop />
       <Navbar />
       {showWelcome && currentUser && (
         <WelcomeOverlay name={currentUser.displayName || currentUser.email} onClose={closeWelcome} />
@@ -85,42 +91,50 @@ function App() {
           <p>{notification.body}</p>
         </div>
       )}
-      <Routes>
-        <Route path="/" element={<HomePage />} />
-        <Route path="/articles" element={<ArticlesPage />} />
-        <Route path="/articles/:id" element={<SingleArticle />} />
-        <Route path="/design-materials" element={<DesignMaterialsPage />} />
-        <Route path="/case-studies" element={<CaseStudiesPage />} />
-        <Route path="/case-studies/:id" element={<CaseStudyDetailPage />} />
-        <Route path="/tools" element={<InteractiveToolsPage />} />
-        <Route path="/tools/beam-calculator" element={<BeamCalculator />} />
-        <Route path="/tools/concrete-mix-design" element={<ConcreteMixDesignCalculator />} />
-        <Route path="/tools/slope-stability" element={<SlopeStabilityCalculator />} />
-        <Route path="/tools/hydraulic-calculator" element={<HydraulicCalculator />} />
-        <Route path="/tools/retaining-wall-design" element={<RetainingWallDesignTool />} />
-        <Route path="/tools/steel-connection-design" element={<SteelConnectionDesignTool />} />
-        <Route path="/tools/reinforced-concrete-design" element={<ReinforcedConcreteDesignTool />} />
-        <Route path="/revision-materials" element={<RevisionMaterialsPage />} />
-        <Route path="/materials/downloadable-revision-materials" element={<DownloadableRevisionMaterialsPage />} />
-        <Route path="/career-guides" element={<CareerGuidesPage />} />
-        <Route path="/tools/soil-bearing-capacity" element={<SoilBearingCapacityCalculator />} />
-        <Route path="/tools/structural-load" element={<StructuralLoadCalculator />} />
-        <Route path="/career-guides/:guideId" element={<CareerGuideDetail />} />
-        <Route path="/contact" element={<ContactPage />} />
-        <Route path="/about-us" element={<AboutUsPage />} />
-        <Route path="/events" element={<EventsPage />} />
-        <Route path="/webinars" element={<WebinarsPage />} />
-        <Route path="/educational-resources" element={<EducationalResourcesPage />} />
-        <Route path="/terms-of-service" element={<TermsOfService />} />
-        <Route path="/privacy-policy" element={<PrivacyPolicy />} />
-        <Route path="/tools/pile-design" element={<PileDesignTool />} />
-        <Route path="/materials/structural-engineering-flashcards" element={<StructuralEngineeringFlashcards />} />
-        <Route path="/materials/hydraulics-summary-notes" element={<HydraulicsSummaryNotes />} />
-        <Route path="/materials/concrete-technology-quiz" element={<ConcreteTechnologyQuiz />} />
-        <Route path="/materials/geotechnical-engineering-flashcards" element={<GeotechnicalEngineeringFlashcards />} />
-        <Route path="/materials/environmental-engineering-summary-notes" element={<EnvironmentalEngineeringSummaryNotes />} />
-        <Route path="/materials/transportation-engineering-quiz" element={<TransportationEngineeringQuiz />} />
-      </Routes>
+      <main className="content">
+        <Routes>
+          <Route path="/" element={<HomePage />} />
+          <Route path="/articles" element={<ArticlesPage />} />
+          <Route path="/articles/:id" element={<SingleArticle />} />
+          <Route path="/design-materials" element={<DesignMaterialsPage />} />
+          <Route path="/case-studies" element={<CaseStudiesPage />} />
+          <Route path="/case-studies/:id" element={<CaseStudyDetailPage />} />
+          <Route path="/tools" element={<InteractiveToolsPage />} />
+          <Route path="/tools/beam-calculator" element={<BeamCalculator />} />
+          <Route path="/tools/concrete-mix-design" element={<ConcreteMixDesignCalculator />} />
+          <Route path="/tools/slope-stability" element={<SlopeStabilityCalculator />} />
+          <Route path="/tools/hydraulic-calculator" element={<HydraulicCalculator />} />
+          <Route path="/tools/retaining-wall-design" element={<RetainingWallDesignTool />} />
+          <Route path="/tools/steel-connection-design" element={<SteelConnectionDesignTool />} />
+          <Route path="/tools/reinforced-concrete-design" element={<ReinforcedConcreteDesignTool />} />
+          <Route path="/revision-materials" element={<RevisionMaterialsPage />} />
+          <Route path="/materials/downloadable-revision-materials" element={<DownloadableRevisionMaterialsPage />} />
+          <Route path="/career-guides" element={<CareerGuidesPage />} />
+          <Route path="/tools/soil-bearing-capacity" element={<SoilBearingCapacityCalculator />} />
+          <Route path="/tools/structural-load" element={<StructuralLoadCalculator />} />
+          <Route path="/career-guides/:guideId" element={<CareerGuideDetail />} />
+          <Route path="/contact" element={<ContactPage />} />
+          <Route path="/about-us" element={<AboutUsPage />} />
+          <Route path="/events" element={<EventsPage />} />
+          <Route path="/community" element={<CategoriesPage />} />
+          <Route path="/community/create-category" element={<CreateCategoryPage />} />
+          <Route path="/community/:categoryId" element={<CommunityPage />} />
+          <Route path="/community/:categoryId/new-thread" element={<NewThreadPage />} />
+          {/* Corrected Route Path */}
+          <Route path="/community/:categoryId/threads/:threadId" element={<ThreadDetail />} />
+          <Route path="/webinars" element={<WebinarsPage />} />
+          <Route path="/educational-resources" element={<EducationalResourcesPage />} />
+          <Route path="/terms-of-service" element={<TermsOfService />} />
+          <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+          <Route path="/tools/pile-design" element={<PileDesignTool />} />
+          <Route path="/materials/structural-engineering-flashcards" element={<StructuralEngineeringFlashcards />} />
+          <Route path="/materials/hydraulics-summary-notes" element={<HydraulicsSummaryNotes />} />
+          <Route path="/materials/concrete-technology-quiz" element={<ConcreteTechnologyQuiz />} />
+          <Route path="/materials/geotechnical-engineering-flashcards" element={<GeotechnicalEngineeringFlashcards />} />
+          <Route path="/materials/environmental-engineering-summary-notes" element={<EnvironmentalEngineeringSummaryNotes />} />
+          <Route path="/materials/transportation-engineering-quiz" element={<TransportationEngineeringQuiz />} />
+        </Routes>
+      </main>
       <InstallPrompt />
       <Footer />
     </Router>

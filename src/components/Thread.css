@@ -1,0 +1,299 @@
+/* src/pages/Thread.css */
+
+.thread {
+  max-width: 800px;
+  margin: 20px auto;
+  padding: 20px;
+  background-color: var(--background-color);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+}
+
+.thread h2 {
+  margin-bottom: 10px;
+  font-size: 24px;
+  color: white;
+  text-align: center;
+}
+
+.thread h3 {
+  color: white;
+}
+
+.thread p {
+  color: black;
+  margin-bottom: 15px;
+  text-align: center;
+}
+
+.thread button {
+  display: inline-block;
+  margin: 5px;
+  padding: 8px 15px;
+  background-color: #3498db;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background-color 0.3s;
+}
+
+.thread button:hover {
+  background-color: #2980b9;
+}
+
+.thread button.delete-button {
+  background-color: #e74c3c;
+}
+
+.thread button.delete-button:hover {
+  background-color: #c0392b;
+}
+
+form textarea {
+  width: 100%;
+  padding: 10px;
+  font-size: 14px;
+  border: 1px solid #dcdcdc;
+  border-radius: 4px;
+  resize: none;
+  margin-bottom: 10px;
+}
+
+form button {
+  width: 100%;
+  padding: 10px;
+  background-color: #2ecc71;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background-color 0.3s;
+}
+
+form button:hover {
+  background-color: #27ae60;
+}
+
+.posts-list {
+  margin-top: 20px;
+}
+
+.thread-item {
+  padding: 15px 20px;
+  margin-bottom: 10px;
+  background-color: #ffffff; /* Set background to white */
+  border: 1px solid #eaeaea;
+  border-radius: 6px;
+  transition: transform 0.2s, background-color 0.3s;
+  color: #2c3e50; /* Ensure text color is visible */
+}
+
+.thread-item:hover {
+  transform: scale(1.02);
+  background-color: #f1f1f1; /* Slightly darker background on hover */
+}
+
+.thread-item h2 {
+  margin-bottom: 10px;
+  font-size: 18px;
+  color: #2c3e50;
+}
+
+.thread-item p {
+  color: #2c3e50; /* Ensure text color is visible */
+  font-size: 14px;
+}
+
+.post-form {
+  margin: 20px 0;
+  padding: 15px;
+  background-color: var(--background-color);
+  border: 1px solid #eaeaea;
+  border-radius: 6px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.post-form textarea {
+  width: 100%;
+  padding: 10px;
+  font-size: 14px;
+  border: 1px solid #dcdcdc;
+  border-radius: 4px;
+  resize: none;
+  margin-bottom: 10px;
+}
+
+.post-form button {
+  width: 100%;
+  padding: 10px;
+  background-color: #1da1f2; /* Twitter-like blue */
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: bold;
+  transition: background-color 0.3s;
+}
+
+.post-form button:hover {
+  background-color: #0c85d0;
+}
+
+.thread-started-by {
+  background-color: var(--background-color); /* Dark background */
+  color: #fff; /* White text */
+  padding: 10px;
+  border-radius: 4px;
+  text-align: center;
+  margin-bottom: 15px;
+}
+
+.thread-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 15px;
+  border-bottom: 1px solid #eaeaea;
+  padding-bottom: 10px;
+  flex-wrap: wrap; /* Ensure content wraps on smaller screens */
+}
+
+.thread-header h2 {
+  flex: 1 1 100%; /* Ensure the title takes full width on smaller screens */
+  text-align: center;
+  margin: 10px 0; /* Add margin for spacing */
+}
+
+.user-info {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.user-icon {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 40px;
+  height: 40px;
+  background-color: #3498db;
+  color: #fff;
+  font-size: 18px;
+  font-weight: bold;
+  border-radius: 50%;
+  text-transform: uppercase;
+}
+
+.user-email {
+  color: #2c3e50;
+  font-size: 14px;
+}
+
+.post-toggle-button {
+  margin: 10px 0;
+  padding: 10px 20px;
+  background-color: #1da1f2;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.post-toggle-button:hover {
+  background-color: #0c85d0;
+}
+
+/* Mobile-first styling */
+.thread {
+  padding: 10px;
+}
+
+.posts-list {
+  margin-top: 20px;
+}
+
+/* Desktop adjustments */
+@media (min-width: 768px) {
+  .thread {
+    max-width: 800px;
+    margin: 0 auto;
+  }
+
+  .user-info {
+    flex-direction: row;
+  }
+}
+
+@media (min-width: 1024px) {
+  .thread {
+    max-width: 1000px;
+    padding: 20px;
+  }
+}
+
+@media (max-width: 600px) {
+  .thread {
+    padding: 15px;
+    margin: 15px 10px;
+  }
+
+  .thread h2 {
+    font-size: 20px;
+  }
+
+  .thread h3 {
+    font-size: 18px;
+  }
+
+  .thread p {
+    font-size: 14px;
+  }
+
+  .thread button {
+    font-size: 13px;
+    padding: 6px 12px;
+  }
+
+  form textarea {
+    font-size: 13px;
+  }
+
+  form button {
+    font-size: 13px;
+    padding: 8px 15px;
+  }
+
+  .thread-item {
+    padding: 10px 15px;
+  }
+
+  .thread-item h2 {
+    font-size: 16px;
+  }
+
+  .thread-item p {
+    font-size: 13px;
+  }
+
+  .post-form {
+    padding: 10px;
+  }
+
+  .post-form textarea {
+    font-size: 13px;
+  }
+
+  .post-form button {
+    font-size: 13px;
+    padding: 8px 15px;
+  }
+
+  .thread-started-by {
+    padding: 8px;
+  }
+}

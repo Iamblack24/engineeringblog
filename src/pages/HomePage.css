@@ -89,6 +89,25 @@
   color: var(--text-color);
 }
 
+.community-link {
+  text-decoration: none;
+}
+
+.community-button {
+  margin-top: 20px;
+  padding: 8px 16px;
+  background-color: var(--accent-color);
+  color: var(--text-color);
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 15px;
+}
+
+.community-button:hover {
+  background-color: #0056b3;
+}
+
 .content-section {
   display: flex;
   flex-wrap: wrap;

@@ -1,0 +1,66 @@
+/* src/pages/Reply.css */
+/* Enhanced for better aesthetics */
+
+.reply {
+  border-left: 3px solid #bdc3c7;
+  padding-left: 18px;
+  margin-bottom: 20px;
+  position: relative;
+  background-color: #f2f2f2;
+  border-radius: 8px;
+}
+
+.reply::before {
+  content: '';
+  position: absolute;
+  left: -10px;
+  top: 20px;
+  width: 14px;
+  height: 14px;
+  background-color: #ffffff;
+  border: 2px solid #bdc3c7;
+  border-radius: 50%;
+}
+
+.reply p {
+  margin: 10px 0;
+  font-size: 15px;
+  color: #34495e;
+}
+
+.delete-button {
+  background-color: #e74c3c;
+  margin-left: 12px;
+  padding: 6px 12px;
+  color: #ffffff;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 13px;
+  transition: background-color 0.3s;
+}
+
+.delete-button:hover {
+  background-color: #c0392b;
+}
+
+.delete-button:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(231, 76, 60, 0.5);
+}
+
+@media (max-width: 600px) {
+  .reply {
+    padding-left: 15px;
+    margin-bottom: 15px;
+  }
+
+  .reply p {
+    font-size: 14px;
+  }
+
+  .delete-button {
+    font-size: 12px;
+    padding: 5px 10px;
+  }
+}

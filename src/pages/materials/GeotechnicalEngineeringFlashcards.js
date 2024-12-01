@@ -4,106 +4,119 @@ import './GeotechnicalEngineeringFlashcards.css'; // Import the CSS file for sty
 const GeotechnicalEngineeringFlashcards = () => {
   const flashcards = [
     {
-      question: 'What is the primary purpose of a retaining wall?',
-      answer: 'To retain soil and prevent erosion or collapse of slopes.',
+        question: 'What is the effective stress in a soil layer with a total stress of 160 kN/m² and a pore water pressure of 40 kN/m²?',
+        answer: 'Effective Stress (σ\') = Total Stress - Pore Water Pressure = 160 kN/m² - 40 kN/m² = 120 kN/m²',
     },
     {
-      question: 'Define the term "Shear Strength" in soil mechanics.',
-      answer: 'Shear strength is the resistance of soil to shear stress, preventing it from failing.',
+        question: 'Determine the settlement of a sand layer with a thickness of 3m, initial void ratio of 0.6, and final void ratio of 0.4.',
+        answer: 'Settlement (S) = H * (e0 - ef) / (1 + e0)\nS = 3m * (0.6 - 0.4) / (1 + 0.6) = 0.375m',
     },
     {
-      question: 'What is the significance of the Atterberg Limits?',
-      answer: 'They define the critical water contents of fine-grained soils, indicating their plasticity.',
+        question: 'Calculate the seepage velocity if the hydraulic conductivity is 0.01 m/day and the hydraulic gradient is 0.05.',
+        answer: 'Seepage Velocity (v) = Hydraulic Conductivity * Hydraulic Gradient = 0.01 m/day * 0.05 = 0.0005 m/day',
     },
     {
-      question: 'Explain the concept of "Effective Stress".',
-      answer: 'Effective stress is the stress carried by the soil skeleton, excluding pore water pressure.',
+        question: 'Determine the lateral earth pressure at rest for a soil with a unit weight of 18 kN/m³ and a depth of 6m. Assume Ko = 0.5.',
+        answer: 'Lateral Earth Pressure (σh) = Ko * γ * h = 0.5 * 18 kN/m³ * 6m = 54 kN/m²',
     },
     {
-      question: 'What is the difference between consolidation and compression in soils?',
-      answer: 'Consolidation is the process by which soils decrease in volume under sustained load, while compression refers to the immediate reduction in soil volume.',
+        question: 'Calculate the bearing capacity of a circular footing with a diameter of 1.5m, depth of 1m, and soil properties: c = 20 kPa, γ = 19 kN/m³, and φ = 25°.',
+        answer: 'q_ult = c*Nc + γ*Df*Nq + 0.5*γ*B*Nγ\nNc = 25.13, Nq = 12.72, Nγ = 9.7\nq_ult = 20*25.13 + 19*1*12.72 + 0.5*19*1.5*9.7 = 634.9 kPa',
     },
     {
-      question: 'What is the purpose of a soil compaction test?',
-      answer: 'To determine the optimal moisture content at which soil will reach its maximum dry density.',
+        question: 'Determine the factor of safety against sliding for a retaining wall with a base friction angle of 30° and a horizontal force of 50 kN. The vertical force is 100 kN.',
+        answer: 'FoS = (Vertical Force * tan(φ)) / Horizontal Force\nFoS = (100 kN * tan(30°)) / 50 kN = 1.15',
     },
     {
-      question: 'Define "Permeability" in the context of soil mechanics.',
-      answer: 'Permeability is the ability of soil to transmit water or other fluids through its pores.',
+        question: 'What is the Atterberg limit?',
+        answer: 'The Atterberg limits are a basic measure of the critical water contents of a fine-grained soil: its shrinkage limit, plastic limit, and liquid limit.',
     },
     {
-      question: 'What is a "Bearing Capacity" of soil?',
-      answer: 'Bearing capacity is the maximum load per unit area that the ground can support without failure.',
+        question: 'What is the difference between cohesionless and cohesive soils?',
+        answer: 'Cohesionless soils, like sand and gravel, have no true cohesion and rely on friction for stability. Cohesive soils, like clay, have significant cohesion due to electrostatic forces between particles.',
     },
     {
-      question: 'Explain the term "Liquefaction" in geotechnical engineering.',
-      answer: 'Liquefaction is the process by which saturated, unconsolidated soil temporarily loses strength and behaves like a liquid due to applied stress, often during an earthquake.',
+        question: 'What is the purpose of a soil compaction test?',
+        answer: 'A soil compaction test determines the optimal moisture content at which a given soil type will become most dense and achieve its maximum dry density.',
     },
     {
-      question: 'What is the role of geotextiles in soil reinforcement?',
-      answer: 'Geotextiles are used to improve soil stability, provide erosion control, and aid in drainage.',
+        question: 'Explain the term "consolidation" in soil mechanics.',
+        answer: 'Consolidation is the process by which soils decrease in volume over time under the action of a sustained load, primarily due to the expulsion of water from the soil pores.',
     },
     {
-      question: 'Calculate the factor of safety (FoS) if the shear strength of soil is 150 kPa and the shear stress is 100 kPa.',
-      answer: 'FoS = Shear Strength / Shear Stress = 150 kPa / 100 kPa = 1.5',
+        question: 'What is the difference between primary and secondary consolidation?',
+        answer: 'Primary consolidation is the volume change due to the expulsion of water under a sustained load, while secondary consolidation is the volume change due to the rearrangement of soil particles after primary consolidation is complete.',
     },
     {
-      question: 'Determine the bearing capacity using Terzaghi\'s equation for a strip footing with a width of 2m, depth of 1m, and soil properties: c = 25 kPa, γ = 18 kN/m³, and φ = 30°.',
-      answer: 'q_ult = c*Nc + γ*Df*Nq + 0.5*γ*B*Nγ\nNc = 30.14, Nq = 18.4, Nγ = 22.4\nq_ult = 25*30.14 + 18*1*18.4 + 0.5*18*2*22.4 = 753.5 kPa',
+        question: 'What is the purpose of a triaxial shear test?',
+        answer: 'A triaxial shear test is used to measure the mechanical properties of soils, including shear strength, cohesion, and internal friction angle, under controlled drainage conditions.',
     },
     {
-      question: 'What is the settlement of a clay layer with a thickness of 5m, initial void ratio of 0.8, and final void ratio of 0.6?',
-      answer: 'Settlement (S) = H * (e0 - ef) / (1 + e0)\nS = 5m * (0.8 - 0.6) / (1 + 0.8) = 0.56m',
+        question: 'What is the significance of the Mohr-Coulomb failure criterion?',
+        answer: 'The Mohr-Coulomb failure criterion describes the relationship between shear strength, normal stress, cohesion, and internal friction angle of a soil, and is used to predict failure conditions.',
     },
     {
-      question: 'Calculate the hydraulic gradient if the head loss is 3m over a distance of 15m.',
-      answer: 'Hydraulic Gradient (i) = Head Loss / Distance = 3m / 15m = 0.2',
+        question: 'What is the difference between drained and undrained shear strength?',
+        answer: 'Drained shear strength is measured under conditions where pore water pressure is allowed to dissipate, while undrained shear strength is measured under conditions where pore water pressure is not allowed to dissipate.',
     },
     {
-      question: 'Determine the consolidation settlement for a soil layer with a thickness of 4m, initial void ratio of 1.0, and final void ratio of 0.7.',
-      answer: 'Settlement (S) = H * (e0 - ef) / (1 + e0)\nS = 4m * (1.0 - 0.7) / (1 + 1.0) = 0.6m',
+        question: 'What is the purpose of a Standard Penetration Test (SPT)?',
+        answer: 'The Standard Penetration Test (SPT) is used to determine the relative density and strength of granular soils and the consistency of cohesive soils by measuring the resistance to penetration of a standard sampler driven into the soil.',
     },
     {
-      question: 'Calculate the total stress at a depth of 10m in a soil with a unit weight of 20 kN/m³.',
-      answer: 'Total Stress (σ) = Unit Weight * Depth = 20 kN/m³ * 10m = 200 kN/m²',
+        question: 'What is the purpose of a Cone Penetration Test (CPT)?',
+        answer: 'The Cone Penetration Test (CPT) is used to determine the geotechnical properties of soils by measuring the resistance to penetration of a cone pushed into the soil at a constant rate.',
     },
     {
-      question: 'Determine the pore water pressure at a depth of 5m below the water table.',
-      answer: 'Pore Water Pressure (u) = γ_w * h = 9.81 kN/m³ * 5m = 49.05 kN/m²',
+        question: 'What is the difference between active and passive earth pressure?',
+        answer: 'Active earth pressure is the pressure exerted by soil when it is allowed to expand or move away from a retaining structure, while passive earth pressure is the pressure exerted by soil when it is compressed or pushed against a retaining structure.',
     },
     {
-      question: 'Calculate the effective stress at a depth of 8m in a soil with a total stress of 160 kN/m² and a pore water pressure of 40 kN/m².',
-      answer: 'Effective Stress (σ\') = Total Stress - Pore Water Pressure = 160 kN/m² - 40 kN/m² = 120 kN/m²',
+        question: 'What is the purpose of a geotextile in geotechnical engineering?',
+        answer: 'Geotextiles are permeable fabrics used in geotechnical engineering to improve soil stability, provide erosion control, and aid in drainage.',
     },
     {
-      question: 'Determine the settlement of a sand layer with a thickness of 3m, initial void ratio of 0.6, and final void ratio of 0.4.',
-      answer: 'Settlement (S) = H * (e0 - ef) / (1 + e0)\nS = 3m * (0.6 - 0.4) / (1 + 0.6) = 0.375m',
+        question: 'What is the significance of the coefficient of permeability in soil mechanics?',
+        answer: 'The coefficient of permeability is a measure of the ability of soil to transmit water, and it is crucial for analyzing seepage, drainage, and the stability of slopes and foundations.',
     },
     {
-      question: 'Calculate the seepage velocity if the hydraulic conductivity is 0.01 m/day and the hydraulic gradient is 0.05.',
-      answer: 'Seepage Velocity (v) = Hydraulic Conductivity * Hydraulic Gradient = 0.01 m/day * 0.05 = 0.0005 m/day',
+        question: 'What is the purpose of a retaining wall?',
+        answer: 'A retaining wall is a structure designed to hold back soil or rock from a building, structure, or area to prevent erosion and provide support for vertical or near-vertical grade changes.',
     },
     {
-      question: 'Determine the lateral earth pressure at rest for a soil with a unit weight of 18 kN/m³ and a depth of 6m. Assume Ko = 0.5.',
-      answer: 'Lateral Earth Pressure (σh) = Ko * γ * h = 0.5 * 18 kN/m³ * 6m = 54 kN/m²',
+        question: 'What is the difference between shallow and deep foundations?',
+        answer: 'Shallow foundations transfer building loads to the earth near the surface, while deep foundations transfer loads to deeper, more stable soil or rock layers.',
     },
     {
-      question: 'Calculate the bearing capacity of a circular footing with a diameter of 1.5m, depth of 1m, and soil properties: c = 20 kPa, γ = 19 kN/m³, and φ = 25°.',
-      answer: 'q_ult = c*Nc + γ*Df*Nq + 0.5*γ*B*Nγ\nNc = 25.13, Nq = 12.72, Nγ = 9.7\nq_ult = 20*25.13 + 19*1*12.72 + 0.5*19*1.5*9.7 = 634.9 kPa',
+        question: 'What is the purpose of a pile foundation?',
+        answer: 'Pile foundations are deep foundations used to transfer heavy loads from structures to deeper, more stable soil or rock layers, bypassing weaker surface soils.',
     },
     {
-      question: 'Determine the factor of safety against sliding for a retaining wall with a base friction angle of 30° and a horizontal force of 50 kN. The vertical force is 100 kN.',
-      answer: 'FoS = (Vertical Force * tan(φ)) / Horizontal Force\nFoS = (100 kN * tan(30°)) / 50 kN = 1.15',
+        question: 'What is the significance of the factor of safety in geotechnical engineering?',
+        answer: 'The factor of safety is a measure of the reliability of a geotechnical design, representing the ratio of the actual strength to the required strength to ensure stability and prevent failure.',
     },
     {
-      question: 'Calculate the consolidation time for a clay layer with a coefficient of consolidation (Cv) of 0.002 cm²/sec and a drainage path length of 2m. Assume 90% consolidation.',
-      answer: 'T90 = 0.848 * (Hdr² / Cv)\nHdr = 2m\nT90 = 0.848 * (2m)² / 0.002 cm²/sec = 169600 sec ≈ 47.1 hours',
+        question: 'What is the purpose of a slope stability analysis?',
+        answer: 'Slope stability analysis is used to evaluate the potential for slope failure and to design appropriate stabilization measures to ensure the safety and stability of slopes.',
     },
     {
-      question: 'Determine the active earth pressure for a retaining wall with a height of 4m, soil unit weight of 17 kN/m³, and an internal friction angle of 35°. Assume Ka = 0.27.',
-      answer: 'Active Earth Pressure (Pa) = 0.5 * Ka * γ * H²\nPa = 0.5 * 0.27 * 17 kN/m³ * (4m)² = 36.72 kN/m',
+        question: 'What is the difference between total and effective stress?',
+        answer: 'Total stress is the total force per unit area exerted on a soil mass, while effective stress is the portion of the total stress that is carried by the soil skeleton, excluding pore water pressure.',
     },
-  ];
+    {
+        question: 'What is the purpose of a soil classification system?',
+        answer: 'Soil classification systems, such as the Unified Soil Classification System (USCS) and the AASHTO system, are used to categorize soils based on their physical properties and behavior for engineering purposes.',
+    },
+    {
+        question: 'What is the significance of the liquid limit and plastic limit in soil mechanics?',
+        answer: 'The liquid limit and plastic limit are Atterberg limits that define the boundaries between different states of consistency for fine-grained soils, indicating their plasticity and workability.',
+    },
+    {
+        question: 'What is the purpose of a geotechnical site investigation?',
+        answer: 'A geotechnical site investigation is conducted to gather information about the subsurface conditions, including soil properties, groundwater levels, and potential geotechnical hazards, to inform the design and construction of foundations and other structures.',
+    }
+];
+
 
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isFlipped, setIsFlipped] = useState(false);

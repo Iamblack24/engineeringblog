@@ -19,107 +19,136 @@ const EnvironmentalEngineeringSummaryNotes = () => {
         <p>
           Water treatment involves processes to make water suitable for its intended use, while wastewater treatment removes contaminants from used water before it is released back into the environment.
         </p>
+        <h3>Key Processes:</h3>
         <ul>
-          <li><strong>Physical Treatment:</strong> Includes sedimentation, filtration, and flotation to remove suspended solids.</li>
-          <li><strong>Chemical Treatment:</strong> Involves coagulation, flocculation, and disinfection to eliminate dissolved contaminants.</li>
-          <li><strong>Biological Treatment:</strong> Utilizes microorganisms to degrade organic matter in wastewater.</li>
+          <li>Coagulation and Flocculation</li>
+          <li>Filtration</li>
+          <li>Disinfection</li>
+          <li>Activated Sludge Process</li>
+          <li>Trickling Filters</li>
         </ul>
+        <h3>Formulas:</h3>
+        <p><strong>Flow Rate (Q):</strong> Q = A * v</p>
+        <p><strong>Detention Time (t):</strong> t = V / Q</p>
       </section>
 
       <section className="notes-section">
         <h2>3. Air Pollution Control</h2>
         <p>
-          Air pollution control focuses on reducing emissions of pollutants into the atmosphere. Key strategies include source reduction, end-of-pipe control devices, and regulatory measures.
+          Air pollution control involves techniques to reduce or eliminate the emission of pollutants into the atmosphere.
         </p>
+        <h3>Key Techniques:</h3>
         <ul>
-          <li><strong>Source Reduction:</strong> Minimizing pollution at its origin through efficient processes and alternative materials.</li>
-          <li><strong>End-of-Pipe Controls:</strong> Technologies like scrubbers, electrostatic precipitators, and catalytic converters that remove pollutants from exhaust streams.</li>
-          <li><strong>Regulatory Measures:</strong> Implementing standards and regulations to limit pollutant emissions.</li>
+          <li>Electrostatic Precipitators</li>
+          <li>Scrubbers</li>
+          <li>Filters</li>
+          <li>Catalytic Converters</li>
         </ul>
+        <h3>Formulas:</h3>
+        <p><strong>Ideal Gas Law:</strong> PV = nRT</p>
+        <p><strong>Emission Rate (E):</strong> E = Q * C</p>
       </section>
 
       <section className="notes-section">
         <h2>4. Solid Waste Management</h2>
         <p>
-          Solid waste management involves the collection, transportation, processing, disposal, and monitoring of waste materials. Effective management reduces environmental impact and promotes sustainability.
+          Solid waste management involves the collection, treatment, and disposal of solid waste materials.
         </p>
+        <h3>Key Concepts:</h3>
         <ul>
-          <li><strong>Waste Hierarchy:</strong> Prioritizes waste management strategies: Reduce, Reuse, Recycle, Recover, and Dispose.</li>
-          <li><strong>Landfills:</strong> Engineered sites for waste disposal with measures to prevent contamination.</li>
-          <li><strong>Recycling:</strong> Process of converting waste materials into new products to prevent resource depletion.</li>
+          <li>Waste Hierarchy: Reduce, Reuse, Recycle</li>
+          <li>Landfills</li>
+          <li>Composting</li>
+          <li>Incineration</li>
         </ul>
+        <h3>Formulas:</h3>
+        <p><strong>Waste Generation Rate (W):</strong> W = P * G</p>
+        <p><strong>Landfill Volume (V):</strong> V = W / D</p>
       </section>
 
       <section className="notes-section">
         <h2>5. Environmental Impact Assessment (EIA)</h2>
         <p>
-          EIA is a systematic process to evaluate the environmental consequences of proposed projects or developments. It ensures that decision-makers consider environmental impacts before proceeding with projects.
+          Environmental Impact Assessment (EIA) is a process used to evaluate the environmental effects of a proposed project or development.
         </p>
+        <h3>Key Steps:</h3>
         <ul>
-          <li><strong>Scoping:</strong> Identifying the key environmental issues and determining the extent of analysis required.</li>
-          <li><strong>Impact Prediction:</strong> Assessing the potential environmental effects of the project.</li>
-          <li><strong>Mitigation:</strong> Proposing measures to minimize adverse impacts.</li>
-          <li><strong>Reporting:</strong> Documenting the findings and recommendations in an EIA report.</li>
+          <li>Screening</li>
+          <li>Scoping</li>
+          <li>Impact Analysis</li>
+          <li>Mitigation</li>
+          <li>Reporting</li>
         </ul>
       </section>
 
       <section className="notes-section">
-        <h2>6. Sustainable Engineering Practices</h2>
+        <h2>6. Noise Pollution Control</h2>
         <p>
-          Sustainable engineering aims to design systems and processes that meet present needs without compromising the ability of future generations to meet their own needs. It integrates economic, social, and environmental considerations.
+          Noise pollution control involves measures to reduce noise levels in the environment.
         </p>
+        <h3>Key Techniques:</h3>
         <ul>
-          <li><strong>Renewable Energy:</strong> Utilizing sources like solar, wind, and hydro to reduce reliance on fossil fuels.</li>
-          <li><strong>Green Building:</strong> Designing buildings with environmentally friendly materials and energy-efficient systems.</li>
-          <li><strong>Life Cycle Assessment (LCA):</strong> Evaluating the environmental impacts of products or systems throughout their entire life cycle.</li>
+          <li>Sound Insulation</li>
+          <li>Sound Absorption</li>
+          <li>Noise Barriers</li>
+          <li>Regulations and Standards</li>
+        </ul>
+        <h3>Formulas:</h3>
+        <p><strong>Sound Pressure Level (SPL):</strong> SPL = 20 * log10(P / P0)</p>
+      </section>
+
+      <section className="notes-section">
+        <h2>7. Sustainable Development</h2>
+        <p>
+          Sustainable development involves meeting the needs of the present without compromising the ability of future generations to meet their own needs.
+        </p>
+        <h3>Key Principles:</h3>
+        <ul>
+          <li>Environmental Protection</li>
+          <li>Economic Growth</li>
+          <li>Social Equity</li>
         </ul>
       </section>
 
       <section className="notes-section">
-        <h2>7. Climate Change and Its Impacts</h2>
+        <h2>8. Climate Change and Mitigation</h2>
         <p>
-          Climate change refers to significant changes in global temperatures and weather patterns over time. It poses numerous challenges, including rising sea levels, extreme weather events, and impacts on ecosystems and human health.
+          Climate change refers to long-term changes in temperature, precipitation, and other atmospheric conditions. Mitigation involves efforts to reduce or prevent the emission of greenhouse gases.
         </p>
+        <h3>Key Strategies:</h3>
         <ul>
-          <li><strong>Mitigation:</strong> Efforts to reduce or prevent emission of greenhouse gases.</li>
-          <li><strong>Adaptation:</strong> Adjusting systems and practices to minimize the damage caused by climate change.</li>
-          <li><strong>Resilience:</strong> Enhancing the ability of communities and ecosystems to recover from climate-related disturbances.</li>
+          <li>Renewable Energy</li>
+          <li>Energy Efficiency</li>
+          <li>Carbon Sequestration</li>
+          <li>Afforestation</li>
         </ul>
       </section>
 
       <section className="notes-section">
-        <h2>8. Renewable Energy Systems</h2>
+        <h2>9. Environmental Laws and Regulations</h2>
         <p>
-          Renewable energy systems harness energy from natural sources that are replenished constantly, such as sunlight, wind, and water. They are essential for reducing dependency on non-renewable resources and mitigating environmental impacts.
+          Environmental laws and regulations are designed to protect the environment and public health by controlling pollution and managing natural resources.
         </p>
+        <h3>Key Acts:</h3>
         <ul>
-          <li><strong>Solar Energy:</strong> Captured using photovoltaic cells or solar thermal systems.</li>
-          <li><strong>Wind Energy:</strong> Generated through wind turbines that convert kinetic energy into electricity.</li>
-          <li><strong>Hydroelectric Energy:</strong> Produced by using the flow of water to drive turbines.</li>
+          <li>Clean Air Act</li>
+          <li>Clean Water Act</li>
+          <li>Resource Conservation and Recovery Act (RCRA)</li>
+          <li>Comprehensive Environmental Response, Compensation, and Liability Act (CERCLA)</li>
         </ul>
       </section>
 
       <section className="notes-section">
-        <h2>9. Water Resources Management</h2>
+        <h2>10. Renewable Energy Sources</h2>
         <p>
-          Effective water resources management ensures the sustainable use and conservation of water. It involves planning, developing, and managing water resources to meet current and future human and environmental needs.
+          Renewable energy sources are those that can be replenished naturally, such as solar, wind, hydro, and geothermal energy.
         </p>
+        <h3>Key Concepts:</h3>
         <ul>
-          <li><strong>Integrated Water Resources Management (IWRM):</strong> A holistic approach that considers the interconnectedness of water systems.</li>
-          <li><strong>Water Conservation:</strong> Strategies to reduce water usage and minimize waste.</li>
-          <li><strong>Flood Management:</strong> Implementing measures to prevent and mitigate the effects of flooding.</li>
-        </ul>
-      </section>
-
-      <section className="notes-section">
-        <h2>10. Environmental Regulations and Policies</h2>
-        <p>
-          Environmental regulations and policies are legal frameworks designed to protect the environment. They set standards for emissions, waste management, and resource utilization to ensure sustainable development.
-        </p>
-        <ul>
-          <li><strong>Clean Air Act:</strong> Regulates air emissions from stationary and mobile sources.</li>
-          <li><strong>Clean Water Act:</strong> Governs water pollution by regulating discharges into water bodies.</li>
-          <li><strong>Resource Conservation and Recovery Act (RCRA):</strong> Manages the disposal of solid and hazardous waste.</li>
+          <li>Solar Panels</li>
+          <li>Wind Turbines</li>
+          <li>Hydroelectric Dams</li>
+          <li>Geothermal Plants</li>
         </ul>
       </section>
     </div>
