@@ -1,9 +1,23 @@
 /* SteelStructuresQuiz.css */
 
+body {
+    background-color: #121212;
+    color: #ffffff;
+    font-family: Arial, sans-serif;
+}
+
 .quiz-container {
     max-width: 800px;
     margin: 0 auto;
     padding: 20px;
+}
+
+.quiz-card {
+    background-color: #1e1e1e;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    padding: 20px;
+    margin-top: 20px;
 }
 
 .quiz-question {
@@ -18,22 +32,17 @@
     padding: 0;
 }
 
-.quiz-option {
-    margin-bottom: 10px;
-}
-
-.quiz-option label {
-    cursor: pointer;
-}
-
 .quiz-button {
-    display: inline-block;
+    display: block;
+    width: 100%;
     padding: 10px 20px;
     background-color: #0078D4;
     color: #fff;
     border: none;
     cursor: pointer;
-    margin-top: 20px;
+    margin-top: 10px;
+    border-radius: 4px;
+    text-align: left;
 }
 
 .quiz-button:hover {

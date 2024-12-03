@@ -125,18 +125,7 @@ const affiliatemarketing = [
     ],
     link: 'https://www.autodesk.com/products/navisworks/overview'
   },
-  {
-    id: 9,
-    title: 'AutoCAD',
-    description: 'Industry-leading CAD software for 2D and 3D design and drafting.',
-    price: 'Ksh 25,000/year',
-    images: [
-      '/autocad1.jpg',
-      '/autocad2.jpg',
-      '/autocad3.jpg',
-    ],
-    link: 'https://www.autodesk.com/products/autocad/overview',
-  },
+  
   {
     id: 10,
     title: 'SolidWorks',
@@ -191,7 +180,7 @@ const affiliatemarketing = [
     description: 'Integrated software for building analysis and design.',
     price: 'Ksh 45,000/year',
     images: [
-      '/etabs1.jpg',
+      '/etabs1.png',
       '/etabs2.jpg',
       '/etabs3.jpg',
     ],
@@ -211,18 +200,6 @@ const affiliatemarketing = [
   },
   {
     id: 16,
-    title: 'SketchUp',
-    description: 'User-friendly 3D modeling tool for quick architectural designs.',
-    price: 'Ksh 10,000/year',
-    images: [
-      '/sketchup1.jpg',
-      '/sketchup2.jpg',
-      '/sketchup3.jpg',
-    ],
-    link: 'https://www.sketchup.com/',
-  },
-  {
-    id: 17,
     title: 'ArcGIS',
     description: 'Comprehensive GIS software for spatial analysis and mapping.',
     price: 'Ksh 35,000/year',
@@ -234,7 +211,7 @@ const affiliatemarketing = [
     link: 'https://www.esri.com/en-us/arcgis/products/index',
   },
   {
-    id: 18,
+    id: 17,
     title: 'Bluebeam Revu',
     description: 'PDF creation, editing, markup, and collaboration technology for design workflows.',
     price: 'Ksh 12,000/year',

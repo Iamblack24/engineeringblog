@@ -218,7 +218,7 @@ const InteractiveAI = () => {
           placeholder="Ask your engineering question..."
         />
         <button type="submit" disabled={loading}>
-          {loading ? 'Processing...' : 'Ask'}
+          {loading ? 'Thinking...' : 'Interact'}
         </button>
       </form>
 

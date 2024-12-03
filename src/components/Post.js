@@ -63,13 +63,30 @@ const Post = ({ post, threadId, categoryId }) => {
 
   const handleReplySubmit = async (e) => {
     e.preventDefault();
-    console.log('handleReplySubmit called'); // Debugging log
 
-    if (replyContent.trim() && !isSubmitting) { // Prevent multiple submissions
-      setIsSubmitting(true); // Set submitting state
+    // Check if user is authenticated
+    if (!auth.currentUser) {
+      alert('You must be logged in to submit a reply.');
+      return;
+    }
+
+    // Validate IDs
+    console.log('categoryId:', categoryId);
+    console.log('threadId:', threadId);
+    console.log('postId:', postId);
+
+    if (!categoryId || !threadId || !postId) {
+      console.error('One or more IDs are undefined.');
+      alert('An error occurred. Please try again.');
+      return;
+    }
+
+    if (replyContent.trim() && !isSubmitting) {
+      setIsSubmitting(true);
       try {
-        const userEmail = auth.currentUser.email;
+        const userEmail = auth.currentUser.email || 'anonymous@example.com';
         const truncatedEmail = userEmail.split('@')[0];
+
         await addDoc(
           collection(
             db,
@@ -83,9 +100,9 @@ const Post = ({ post, threadId, categoryId }) => {
           ),
           {
             content: replyContent,
-            user: truncatedEmail || 'Anonymous',
+            user: truncatedEmail,
             userId: auth.currentUser.uid,
-            createdAt: serverTimestamp(), // Use serverTimestamp for consistency
+            createdAt: serverTimestamp(),
           }
         );
         console.log('Reply submitted successfully.');
@@ -93,10 +110,9 @@ const Post = ({ post, threadId, categoryId }) => {
         setShowReplyForm(false);
       } catch (error) {
         console.error('Error adding reply:', error);
-        alert('Failed to add reply. Please try again.');
+        alert(`Failed to add reply: ${error.message}`);
       } finally {
-        setIsSubmitting(false); // Reset submitting state
-        console.log('Submission state reset.');
+        setIsSubmitting(false);
       }
     } else {
       console.log('Submission prevented: Either empty content or already submitting.');

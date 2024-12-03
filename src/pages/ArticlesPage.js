@@ -4,6 +4,7 @@ import { collection, onSnapshot, doc, getDoc, setDoc, updateDoc, deleteDoc, incr
 import { db } from '../firebase';
 import { AuthContext } from '../contexts/AuthContext';
 import ArticleCard from '../components/ArticleCard';
+import Loader from '../components/Loader';
 import './ArticlesPage.css';
 
 const ArticlesPage = () => {
@@ -101,7 +102,7 @@ const ArticlesPage = () => {
   return (
     <div className="articles-page">
       {loading ? (
-        <p>Fetching from the bowels of intellect</p>
+        <Loader />
       ) : (
         <div className="articles-list">
           {articles.map(article => (

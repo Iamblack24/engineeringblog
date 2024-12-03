@@ -218,30 +218,31 @@ const SteelStructuresQuiz = () => {
   };
 
   return (
-    <div className="steel-structures-quiz">
+    <div className="quiz-container">
       {showScore ? (
-        <div className="score-section">
+        <div className="quiz-result">
           You scored {score} out of {questions.length}
         </div>
       ) : (
-        <>
-          <div className="question-section">
+        <div className="quiz-card">
+          <div className="quiz-question">
             <div className="question-count">
               <span>Question {currentQuestionIndex + 1}</span>/{questions.length}
             </div>
             <div className="question-text">{questions[currentQuestionIndex].question}</div>
           </div>
-          <div className="answer-section">
+          <div className="quiz-options">
             {questions[currentQuestionIndex].options.map((option, index) => (
               <button
                 key={index}
+                className="quiz-button"
                 onClick={() => handleAnswerOptionClick(option === questions[currentQuestionIndex].correctAnswer)}
               >
                 {option}
               </button>
             ))}
           </div>
-        </>
+        </div>
       )}
     </div>
   );

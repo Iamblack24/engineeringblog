@@ -1,6 +1,9 @@
-import React from 'react';
+import React, { useState } from 'react';
+import './SoilMechanicsFlashcards.css';
 
 const SoilMechanicsFlashcards = () => {
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [isFlipped, setIsFlipped] = useState(false);
   const flashcards = [
     { question: "What is the definition of soil mechanics?", answer: "Soil mechanics is the study of the physical properties and utilization of soils, especially used in planning foundations for structures and subgrades for highways." },
     { question: "What is the Atterberg limit?", answer: "The Atterberg limits are a basic measure of the critical water contents of a fine-grained soil: its shrinkage limit, plastic limit, and liquid limit." },
@@ -25,17 +28,35 @@ const SoilMechanicsFlashcards = () => {
     // Add more flashcards as needed
   ];
 
+  const handleNext = () => {
+    setCurrentIndex((prevIndex) => (prevIndex + 1) % flashcards.length);
+    setIsFlipped(false);
+  };
+
+  const handlePrev = () => {
+    setCurrentIndex((prevIndex) => (prevIndex - 1 + flashcards.length) % flashcards.length);
+    setIsFlipped(false);
+  };
+
+  const handleFlip = () => {
+    setIsFlipped(!isFlipped);
+  };
+
   return (
-    <div>
+    <div className="flashcards-container">
       <h1>Soil Mechanics Flashcards</h1>
       <p>Review key concepts and formulas with these flashcards.</p>
-      <div>
-        {flashcards.map((flashcard, index) => (
-          <div key={index}>
-            <h3>{flashcard.question}</h3>
-            <p>{flashcard.answer}</p>
-          </div>
-        ))}
+      <div className="flashcard">
+        {isFlipped ? (
+          <p>{flashcards[currentIndex].answer}</p>
+        ) : (
+          <h3>{flashcards[currentIndex].question}</h3>
+        )}
+      </div>
+      <div className="navigation-buttons">
+        <button onClick={handlePrev}>Previous</button>
+        <button onClick={handleFlip}>Flip</button>
+        <button onClick={handleNext}>Next</button>
       </div>
     </div>
   );

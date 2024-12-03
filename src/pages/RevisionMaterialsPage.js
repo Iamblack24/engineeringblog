@@ -66,6 +66,11 @@ const revisionMaterials = [
     description: 'Summarized notes covering the essential topics in water resources engineering.',
     link: '/materials/water-resources-engineering-summary-notes',
   },
+  {
+    title: 'Public Health Engineering Quiz',
+    description: 'Test your knowledge with this quiz on public health engineering.',
+    link: '/pages/materials/public-health-engineering-quiz',
+  },
   // Add more revision materials here
 ];
 

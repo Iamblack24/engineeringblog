@@ -30,4 +30,9 @@
   padding-top: 60px; /* Adjust this value based on the height of your navbar */
 }
 
+.no-whitespace {
+  margin-top: 0;
+  padding-top: 60px; /* Ensure content is not hidden behind the navbar */
+}
+
 

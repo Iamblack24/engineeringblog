@@ -5,9 +5,11 @@ import { collection, onSnapshot } from 'firebase/firestore';
 import { db } from '../firebase';
 import { Link } from 'react-router-dom';
 import './CategoriesPage.css';
+import Loader from '../components/Loader';
 
 const CategoriesPage = () => {
   const [categories, setCategories] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const categoriesRef = collection(db, 'categories');
@@ -17,6 +19,7 @@ const CategoriesPage = () => {
         ...doc.data(),
       }));
       setCategories(categoriesData);
+      setLoading(false);
     });
 
     return () => unsubscribe();
@@ -24,23 +27,29 @@ const CategoriesPage = () => {
 
   return (
     <div className="container">
-      <div className="header">
-        <h1>Discussions</h1>
-      </div>
-      <div className="categories">
-        {categories.map((category) => (
-          <div key={category.id} className="category-card">
-            <h2>{category.name}</h2>
-            <p>{category.description}</p>
-            <Link to={`/community/${encodeURIComponent(category.id)}`}>
-              View Discussions
-            </Link>
+      {loading ? (
+        <Loader />
+      ) : (
+        <>
+          <div className="header">
+            <h1>Discussions</h1>
           </div>
-        ))}
-      </div>
-      <Link to="/community/create-category" className="create-category">
-        Create New Discussion forum
-      </Link>
+          <div className="categories">
+            {categories.map((category) => (
+              <div key={category.id} className="category-card">
+                <h2>{category.name}</h2>
+                <p>{category.description}</p>
+                <Link to={`/community/${encodeURIComponent(category.id)}`}>
+                  View Discussions
+                </Link>
+              </div>
+            ))}
+          </div>
+          <Link to="/community/create-category" className="create-category">
+            Create New Discussion forum
+          </Link>
+        </>
+      )}
     </div>
   );
 };
