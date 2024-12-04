@@ -46,7 +46,11 @@
 }
 
 .hero-overlay h1 {
-  color: black;
+  color: var(--primary-color);
+}
+
+.hero-overlay p {
+  color: var(--primary-color);
 }
 
 .hero-image {
@@ -143,8 +147,12 @@
   flex: 1;
 }
 
+.content-text p {
+  color: var(--text-color);
+}
+
 .content-card h2 {
-  color: var(--accent-color);
+  color: var(--text-color);
 }
 
 .content-link {
@@ -165,6 +173,14 @@
   text-align: center;
 }
 
+.random-fact-section p{
+  color: white;
+}
+
+.random-fact-section h2{
+  color: var(--text-color);
+}
+
 .testimonials-section {
   background-color: var(--secondary-color);
   padding: 20px;
@@ -181,12 +197,24 @@
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
+.testimonial p {
+  color: var(--text-color);
+}
+
+.testimonials-section h2 {
+  color: var(--accent-color);
+}
+
 .featured-articles-section {
   background-color: var(--secondary-color);
   padding: 20px;
   margin: 20px 0;
   border-radius: 8px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.featured-articles-section h2 {
+  color: var(--accent-color);
 }
 
 .featured-article {
@@ -198,9 +226,12 @@
 }
 
 .featured-article h3 {
-  color: var(--accent-color);
+  color: var(--text-color);
 }
 
+.featured-article p {
+  color: var(--text-color);
+}
 
 /* Responsive adjustments */
 @media (max-width: 600px) {
@@ -318,11 +349,12 @@ body {
 }
 
 .founder-developer h3 {
-  color: var(--accent-color);
+  color: var(--text-color);
   margin-bottom: 10px;
 }
 
 .founder-developer p {
+  color: var(--text-color);
   margin-bottom: 10px;
 }
 

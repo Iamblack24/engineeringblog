@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import './StructuralEngineeringFlashcards.css'; // Import the CSS file for styling
 
 const StructuralEngineeringFlashcards = () => {
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [isFlipped, setIsFlipped] = useState(false);
   const flashcards = [
     {
       question: 'What is the primary purpose of a beam in structural engineering?',
@@ -105,25 +107,18 @@ const StructuralEngineeringFlashcards = () => {
     },
   ];
 
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const [isFlipped, setIsFlipped] = useState(false);
-
   const handleNext = () => {
-    setIsFlipped(false);
-    setCurrentIndex((prevIndex) =>
-      prevIndex === flashcards.length - 1 ? 0 : prevIndex + 1
-    );
+    setIsFlipped(false); // Reset flip state
+    setCurrentIndex((prevIndex) => (prevIndex + 1) % flashcards.length);
   };
 
   const handlePrevious = () => {
-    setIsFlipped(false);
-    setCurrentIndex((prevIndex) =>
-      prevIndex === 0 ? flashcards.length - 1 : prevIndex - 1
-    );
+    setIsFlipped(false); // Reset flip state
+    setCurrentIndex((prevIndex) => (prevIndex - 1 + flashcards.length) % flashcards.length);
   };
 
   const handleFlip = () => {
-    setIsFlipped(!isFlipped);
+    setIsFlipped((prevState) => !prevState); // Toggle flip state
   };
 
   return (
@@ -132,6 +127,7 @@ const StructuralEngineeringFlashcards = () => {
       <p>Review key concepts and formulas with these flashcards.</p>
 
       <div className="flashcard-container">
+        {/* Flashcard Front and Back */}
         <div className={`flashcard ${isFlipped ? 'flipped' : ''}`} onClick={handleFlip}>
           <div className="front">
             <p>{flashcards[currentIndex].question}</p>
@@ -142,12 +138,18 @@ const StructuralEngineeringFlashcards = () => {
         </div>
       </div>
 
+      {/* Navigation Buttons */}
       <div className="navigation-buttons">
-        <button onClick={handlePrevious}>Previous</button>
+        <button onClick={handlePrevious} disabled={flashcards.length === 0}>
+          Previous
+        </button>
         <button onClick={handleFlip}>Flip</button>
-        <button onClick={handleNext}>Next</button>
+        <button onClick={handleNext} disabled={flashcards.length === 0}>
+          Next
+        </button>
       </div>
 
+      {/* Progress Display */}
       <div className="progress">
         {currentIndex + 1} / {flashcards.length}
       </div>

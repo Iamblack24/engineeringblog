@@ -145,6 +145,7 @@ const InteractiveAI = () => {
 
       // Update usage count in Firestore
       await setDoc(usageDocRef, { date: today, count: currentCount + 1 }, { merge: true });
+      setAiUsage(currentCount + 1); // Update the aiUsage state
 
       setShowResponse(true); // Show the response
     } catch (err) {

@@ -8,15 +8,18 @@
   
   .career-guide-detail h1 {
     margin-bottom: 20px;
+    color: var(--accent-color);
   }
   
   .career-guide-detail p {
     font-size: 16px;
     line-height: 1.6;
+    color: var(--text-color);
     margin-bottom: 15px;
   }
   
   .career-guide-detail h2 {
     margin-top: 20px;
     margin-bottom: 10px;
+    color: var(--accent-color);
   }

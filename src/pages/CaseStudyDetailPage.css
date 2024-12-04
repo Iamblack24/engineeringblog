@@ -16,15 +16,18 @@
 
 .case-study-detail-page h1 {
   font-size: 2em;
+  color: var(--accent-color);
   margin-bottom: 20px;
 }
 
 .case-study-detail-page h2,
 .case-study-detail-page h3 {
   margin-top: 20px;
+  color: var(--text-color);
 }
 
 .case-study-detail-page p {
   line-height: 1.6;
+  color: var(--text-color);
   margin-bottom: 15px;
 }

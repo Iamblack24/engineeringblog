@@ -10,3 +10,17 @@
   gap: 20px;
   justify-content: center;
 }
+.interactive-tools-page h1 {
+  font-size: 2rem;
+  color: var(--accent-color);
+  margin-bottom: 20px;
+}
+.interactive-tools-page p {
+  font-size: 1.2rem;
+  line-height: 1.6;
+  color: var(--text-color);
+  margin-bottom: 15px;
+}
+.tools-list p {
+  color: black;
+}

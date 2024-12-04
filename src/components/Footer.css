@@ -20,8 +20,13 @@
   max-width: 300px;
 }
 
+.footer-section p {
+  color: var(--text-color);
+}
+
 .footer-section.about p {
   font-size: 1rem;
+  color: var(--text-color);
   line-height: 1.6;
 }
 
@@ -30,6 +35,7 @@
   font-size: 1.5rem;
   border-bottom: 2px solid #1abc9c;
   display: inline-block;
+  color: var(--text-color);
   padding-bottom: 5px;
 }
 
@@ -70,4 +76,8 @@
     max-width: 100%;
     margin: 10px 0; /* Adjusted margin for vertical stacking */
   }
+}
+
+.footer-bottom p {
+  color: var(--text-color);
 }

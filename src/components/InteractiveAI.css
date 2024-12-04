@@ -56,18 +56,19 @@
 .response {
   margin-top: 30px;
   padding: 20px;
-  background-color: #f9f9f9; /* Light background for contrast */
+  background-color: var(--background-color); /* Light background for contrast */
   border-radius: 6px;
-  color: #333; /* Dark text for readability */
+  color: white; /* Dark text for readability */
   line-height: 1.6; /* Improved line spacing */
   font-size: 1rem;
+  padding-top: 40px; /* Ensure the first part of the response is visible */
 }
 
 /* Heading styles */
 .response h3 {
   margin-top: 0;
   font-size: 1.5rem;
-  color: #222;
+  color: var(--text-color);
 }
 
 /* Paragraph and list item styling */
@@ -97,7 +98,7 @@
   left: -1.5em; /* Position numbers to the left */
   width: 1.5em;
   text-align: right;
-  color: #555;
+  color: white;
 }
 
 /* Unordered list styling */
@@ -115,7 +116,7 @@
   content: "•"; /* Bullet point */
   position: absolute;
   left: -1.5em;
-  color: #555;
+  color:white;
 }
 
 /* Code block styling */
@@ -151,10 +152,16 @@
 
 /* Adjust text alignment for better readability */
 .response p,
+.response h1,
+.response h2,
 .response ul,
 .response ol {
   margin-top: 0;
+  color: white;
   margin-bottom: 1em;
+}
+.response p {
+  color: white;
 }
 
 /* Ensure nested lists are properly indented */
@@ -177,8 +184,11 @@
 .ai-usage {
   margin-top: 20px;
   padding: 10px;
-  background-color: #f0f0f0;
+  background-color: var(--background-color);
   border-radius: 4px;
   text-align: center;
   font-size: 1rem;
+}
+.ai-usage p {
+  color: black;
 }

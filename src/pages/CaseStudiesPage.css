@@ -7,6 +7,7 @@
 
 .case-studies-page h1 {
   text-align: center;
+  color: var(--text-color);
   margin-bottom: 30px;
 }
 
@@ -22,6 +23,15 @@
   flex-wrap: wrap;
   gap: 20px;
   justify-content: center;
+}
+
+.case-studies-container h2 {
+  text-align: center;
+  color: var(--text-color);
+}
+
+.case-studies-container p {
+  color: var(--text-color);
 }
 
 @media (min-width: 768px) {

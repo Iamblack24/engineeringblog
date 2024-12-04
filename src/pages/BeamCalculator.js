@@ -66,7 +66,7 @@ const BeamCalculator = () => {
     const bendingMoments = [];
     const deflections = [];
 
-    // Simplified formulas for shear, moment, and deflection based on support types and loads
+    // Enhanced formulas for shear, moment, and deflection based on support types and loads
     loads.forEach(load => {
       if (supportType === 'simply-supported') {
         if (load.type === 'point') {
@@ -100,6 +100,73 @@ const BeamCalculator = () => {
           const delta = (5 * w * Math.pow(b - a, 4)) / (384 * E * I);
           deflections.push({ position: (a + b) / 2, value: delta });
         }
+      } else if (supportType === 'cantilever') {
+        if (load.type === 'point') {
+          const R = load.magnitude;
+          const M = load.magnitude * load.position;
+
+          shearForces.push({ position: 0, value: R });
+          shearForces.push({ position: load.position, value: -R });
+
+          bendingMoments.push({ position: load.position, value: M });
+
+          const delta = (load.magnitude * Math.pow(load.position, 3)) / (3 * E * I);
+          deflections.push({ position: load.position, value: delta });
+        } else if (load.type === 'udl') {
+          const w = load.magnitude;
+          const a = load.startPosition;
+          const b = load.endPosition;
+
+          const totalLoad = w * (b - a);
+          const R = totalLoad;
+          const M = (totalLoad * (b - a)) / 2;
+
+          shearForces.push({ position: a, value: R });
+          shearForces.push({ position: b, value: -totalLoad });
+
+          bendingMoments.push({ position: (a + b) / 2, value: M });
+
+          const delta = (w * Math.pow(b - a, 4)) / (8 * E * I);
+          deflections.push({ position: (a + b) / 2, value: delta });
+        }
+      } else if (supportType === 'fixed') {
+        if (load.type === 'point') {
+          const R1 = (load.magnitude * (length - load.position)) / length;
+          const R2 = (load.magnitude * load.position) / length;
+          const M1 = R2 * load.position;
+          const M2 = R1 * (length - load.position);
+
+          shearForces.push({ position: 0, value: R1 });
+          shearForces.push({ position: load.position, value: -load.magnitude });
+          shearForces.push({ position: length, value: R2 });
+
+          bendingMoments.push({ position: 0, value: M1 });
+          bendingMoments.push({ position: length, value: M2 });
+
+          const delta = (load.magnitude * Math.pow(load.position, 3)) / (3 * E * I);
+          deflections.push({ position: load.position, value: delta });
+        } else if (load.type === 'udl') {
+          const w = load.magnitude;
+          const a = load.startPosition;
+          const b = load.endPosition;
+          const L = parseFloat(length);
+
+          const totalLoad = w * (b - a);
+          const R1 = (totalLoad * (L - (a + b) / 2)) / L;
+          const R2 = (totalLoad * (a + b) / 2) / L;
+          const M1 = R2 * (a + b) / 2;
+          const M2 = R1 * (L - (a + b) / 2);
+
+          shearForces.push({ position: a, value: R1 });
+          shearForces.push({ position: b, value: -totalLoad });
+          shearForces.push({ position: length, value: R2 });
+
+          bendingMoments.push({ position: 0, value: M1 });
+          bendingMoments.push({ position: length, value: M2 });
+
+          const delta = (5 * w * Math.pow(b - a, 4)) / (384 * E * I);
+          deflections.push({ position: (a + b) / 2, value: delta });
+        }
       }
     });
 
@@ -109,7 +176,7 @@ const BeamCalculator = () => {
   };
 
   return (
-    <div>
+    <div className="beam-calculator">
       <h1>Beam Calculator</h1>
       <div className="form-group">
         <label>Beam Length (m):</label>
@@ -212,9 +279,9 @@ const BeamCalculator = () => {
       ))}
       <button onClick={addLoad}>Add Load</button>
       <button onClick={calculateResults}>Calculate</button>
-      {shear && <div className="results">Shear Forces: {JSON.stringify(shear)}</div>}
-      {moment && <div className="results">Bending Moments: {JSON.stringify(moment)}</div>}
-      {deflection && <div className="results">Deflections: {JSON.stringify(deflection)}</div>}
+      {shear && <div className="results"><h2>Shear Forces:</h2> <p>{JSON.stringify(shear)}</p></div>}
+      {moment && <div className="results"><h2>Bending Moments:</h2> <p>{JSON.stringify(moment)}</p></div>}
+      {deflection && <div className="results"><h2>Deflections:</h2> <p>{JSON.stringify(deflection)}</p></div>}
     </div>
   );
 };

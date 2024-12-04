@@ -87,6 +87,7 @@ const InteractiveToolsPage = () => {
         <AuthModal onClose={() => setShowAuthModal(false)} />
       )}
       <h1>Interactive Tools</h1>
+      <p>Explore our interactive tools to assist you in your engineering projects and calculations.REMEMBER CALCULATIONS MAY NOT BE ACCURATE! HAVE SOME IDEA BEFORE INTERACTING.REMEMBER TO REPORT INACCURACY</p>
       <div className="tools-list">
         {tools.map((tool, index) => (
           <InteractiveToolCard

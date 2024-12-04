@@ -10,7 +10,7 @@ const AboutUsPage = () => {
         <section className="mission">
           <h2>Our Mission</h2>
           <p>
-            We strive to provide top-quality educational resources and tools to empower engineers and construction professionals worldwide.
+            We provide top-quality educational resources and tools to empower engineers and construction professionals worldwide.
           </p>
           <p>
             Our mission is to bridge the gap between theoretical knowledge and practical application, ensuring that our users are well-equipped to tackle real-world challenges.

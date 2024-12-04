@@ -34,7 +34,7 @@ const StyledWrapper = styled.div`
     height: 20px;
     position: absolute;
     border-radius: 50%;
-    background-color: #fff;
+    background-color: #000;
     left: 15%;
     transform-origin: 50%;
     animation: circle7124 .5s alternate infinite ease;

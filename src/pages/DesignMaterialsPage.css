@@ -5,9 +5,17 @@
   margin: 0 auto;
 }
 
+.design-materials-page h1, .design-materials-page h2 {
+  color: var(--text-color);
+}
+
 .design-materials-page h1 {
   text-align: center;
   margin-bottom: 30px;
+}
+
+.design-materials-page p {
+  color: var(--text-color);
 }
 
 .materials-list {
