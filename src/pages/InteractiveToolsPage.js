@@ -56,6 +56,31 @@ const tools = [
     description: 'Design reinforced concrete beams, columns, and slabs for strength and durability.',
     link: '/tools/reinforced-concrete-design', // Replace with the actual link to the tool
   },
+  {
+    title: 'Frame Calculator' ,
+    description: 'Design and analyze structural frames under various loads.' ,
+    link: '/tools/frame-calculator' , // Replace with the actual link to the tool
+  },
+  {
+    title: 'Material Selection Tool',
+    description: 'Select construction materials based on strength, cost, and sustainability criteria.',
+    link: '/tools/material-selection-tool', // Replace with the actual link to the tool
+  },
+  {
+    title: 'Matrix Calculator',
+    description: 'Perform matrix operations, including addition, subtraction, multiplication, and inversion.',
+    link: '/tools/matrix-calculator', // Replace with the actual link to the tool
+  },
+  {
+    title: 'Stress-Strain Generator',
+    description: 'Generate stress-strain diagrams for different materials or custom data sets.',
+    link: '/tools/stress-strain-generator', // Replace with the actual link to the tool
+  },
+  {
+    title: 'Life Cycle Cost Analysis Tool',
+    description: 'Analyze the life cycle costs of different alternatives for engineering projects.',
+    link: '/tools/lcca-tool', // Replace with the actual link to the tool
+  },
   
   
 

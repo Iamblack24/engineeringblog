@@ -1,113 +1,118 @@
-
-.structural-engineering-flashcards {
-  max-width: 600px;
+.flashcards-wrapper {
+  max-width: 800px;
   margin: 0 auto;
   padding: 20px;
-  background-color: var(--primary-color);
-  color: var(--text-color);
-  border-radius: 8px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
   text-align: center;
 }
-
-.structural-engineering-flashcards h1 {
-  color: var(--accent-color);
-  margin-bottom: 10px;
+.flashcards-wrapper h1 {
+  color: var(--text-color);
+  font-size: 2rem;
+  margin-bottom: 20px;
 }
-
-.structural-engineering-flashcards p {
+.flashcards-wrapper p {
+  color: var(--text-color);
+  font-size: 1rem;
   margin-bottom: 20px;
 }
 
-.flashcard-container {
-  perspective: 1000px;
+.flashcard-scene {
+  width: 100%;
+  max-width: 600px;
+  height: 300px;
+  margin: 40px auto;
+  perspective: 1200px;
 }
 
 .flashcard {
   width: 100%;
-  height: 200px;
+  height: 100%;
   position: relative;
-  margin: 0 auto 20px auto;
-  text-align: center;
-  transition: transform 0.6s;
+  transition: transform 0.8s;
   transform-style: preserve-3d;
   cursor: pointer;
 }
 
-.flashcard.flipped {
+.flashcard.is-flipped {
   transform: rotateY(180deg);
 }
 
-.flashcard .front,
-.flashcard .back {
+.card-face {
   position: absolute;
   width: 100%;
   height: 100%;
   backface-visibility: hidden;
-  border: 1px solid var(--accent-color);
-  border-radius: 8px;
+  -webkit-backface-visibility: hidden;
   display: flex;
   align-items: center;
   justify-content: center;
   padding: 20px;
   box-sizing: border-box;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  background-color: var(--background-color);
+  border: 1px solid #e0e0e0;
 }
 
-.flashcard .front {
-  background-color: var(--secondary-color);
+.card-face-front {
+  transform: rotateY(0deg);
+  background-color: var(--background-color);
 }
 
-.flashcard .back {
-  background-color: var(--accent-color);
-  color: var(--background-color);
+.card-face-back {
   transform: rotateY(180deg);
+  background-color: var(--background-color);
 }
 
-.navigation-buttons {
+.card-content {
+  font-size: 1.2rem;
+  line-height: 1.5;
+  max-width: 80%;
+}
+
+.controls {
   display: flex;
-  justify-content: space-between;
-  margin-bottom: 10px;
+  gap: 20px;
+  justify-content: center;
+  margin: 20px 0;
 }
 
-.navigation-buttons button {
+.controls button {
   padding: 10px 20px;
-  background-color: var(--accent-color);
-  color: var(--background-color);
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
   font-size: 1rem;
-  flex: 1;
-  margin: 0 5px;
+  border: none;
+  border-radius: 5px;
+  background-color: #007bff;
+  color: white;
+  cursor: pointer;
   transition: background-color 0.3s;
 }
 
-.navigation-buttons button:hover {
-  background-color: #52c7b8;
+.controls button:hover {
+  background-color: #0056b3;
 }
 
 .progress {
+  margin-top: 20px;
   font-size: 1rem;
-  color: var(--text-color);
+  color: #6c757d;
 }
 
-/* Mobile responsiveness */
 @media (max-width: 600px) {
-  .flashcard {
-    width: 100%;
-    padding: 15px;
+  .flashcard-scene {
+    height: 250px;
   }
 
-  .navigation-buttons button {
+  .card-content {
+    font-size: 1rem;
+  }
+
+  .controls {
+    flex-direction: row;
+    gap: 10px;
+  }
+
+  .controls button {
     padding: 8px 16px;
-    margin: 5px;
-  }
-
-  .structural-engineering-flashcards h1 {
-    font-size: 1.5em;
-  }
-
-  .flashcard .front, .flashcard .back {
-    font-size: 1em;
+    font-size: 0.9rem;
   }
 }

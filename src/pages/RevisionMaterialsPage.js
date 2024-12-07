@@ -71,6 +71,11 @@ const revisionMaterials = [
     description: 'Test your knowledge with this quiz on public health engineering.',
     link: '/pages/materials/public-health-engineering-quiz',
   },
+  {
+    title: 'Engineering Graphics Flashcards',
+    description: 'Review key concepts and definitions with these flashcards.',
+    link: '/materials/engineering-graphics-flashcards',
+  }
   // Add more revision materials here
 ];
 

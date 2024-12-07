@@ -1,0 +1,48 @@
+.lcca-tool {
+    font-family: Arial, sans-serif;
+    padding: 20px;
+  }
+  
+  .input-section, .alternatives-section, .results-section {
+    margin-bottom: 20px;
+  }
+  
+  label {
+    display: block;
+    margin: 10px 0;
+  }
+  
+  input {
+    margin-left: 10px;
+    width: 200px;
+    padding: 5px;
+  }
+  
+  button {
+    margin-top: 10px;
+    padding: 10px 20px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  
+  button:hover {
+    background-color: #0056b3;
+  }
+  
+  ul {
+    list-style-type: none;
+    padding: 0;
+  }
+  
+  li {
+    margin: 5px 0;
+  }
+  
+  .chart-container {
+    height: 400px;
+    margin-top: 20px;
+  }
+  

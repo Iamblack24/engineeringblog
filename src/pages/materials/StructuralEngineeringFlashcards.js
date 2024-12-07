@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import './StructuralEngineeringFlashcards.css'; // Import the CSS file for styling
+import './StructuralEngineeringFlashcards.css';
 
 const StructuralEngineeringFlashcards = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -108,50 +108,50 @@ const StructuralEngineeringFlashcards = () => {
   ];
 
   const handleNext = () => {
-    setIsFlipped(false); // Reset flip state
+    setIsFlipped(false);
     setCurrentIndex((prevIndex) => (prevIndex + 1) % flashcards.length);
   };
 
   const handlePrevious = () => {
-    setIsFlipped(false); // Reset flip state
+    setIsFlipped(false);
     setCurrentIndex((prevIndex) => (prevIndex - 1 + flashcards.length) % flashcards.length);
   };
 
   const handleFlip = () => {
-    setIsFlipped((prevState) => !prevState); // Toggle flip state
+    setIsFlipped(!isFlipped);
   };
 
   return (
-    <div className="structural-engineering-flashcards">
+    <div className="flashcards-wrapper">
       <h1>Structural Engineering Flashcards</h1>
       <p>Review key concepts and formulas with these flashcards.</p>
 
-      <div className="flashcard-container">
-        {/* Flashcard Front and Back */}
-        <div className={`flashcard ${isFlipped ? 'flipped' : ''}`} onClick={handleFlip}>
-          <div className="front">
-            <p>{flashcards[currentIndex].question}</p>
+      <div className="flashcard-scene">
+        <div 
+          className={`flashcard ${isFlipped ? 'is-flipped' : ''}`} 
+          onClick={handleFlip}
+        >
+          <div className="card-face card-face-front">
+            <div className="card-content">
+              {flashcards[currentIndex].question}
+            </div>
           </div>
-          <div className="back">
-            <p>{flashcards[currentIndex].answer}</p>
+          <div className="card-face card-face-back">
+            <div className="card-content">
+              {flashcards[currentIndex].answer}
+            </div>
           </div>
         </div>
       </div>
 
-      {/* Navigation Buttons */}
-      <div className="navigation-buttons">
-        <button onClick={handlePrevious} disabled={flashcards.length === 0}>
-          Previous
-        </button>
+      <div className="controls">
+        <button onClick={handlePrevious}>Previous</button>
         <button onClick={handleFlip}>Flip</button>
-        <button onClick={handleNext} disabled={flashcards.length === 0}>
-          Next
-        </button>
+        <button onClick={handleNext}>Next</button>
       </div>
 
-      {/* Progress Display */}
       <div className="progress">
-        {currentIndex + 1} / {flashcards.length}
+        Card {currentIndex + 1} of {flashcards.length}
       </div>
     </div>
   );

@@ -9,6 +9,7 @@ import { requestForToken, onMessageListener } from './firebase';
 import { AuthContext } from './contexts/AuthContext';
 import './App.css';
 
+
 // Import all components directly
 import HomePage from './pages/HomePage';
 import ArticlesPage from './pages/ArticlesPage';
@@ -19,6 +20,7 @@ import CareerGuidesPage from './pages/CareerGuidesPage';
 import CareerGuideDetail from './pages/CareerGuideDetail';
 import SingleArticle from './pages/SingleArticle';
 import BeamCalculator from './pages/BeamCalculator';
+import FrameCalculator from './tools/FrameCalculator';
 import ConcreteMixDesignCalculator from './pages/ConcreteMixDesignCalculator';
 import ContactPage from './pages/ContactPage';
 import DesignMaterialsPage from './pages/DesignMaterialsPage';
@@ -55,6 +57,11 @@ import SteelStructuresQuiz from './pages/materials/SteelStructuresQuiz';
 import SoilMechanicsFlashcards from './pages/materials/SoilMechanicsFlashcards';
 import WaterResourcesEngineeringSummaryNotes from './pages/materials/WaterResourcesEngineeringSummaryNotes';
 import PublicHealthEngineeringQuiz from './pages/materials/PublicHealthEngineeringQuiz';
+import MatrixCalculator from './tools/MatrixCalculator';
+import EngineeringGraphicsFlashcards from './pages/materials/EngineeringGraphicsFlashcards';
+import StressStrainGenerator from './tools/StressStrainGenerator';
+import LCCATool from './tools/LCCATool';
+import MaterialSelectionTool from './tools/MaterialSelectionTool';
 
 function App() {
   const { currentUser } = useContext(AuthContext);
@@ -144,6 +151,12 @@ function App() {
           <Route path="/materials/soil-mechanics-flashcards" element={<SoilMechanicsFlashcards />} />
           <Route path="/materials/water-resources-engineering-summary-notes" element={<WaterResourcesEngineeringSummaryNotes />} />
           <Route path="/pages/materials/public-health-engineering-quiz" element={<PublicHealthEngineeringQuiz />} />
+          <Route path="/tools/frame-calculator" element={<FrameCalculator />} />
+          <Route path="/tools/matrix-calculator" element={<MatrixCalculator />} />
+          <Route path="/tools/stress-strain-generator" element={<StressStrainGenerator />} />
+          <Route path="/tools/lcca-tool" element={<LCCATool />} />
+          <Route path="/tools/material-selection-tool" element={<MaterialSelectionTool />} />
+          <Route path="/materials/engineering-graphics-flashcards" element={<EngineeringGraphicsFlashcards />} />
         </Routes>
       </main>
       <InstallPrompt />

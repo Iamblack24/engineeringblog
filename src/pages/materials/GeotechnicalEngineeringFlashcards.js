@@ -1,7 +1,10 @@
 import React, { useState } from 'react';
-import './GeotechnicalEngineeringFlashcards.css'; // Import the CSS file for styling
+import './GeotechnicalEngineeringFlashcards.css';
 
 const GeotechnicalEngineeringFlashcards = () => {
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [isFlipped, setIsFlipped] = useState(false);
+  
   const flashcards = [
     {
         question: 'What is the effective stress in a soil layer with a total stress of 160 kN/m² and a pore water pressure of 40 kN/m²?',
@@ -117,20 +120,16 @@ const GeotechnicalEngineeringFlashcards = () => {
     }
 ];
 
-
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const [isFlipped, setIsFlipped] = useState(false);
-
   const handleNext = () => {
     setIsFlipped(false);
-    setCurrentIndex((prevIndex) =>
+    setCurrentIndex((prevIndex) => 
       prevIndex === flashcards.length - 1 ? 0 : prevIndex + 1
     );
   };
 
   const handlePrevious = () => {
     setIsFlipped(false);
-    setCurrentIndex((prevIndex) =>
+    setCurrentIndex((prevIndex) => 
       prevIndex === 0 ? flashcards.length - 1 : prevIndex - 1
     );
   };
@@ -144,16 +143,16 @@ const GeotechnicalEngineeringFlashcards = () => {
       <h1>Geotechnical Engineering Flashcards</h1>
       <p>Review key concepts and formulas with these flashcards.</p>
 
-      <div className="flashcard-container">
-        <div
-          className={`flashcard ${isFlipped ? 'flipped' : ''}`}
+      <div className="card-scene">
+        <div 
+          className={`card ${isFlipped ? 'is-flipped' : ''}`} 
           onClick={handleFlip}
         >
-          <div className="front">
-            <p>{flashcards[currentIndex].question}</p>
+          <div className="card__face card__face--front">
+            {flashcards[currentIndex].question}
           </div>
-          <div className="back">
-            <p>{flashcards[currentIndex].answer}</p>
+          <div className="card__face card__face--back">
+            {flashcards[currentIndex].answer}
           </div>
         </div>
       </div>

@@ -1,0 +1,56 @@
+.matrix-calculator {
+  font-family: Arial, sans-serif;
+  text-align: center;
+  padding: 20px;
+}
+
+.matrix-settings,
+.matrix-inputs,
+.results {
+  margin-bottom: 20px;
+}
+
+label {
+  margin: 10px 0;
+  display: block;
+}
+
+input {
+  margin: 5px;
+  padding: 8px;
+  font-size: 14px;
+  width: 60px;
+}
+
+.buttons button {
+  margin: 5px;
+  padding: 10px 20px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.buttons button:hover {
+  background-color: #0056b3;
+}
+
+table {
+  margin: 10px auto;
+  border-collapse: collapse;
+}
+
+td {
+  border: 1px solid #ddd;
+  padding: 5px;
+}
+
+.results {
+  color: black; /* Set result text color to black for better visibility */
+  font-size: 16px;
+}
+
+pre {
+  color: black; /* Ensure JSON results are also black */
+}

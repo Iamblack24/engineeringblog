@@ -5,17 +5,17 @@
   text-align: center;
   font-family: Arial, sans-serif;
 }
-.flashcards-container p {
-  color: var(--text-color);
-}
-.flashcards-container h1 {
-  color: var(--text-color);
-}
 
 h1 {
-  color: black;
+  color: #333;
   font-size: 2rem;
-  margin-bottom: 10px;
+  margin-bottom: 15px;
+}
+
+p {
+  font-size: 1rem;
+  color: #555;
+  margin-bottom: 20px;
 }
 
 .card-scene {
@@ -23,7 +23,7 @@ h1 {
   max-width: 600px;
   height: 300px;
   margin: 40px auto;
-  perspective: 600px;
+  perspective: 1200px;
 }
 
 .card {
@@ -33,7 +33,7 @@ h1 {
   cursor: pointer;
   transform-style: preserve-3d;
   transform-origin: center right;
-  transition: transform 1s;
+  transition: transform 0.8s;
 }
 
 .card.is-flipped {
@@ -57,8 +57,9 @@ h1 {
 }
 
 .card__face--front {
-  background: var(--primary-color);
-  color: var(--text-color);
+  background: #f9f9f9;
+  color: #333;
+  font-weight: bold;
 }
 
 .card__face--back {
@@ -114,5 +115,9 @@ h1 {
   .navigation-buttons button {
     padding: 8px 16px;
     font-size: 0.9rem;
+  }
+
+  h1 {
+    font-size: 1.5rem;
   }
 }
