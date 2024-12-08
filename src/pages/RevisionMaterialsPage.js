@@ -75,6 +75,36 @@ const revisionMaterials = [
     title: 'Engineering Graphics Flashcards',
     description: 'Review key concepts and definitions with these flashcards.',
     link: '/materials/engineering-graphics-flashcards',
+  },
+  {
+    title: 'Construction Management Flashcards',
+    description: 'Review key concepts in construction planning and management.',
+    link: '/materials/construction-management-flashcards',
+  },
+  {
+    title: 'Building Services Flashcards',
+    description: 'Study MEP systems and building services integration.',
+    link: '/materials/building-services-flashcards',
+  },
+  {
+    title: 'Surveying Fundamentals Quiz',
+    description: 'Test your knowledge of surveying principles and methods.',
+    link: '/materials/surveying-fundamentals-quiz',
+  },
+  {
+    title: 'Highway Engineering Flashcards',
+    description: 'Review road design and traffic engineering concepts.',
+    link: '/materials/highway-engineering-flashcards',
+  },
+  {
+    title: 'Foundation Design Flashcards',
+    description: 'Study different foundation types and design principles.',
+    link: '/materials/foundation-design-flashcards',
+  },
+  {
+    title: 'Construction Materials Quiz',
+    description: 'Test your knowledge of construction materials and their properties.',
+    link: '/materials/construction-materials-quiz',
   }
   // Add more revision materials here
 ];

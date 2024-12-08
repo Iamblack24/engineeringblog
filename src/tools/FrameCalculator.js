@@ -90,7 +90,7 @@ const FrameCalculator = () => {
     };
 
     setNodes(prev => [...prev, newNode]);
-    setNewNodeInput({ x: '', y: '' }); // Clear input
+    setNewNodeInput({ x: '', y: '' });
   };
 
   const handleManualLoadAdd = (e) => {
@@ -222,7 +222,7 @@ const FrameCalculator = () => {
     const handleClick = (event) => {
       event.preventDefault();
       setError('');
-      setContextMenu({ show: false, x: 0, y: 0, nodeId: null }); //Hide context menu on click
+      setContextMenu({ show: false, x: 0, y: 0, nodeId: null });
 
       const rect = canvas.getBoundingClientRect();
       const mouseX = ((event.clientX - rect.left) / canvas.clientWidth) * 2 - 1;
@@ -247,7 +247,7 @@ const FrameCalculator = () => {
           const newNode = {
             id: nodes.length,
             x: Math.round(point.x * 2) / 2,
-            y: Math.round(point.z * 2) / 2,
+            y: Math.round(point.y * 2) / 2,
             z: 0
           };
 
@@ -261,12 +261,8 @@ const FrameCalculator = () => {
       }
     };
 
-    const currentCanvas = canvas; // Store reference for cleanup
-    currentCanvas.addEventListener('click', handleClick);
-  
-    return () => {
-      currentCanvas.removeEventListener('click', handleClick);
-    };
+    canvas.addEventListener('click', handleClick);
+    return () => canvas.removeEventListener('click', handleClick);
   }, [nodes, members, selectedNodes, handleNodeSelection]);
 
   // Scene rendering effect
@@ -286,8 +282,8 @@ const FrameCalculator = () => {
       if (startNode && endNode) {
         const material = new THREE.LineBasicMaterial({ color: 0x000000 });
         const points = [
-          new THREE.Vector3(startNode.x, 0, startNode.y),
-          new THREE.Vector3(endNode.x, 0, endNode.y),
+          new THREE.Vector3(startNode.x, startNode.y, 0),
+          new THREE.Vector3(endNode.x, endNode.y, 0),
         ];
         const geometry = new THREE.BufferGeometry().setFromPoints(points);
         const line = new THREE.Line(geometry, material);
@@ -295,12 +291,12 @@ const FrameCalculator = () => {
       }
     });
 
-    // Draw Nodes and Supports
+    // Draw Nodes
     nodes.forEach(node => {
       const geometry = new THREE.CircleGeometry(0.3, 32);
       const material = new THREE.MeshStandardMaterial({ color: 0x007bff });
       const circle = new THREE.Mesh(geometry, material);
-      circle.position.set(node.x, 0.1, node.y);
+      circle.position.set(node.x, node.y, 0);
       circle.userData.nodeId = node.id;
       scene.add(circle);
       nodeMeshesRef.current.push(circle);
@@ -329,7 +325,7 @@ const FrameCalculator = () => {
         }
 
         const support = new THREE.Mesh(supportGeometry, supportMaterial);
-        support.position.set(node.x, -0.4, node.y);
+        support.position.set(node.x, node.y - 0.5, 0);
         scene.add(support);
       }
     });

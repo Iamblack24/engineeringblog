@@ -800,8 +800,7 @@ The **Hinkley Point C** is a new nuclear power station under construction in the
 - Construction duration: 10 years
 - Project cost: £22-23 billion
 
-[... Additional 1000+ words of detailed technical content ...]
-    `,
+[... Additional 1000+ words of detailed technical content ...]    `,
   },
   {
     id: 22,

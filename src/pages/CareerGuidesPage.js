@@ -28,6 +28,32 @@ const careerGuides = [
     description: 'Find out about continuing education opportunities and certifications for civil engineers.',
     link: '/career-guides/continuing-education', // Ensure this matches the key in careerGuideDetails
   },
+  {
+    title: 'Building Information Modeling (BIM) Specialist',
+    description: 'Explore the growing field of BIM and its impact on modern construction.',
+    link: '/career-guides/bim-specialist',
+  },
+  {
+    title: 'Sustainable Design Engineer',
+    description: 'Learn about career opportunities in sustainable building design and green infrastructure.',
+    link: '/career-guides/sustainable-design',
+  },
+  {
+    title: 'Urban Planning and Development',
+    description: 'Discover how civil engineers shape cities and urban infrastructure.',
+    link: '/career-guides/urban-planning',
+  },
+  {
+    title: 'Building Services Engineering',
+    description: 'Explore careers in MEP (Mechanical, Electrical, Plumbing) systems design and integration.',
+    link: '/career-guides/building-services',
+  },
+  {
+    title: 'Construction Technology Specialist',
+    description: 'Learn about emerging technologies in construction and how to build a career in this field.',
+    link: '/career-guides/construction-technology',
+  },
+  
   // Add more career guides here
 ];
 

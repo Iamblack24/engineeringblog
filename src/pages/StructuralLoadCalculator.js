@@ -102,6 +102,7 @@ const StructuralLoadCalculator = () => {
     let RB = 0;
     let centroid = 0;
     let momentA = 0;
+    let fixedEndMoments = {};
 
     switch (beamType) {
       case 'simplySupported':
@@ -125,12 +126,6 @@ const StructuralLoadCalculator = () => {
 
       case 'fixed':
         // Reactions for Fixed Beams
-        // Requires additional calculations for fixed supports
-        // For simplicity, assuming fixed at both ends with moments
-        // Sum of vertical forces: RA + RB = Total Load
-        // Sum of moments about A: RB * L = Total Load * centroid position
-        // Additionally, calculate moments at supports
-
         pointLoads.forEach((load) => {
           centroid += load.value * load.position;
         });
@@ -146,9 +141,12 @@ const StructuralLoadCalculator = () => {
         RB = (totalLoad * centroid) / L;
         RA = totalLoad - RB;
         
-        //add calculations for fixed end moments
-        const MA = (totalLoad * centroid * (L - centroid)) / (2 * L);
-        const MB = MA;
+        // Calculate fixed end moments
+        const MA = -(totalLoad * centroid * (L - centroid)) / (2 * L);
+        const MB = (totalLoad * centroid * (L - centroid)) / (2 * L);
+        
+        // Store moments for use in results
+        fixedEndMoments = { MA, MB };
         break;
 
       case 'cantilever':
@@ -203,7 +201,7 @@ const StructuralLoadCalculator = () => {
         RB = 0;
     }
 
-    return { RA, RB, totalLoad };
+    return { RA, RB, totalLoad, fixedEndMoments };
   };
 
   // Handle form submission
@@ -217,7 +215,7 @@ const StructuralLoadCalculator = () => {
     }
 
     // Calculate reactions
-    const { RA, RB, totalLoad } = calculateReactions();
+    const { RA, RB, totalLoad, fixedEndMoments } = calculateReactions();
 
     // Initialize arrays for shear force and bending moment
     const shear = [];
@@ -279,7 +277,17 @@ const StructuralLoadCalculator = () => {
       momentArr.push({ x: parseFloat(x.toFixed(2)), y: parseFloat(M.toFixed(2)) });
     }
 
-    setResult({ RA: RA.toFixed(2), RB: RB.toFixed(2), totalLoad: totalLoad.toFixed(2) });
+    setResult({ 
+      RA: RA.toFixed(2), 
+      RB: RB.toFixed(2), 
+      totalLoad: totalLoad.toFixed(2),
+      ...(beamType === 'fixed' && fixedEndMoments 
+        ? {
+            MA: fixedEndMoments.MA.toFixed(2),
+            MB: fixedEndMoments.MB.toFixed(2)
+          } 
+        : {})
+    });
     setShearForce(shear);
     setBendingMoment(momentArr);
   };
@@ -456,18 +464,16 @@ const StructuralLoadCalculator = () => {
 
       {result && (
         <div className="results">
-          <h2>Support Reactions</h2>
-          <p>
-            <strong>Reaction at Support A (RA):</strong> {result.RA} kN
-          </p>
-          {beamType !== 'cantilever' && (
-            <p>
-              <strong>Reaction at Support B (RB):</strong> {result.RB} kN
-            </p>
+          <h2>Results</h2>
+          <p>Reaction at A (RA): {result.RA} kN</p>
+          <p>Reaction at B (RB): {result.RB} kN</p>
+          <p>Total Load: {result.totalLoad} kN</p>
+          {beamType === 'fixed' && (
+            <>
+              <p>Fixed End Moment at A (MA): {result.MA} kN·m</p>
+              <p>Fixed End Moment at B (MB): {result.MB} kN·m</p>
+            </>
           )}
-          <p>
-            <strong>Total Load:</strong> {result.totalLoad} kN
-          </p>
         </div>
       )}
 

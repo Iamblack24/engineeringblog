@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom'; // Import the Link component
 import './HomePage.css'; // Import the CSS file for styling
 import NewsletterSignup from '../components/NewsletterSignup'; // Import the NewsletterSignup component
+import { motion } from 'framer-motion'; // Add this import for smooth animations
 // This useEffect hook handles the animation of the hero images and overlay
 const HomePage = () => {
   const [randomFact, setRandomFact] = useState('');
@@ -36,9 +37,9 @@ const HomePage = () => {
         setShowOverlay(true);
         setTimeout(() => {
           setCurrentImageIndex((prevIndex) => (prevIndex + 1) % images.length);
-        }, 3000); // Show overlay for 3 seconds
-      }, 3000); // Show image without overlay for 3 seconds
-    }, 6000); // Change image every 6 seconds
+        }, 5000); // Increased from 3000 to 5000 - text stays longer
+      }, 3000);
+    }, 8000); // Increased from 6000 to 8000 - overall cycle longer
 
     return () => clearInterval(interval);
   }, [images.length]);
@@ -55,23 +56,85 @@ const HomePage = () => {
         crossOrigin="anonymous"
       />
       <div className="home-page">
-        <section className="hero-section">
-        {images.map((image, index) => (
-            <img
+        <motion.section 
+          className="hero-section"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 1 }}
+        >
+          {images.map((image, index) => (
+            <motion.img
               key={index}
               src={image}
               alt={`Hero ${index + 1}`}
               className={`hero-image ${index === currentImageIndex ? 'active' : ''}`}
+              initial={{ scale: 1.1 }}
+              animate={{ 
+                scale: index === currentImageIndex ? 1 : 1.1,
+                opacity: index === currentImageIndex ? 1 : 0 
+              }}
+              transition={{ duration: 2, ease: "easeOut" }} // Increased duration
             />
           ))}
-          <div className={`hero-overlay ${showOverlay ? 'active' : ''}`}>
-            <h1>Welcome to the Engineering Hub</h1>
-            <p>Empowering Future and proffessional Civil Engineers, Architects, Structural Engineers</p>
-            <Link to="/community" className="community-link">
-            <button className="community-button">Join the Community</button>
-          </Link>
-          </div>
-        </section>
+          
+          <motion.div 
+            className={`hero-overlay ${showOverlay ? 'active' : ''}`}
+            initial={{ y: 50, opacity: 0 }}
+            animate={{ y: 0, opacity: showOverlay ? 1 : 0 }}
+            transition={{ duration: 1.2, ease: "easeOut" }} // Increased duration
+          >
+            <div className="hero-content">
+              <motion.h1
+                initial={{ y: 30, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                transition={{ delay: 0.3, duration: 1 }}
+              >
+                Welcome to the Engineering Hub
+              </motion.h1>
+              
+              <motion.p
+                initial={{ y: 30, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                transition={{ delay: 0.5, duration: 1 }}
+                className="hero-description"
+              >
+                Empowering Future and Professional Civil Engineers, Architects, Structural Engineers
+              </motion.p>
+              
+              <motion.div
+                className="cta-container"
+                initial={{ y: 30, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                transition={{ delay: 0.7, duration: 1 }}
+              >
+                <Link to="/community" className="community-link">
+                  <motion.button 
+                    className="community-button"
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                  >
+                    Join the Community
+                  </motion.button>
+                </Link>
+              </motion.div>
+            </div>
+          </motion.div>
+
+          <motion.div 
+            className="scroll-indicator"
+            animate={{ 
+              y: [0, 10, 0],
+              opacity: [0.8, 1, 0.8]
+            }}
+            transition={{ 
+              y: { repeat: Infinity, duration: 1.5 },
+              opacity: { repeat: Infinity, duration: 1.5 }
+            }}
+          >
+            <span className="scroll-arrow">↓</span>
+            <span className="scroll-text">Scroll to explore</span>
+          </motion.div>
+        </motion.section>
         <section className="random-fact-section">
           <h2>Did You Know?</h2>
           <p>{randomFact}</p>

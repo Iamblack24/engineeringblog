@@ -62,6 +62,12 @@ import EngineeringGraphicsFlashcards from './pages/materials/EngineeringGraphics
 import StressStrainGenerator from './tools/StressStrainGenerator';
 import LCCATool from './tools/LCCATool';
 import MaterialSelectionTool from './tools/MaterialSelectionTool';
+import ConstructionManagementFlashcards from './pages/materials/ConstructionManagementFlashcards';
+import BuildingServicesFlashcards from './pages/materials/BuildingServicesFlashcards';
+import SurveyingFundamentalsQuiz from './pages/materials/SurveyingFundamentalsQuiz';
+import HighwayEngineeringFlashcards from './pages/materials/HighwayEngineeringFlashcards';
+import FoundationDesignFlashcards from './pages/materials/FoundationDesignFlashcards';
+import ConstructionMaterialsQuiz from './pages/materials/ConstructionMaterialsQuiz';
 
 function App() {
   const { currentUser } = useContext(AuthContext);
@@ -157,6 +163,12 @@ function App() {
           <Route path="/tools/lcca-tool" element={<LCCATool />} />
           <Route path="/tools/material-selection-tool" element={<MaterialSelectionTool />} />
           <Route path="/materials/engineering-graphics-flashcards" element={<EngineeringGraphicsFlashcards />} />
+          <Route path="/materials/construction-management-flashcards" element={<ConstructionManagementFlashcards />} />
+          <Route path="/materials/building-services-flashcards" element={<BuildingServicesFlashcards />} />
+          <Route path="/materials/surveying-fundamentals-quiz" element={<SurveyingFundamentalsQuiz />} />
+          <Route path="/materials/highway-engineering-flashcards" element={<HighwayEngineeringFlashcards />} />
+          <Route path="/materials/foundation-design-flashcards" element={<FoundationDesignFlashcards />} />
+          <Route path="/materials/construction-materials-quiz" element={<ConstructionMaterialsQuiz />} />
         </Routes>
       </main>
       <InstallPrompt />
