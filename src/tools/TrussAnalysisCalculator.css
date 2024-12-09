@@ -1,0 +1,144 @@
+.truss-analysis-calculator {
+    max-width: 1200px;
+    margin: 2rem auto;
+    padding: 2rem;
+    background: var(--primary-color);
+    border-radius: 12px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  }
+  
+  .truss-analysis-calculator h2 {
+    color: var(--accent-color);
+    text-align: center;
+    margin-bottom: 2rem;
+    font-size: 1.8rem;
+  }
+  
+  .input-section {
+    margin-bottom: 2rem;
+  }
+  
+  .input-section h3 {
+    color: var(--accent-color);
+    margin-bottom: 1rem;
+    font-size: 1.2rem;
+  }
+  
+  .table-container {
+    overflow-x: auto;
+    margin-bottom: 1rem;
+  }
+  
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 600px;
+  }
+  
+  th, td {
+    padding: 0.8rem;
+    text-align: left;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    color: var(--text-color);
+  }
+  
+  th {
+    background: var(--secondary-color);
+    color: var(--accent-color);
+  }
+  
+  td input, td select {
+    width: 100%;
+    padding: 0.5rem;
+    border-radius: 4px;
+    border: 1px solid var(--accent-color);
+    background: var(--secondary-color);
+    color: var(--text-color);
+    font-size: 0.9rem;
+  }
+  
+  td input:focus, td select:focus {
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(100, 255, 218, 0.2);
+  }
+  
+  .analyze-button {
+    background: var(--accent-color);
+    color: var(--primary-color);
+    border: none;
+    padding: 1rem 2rem;
+    border-radius: 6px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: block;
+    margin: 0 auto;
+    margin-top: 1rem;
+  }
+  
+  .analyze-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(100, 255, 218, 0.2);
+  }
+  
+  .results-section {
+    background: rgba(23, 42, 69, 0.5);
+    padding: 2rem;
+    border-radius: 8px;
+    margin-top: 2rem;
+    border: 1px solid rgba(100, 255, 218, 0.1);
+  }
+  
+  .results-section h3 {
+    color: var(--accent-color);
+    margin-bottom: 1.5rem;
+    text-align: center;
+  }
+  
+  .results-container {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+  
+  .results-container h4 {
+    color: var(--accent-color);
+    margin-bottom: 1rem;
+    font-size: 1.1rem;
+  }
+  
+  .error {
+    color: #ff6b6b;
+    font-size: 0.9rem;
+    margin-top: 0.5rem;
+    display: block;
+  }
+  
+  .tension {
+    color: #4caf50; /* Green for tension */
+  }
+  
+  .compression {
+    color: #f44336; /* Red for compression */
+  }
+  
+  /* Responsive Design */
+  @media (max-width: 768px) {
+    .truss-analysis-calculator {
+      margin: 1rem;
+      padding: 1rem;
+    }
+  
+    .results-container {
+      grid-template-columns: 1fr;
+    }
+  }
+  
+  /* Dark mode support */
+  @media (prefers-color-scheme: dark) {
+    td input, td select {
+      background: var(--secondary-color);
+      color: var(--text-color);
+    }
+  }

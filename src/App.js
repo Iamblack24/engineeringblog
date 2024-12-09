@@ -61,6 +61,25 @@ import MatrixCalculator from './tools/MatrixCalculator';
 import EngineeringGraphicsFlashcards from './pages/materials/EngineeringGraphicsFlashcards';
 import StressStrainGenerator from './tools/StressStrainGenerator';
 import LCCATool from './tools/LCCATool';
+import SteelSectionDatabase from './tools/SteelSectionDatabase';
+import UnitConverter from './tools/UnitConverter';
+import TraverseCalculator from './tools/TraverseCalculator';
+import LevelingCalculator from './tools/LevelingCalculator';
+import TrafficAnalysisCalculator from './tools/TrafficAnalysisCalculator';
+import TrussAnalysisCalculator from './tools/TrussAnalysisCalculator';
+import PavementDesignCalculator from './tools/PavementDesignCalculator';
+import SettlementCalculator from './tools/SettlementCalculator';
+import HighwayGeometricCalculator from './tools/HighwayGeometricCalculator';
+import EarthPressureCalculator from './tools/EarthPressureCalculator';
+import ColumnDesignTool from './tools/ColumnDesignTool';
+import RainfallRunoffCalculator from './tools/RainfallRunoffCalculator';
+import MaterialQuantityCalculator from './tools/MaterialQuantityCalculator';
+import ConstructionCostEstimator from './tools/ConstructionCostEstimator';
+import AreaVolumeCalculator from './tools/AreaVolumeCalculator';
+import CarbonFootprintCalculator from './tools/CarbonFootprintCalculator';
+import ProjectTimelineGenerator from './tools/ProjectTimelineGenerator';
+import SoilClassificationTool from './tools/SoilClassificationTool';
+import WaterNetworkAnalysis from './tools/WaterNetworkAnalysis';
 import MaterialSelectionTool from './tools/MaterialSelectionTool';
 import ConstructionManagementFlashcards from './pages/materials/ConstructionManagementFlashcards';
 import BuildingServicesFlashcards from './pages/materials/BuildingServicesFlashcards';
@@ -161,6 +180,13 @@ function App() {
           <Route path="/tools/matrix-calculator" element={<MatrixCalculator />} />
           <Route path="/tools/stress-strain-generator" element={<StressStrainGenerator />} />
           <Route path="/tools/lcca-tool" element={<LCCATool />} />
+          <Route path="/tools/area-volume-calculator" element={<AreaVolumeCalculator />} />
+          <Route path="/tools/carbon-footprint-calculator" element={<CarbonFootprintCalculator />} />
+          <Route path="/tools/project-timeline-generator" element={<ProjectTimelineGenerator />} />
+          <Route path="/tools/soil-classification-tool" element={<SoilClassificationTool />} />
+          <Route path="/tools/water-network-analysis" element={<WaterNetworkAnalysis />} />
+          <Route path="/tools/unit-conversion" element={<UnitConverter />} />
+          <Route path="/tools/steel-sections" element={<SteelSectionDatabase />} />
           <Route path="/tools/material-selection-tool" element={<MaterialSelectionTool />} />
           <Route path="/materials/engineering-graphics-flashcards" element={<EngineeringGraphicsFlashcards />} />
           <Route path="/materials/construction-management-flashcards" element={<ConstructionManagementFlashcards />} />
@@ -169,6 +195,18 @@ function App() {
           <Route path="/materials/highway-engineering-flashcards" element={<HighwayEngineeringFlashcards />} />
           <Route path="/materials/foundation-design-flashcards" element={<FoundationDesignFlashcards />} />
           <Route path="/materials/construction-materials-quiz" element={<ConstructionMaterialsQuiz />} />
+          <Route path="/tools/traverse-calculator" element={<TraverseCalculator />} />
+          <Route path="/tools/leveling-calculator" element={<LevelingCalculator />} />
+          <Route path="/tools/traffic-analysis" element={<TrafficAnalysisCalculator />} />
+          <Route path="/tools/truss-analysis" element={<TrussAnalysisCalculator />} />
+          <Route path="/tools/pavement-design" element={<PavementDesignCalculator />} />
+          <Route path="/tools/settlement-calculator" element={<SettlementCalculator />} />
+          <Route path="/tools/highway-geometric" element={<HighwayGeometricCalculator />} />
+          <Route path="/tools/earth-pressure" element={<EarthPressureCalculator />} />
+          <Route path="/tools/column-design" element={<ColumnDesignTool />} />
+          <Route path="/tools/rainfall-runoff" element={<RainfallRunoffCalculator />} />
+          <Route path="/tools/material-quantity" element={<MaterialQuantityCalculator />} />
+          <Route path="/tools/construction-cost" element={<ConstructionCostEstimator />} />
         </Routes>
       </main>
       <InstallPrompt />

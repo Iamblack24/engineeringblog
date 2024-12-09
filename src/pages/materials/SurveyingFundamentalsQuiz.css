@@ -93,3 +93,24 @@ h1 {
 .score-section button:hover {
   background-color: #0056b3;
 }
+.incorrect-answers {
+    margin-top: 20px;
+    padding: 20px;
+    background-color: #f8f9fa;
+    border-radius: 8px;
+  }
+  
+  .incorrect-answer-item {
+    margin-bottom: 20px;
+    padding: 15px;
+    border-left: 3px solid #dc3545;
+    background-color: white;
+  }
+  
+  .wrong {
+    color: #dc3545;
+  }
+  
+  .correct {
+    color: #28a745;
+  }

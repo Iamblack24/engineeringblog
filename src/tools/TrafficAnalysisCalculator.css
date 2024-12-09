@@ -1,0 +1,329 @@
+.traffic-analysis-calculator {
+    max-width: 1200px;
+    margin: 2rem auto;
+    padding: 2rem;
+    background: var(--primary-color);
+    border-radius: 12px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  }
+  
+  .traffic-analysis-calculator h2 {
+    color: var(--accent-color);
+    text-align: center;
+    margin-bottom: 2rem;
+    font-size: 1.8rem;
+  }
+  
+  .calculator-controls {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+  }
+  
+  .input-sections {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+  }
+  
+  .input-section {
+    background: rgba(23, 42, 69, 0.5);
+    padding: 1.5rem;
+    border-radius: 8px;
+    border: 1px solid rgba(100, 255, 218, 0.1);
+  }
+  
+  .input-section h3 {
+    color: var(--accent-color);
+    margin-bottom: 1.5rem;
+    font-size: 1.2rem;
+  }
+  
+  .input-group {
+    margin-bottom: 1.2rem;
+  }
+  
+  .input-group label {
+    display: block;
+    color: var(--text-color);
+    margin-bottom: 0.5rem;
+    font-size: 0.9rem;
+  }
+  
+  .input-group input[type="number"],
+  .input-group input[type="text"],
+  .input-group select {
+    width: 100%;
+    padding: 0.8rem;
+    border-radius: 4px;
+    border: 1px solid var(--accent-color);
+    background: var(--secondary-color);
+    color: var(--text-color);
+    font-size: 1rem;
+  }
+  
+  .input-group input:focus,
+  .input-group select:focus {
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(100, 255, 218, 0.2);
+  }
+  
+  .analyze-button {
+    background: var(--accent-color);
+    color: var(--primary-color);
+    border: none;
+    padding: 1rem 2rem;
+    border-radius: 6px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: block;
+    margin: 2rem auto;
+    min-width: 200px;
+  }
+  
+  .analyze-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(100, 255, 218, 0.2);
+  }
+  
+  .results-section {
+    background: rgba(23, 42, 69, 0.5);
+    padding: 2rem;
+    border-radius: 8px;
+    margin-top: 2rem;
+    border: 1px solid rgba(100, 255, 218, 0.1);
+    animation: fadeIn 0.5s ease-out;
+  }
+  
+  .results-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1.5rem;
+  }
+  
+  .result-item {
+    background: rgba(255, 255, 255, 0.05);
+    padding: 1.5rem;
+    border-radius: 8px;
+    border: 1px solid rgba(100, 255, 218, 0.1);
+  }
+  
+  .result-item h4 {
+    color: var(--accent-color);
+    margin-bottom: 1rem;
+    font-size: 1.1rem;
+    border-bottom: 1px solid rgba(100, 255, 218, 0.2);
+    padding-bottom: 0.5rem;
+  }
+  
+  /* LOS Badge Styles */
+  .los-display {
+    text-align: center;
+  }
+  
+  .los-badge {
+    display: inline-block;
+    width: 80px;
+    height: 80px;
+    line-height: 80px;
+    border-radius: 50%;
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin: 1rem 0;
+    color: var(--primary-color);
+  }
+  
+  .los-a { background: #4CAF50; }
+  .los-b { background: #8BC34A; }
+  .los-c { background: #FFEB3B; }
+  .los-d { background: #FFC107; }
+  .los-e { background: #FF9800; }
+  .los-f { background: #F44336; }
+  
+  .los-description {
+    color: var(--text-color);
+    font-size: 0.9rem;
+    margin-top: 1rem;
+  }
+  
+  /* Metric Grid Styles */
+  .metric-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 1rem;
+  }
+  
+  .metric {
+    background: rgba(255, 255, 255, 0.02);
+    padding: 1rem;
+    border-radius: 6px;
+    text-align: center;
+  }
+  
+  .metric-label {
+    display: block;
+    color: var(--text-color);
+    font-size: 0.9rem;
+    margin-bottom: 0.5rem;
+  }
+  
+  .metric-value {
+    display: block;
+    color: var(--accent-color);
+    font-size: 1.2rem;
+    font-weight: 600;
+  }
+  
+  /* Capacity Chart Styles */
+  .capacity-chart {
+    margin-top: 1rem;
+  }
+  
+  .capacity-bar {
+    height: 2rem;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 4px;
+    overflow: hidden;
+    margin-bottom: 0.5rem;
+  }
+  
+  .usage-fill {
+    height: 100%;
+    background: linear-gradient(to right, #4CAF50, #FFC107, #F44336);
+    transition: width 1s ease-out;
+  }
+  
+  .capacity-labels {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.9rem;
+    color: var(--text-color);
+  }
+  
+  /* Recommendations Styles */
+  .recommendations {
+    grid-column: 1 / -1;
+  }
+  
+  .recommendations-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1rem;
+  }
+  
+  .recommendations-list li {
+    padding: 1rem;
+    background: rgba(255, 255, 255, 0.02);
+    border-radius: 6px;
+    border-left: 4px solid;
+    margin: 0.5rem 0;
+  }
+  
+  .priority-high { border-left-color: #F44336; }
+  .priority-medium { border-left-color: #FFC107; }
+  .priority-low { border-left-color: #4CAF50; }
+  
+  /* Error Styles */
+  .errors {
+    background: rgba(255, 107, 107, 0.1);
+    padding: 1rem;
+    border-radius: 6px;
+    margin: 1rem 0;
+    border: 1px solid rgba(255, 107, 107, 0.3);
+  }
+  
+  .error {
+    color: #ff6b6b;
+    font-size: 0.9rem;
+    margin: 0.3rem 0;
+  }
+  
+  /* Responsive Design */
+  @media (max-width: 768px) {
+    .traffic-analysis-calculator {
+      margin: 1rem;
+      padding: 1rem;
+    }
+  
+    .input-sections {
+      grid-template-columns: 1fr;
+    }
+  
+    .results-grid {
+      grid-template-columns: 1fr;
+    }
+  
+    .metric-grid {
+      grid-template-columns: 1fr;
+    }
+  
+    .los-badge {
+      width: 60px;
+      height: 60px;
+      line-height: 60px;
+      font-size: 2rem;
+    }
+  }
+  
+  /* Dark mode support */
+  @media (prefers-color-scheme: dark) {
+    .input-group input,
+    .input-group select {
+      background: var(--secondary-color);
+      color: var(--text-color);
+    }
+  
+    .result-item {
+      background: rgba(0, 0, 0, 0.2);
+    }
+  }
+  
+  /* Animations */
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  
+  @keyframes pulseGlow {
+    0% { box-shadow: 0 0 5px var(--accent-color); }
+    50% { box-shadow: 0 0 20px var(--accent-color); }
+    100% { box-shadow: 0 0 5px var(--accent-color); }
+  }
+  
+  .los-badge {
+    animation: pulseGlow 2s infinite;
+  }
+  
+  /* Print styles */
+  @media print {
+    .traffic-analysis-calculator {
+      margin: 0;
+      padding: 1rem;
+      box-shadow: none;
+    }
+  
+    .input-sections,
+    .analyze-button {
+      display: none;
+    }
+  
+    .results-section {
+      break-inside: avoid;
+    }
+  
+    .result-item {
+      break-inside: avoid;
+      page-break-inside: avoid;
+    }
+  }

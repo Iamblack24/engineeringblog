@@ -4,10 +4,46 @@ import './HomePage.css'; // Import the CSS file for styling
 import NewsletterSignup from '../components/NewsletterSignup'; // Import the NewsletterSignup component
 import { motion } from 'framer-motion'; // Add this import for smooth animations
 // This useEffect hook handles the animation of the hero images and overlay
+const facts = [
+  {
+    fact: "The Burj Khalifa uses a unique Y-shaped plan to reduce wind forces.",
+    icon: "🏗️"
+  },
+  {
+    fact: "The concrete in the Hoover Dam is still curing and gaining strength today.",
+    icon: "🏊"
+  },
+  {
+    fact: "The Golden Gate Bridge's color was originally chosen for its visibility in fog.",
+    icon: "🌉"
+  },
+  {
+    fact: "The Sydney Opera House's tiles are self-cleaning.",
+    icon: "🏛️"
+  },
+  {
+    fact: "The Millau Viaduct in France is taller than the Eiffel Tower.",
+    icon: "🚗"
+  },
+  {
+    fact: "The Empire State Building has its own ZIP code.",
+    icon: "🏙️"
+  },
+  {
+    fact: "The Channel Tunnel linking UK and France has an average depth of 50m below the seabed.",
+    icon: "🚂"
+  },
+  {
+    fact: "The Three Gorges Dam is so massive it slightly slowed the Earth's rotation.",
+    icon: "⚡"
+  }
+];
+
 const HomePage = () => {
   const [randomFact, setRandomFact] = useState('');
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [showOverlay, setShowOverlay] = useState(true);
+  const [isFactRotating, setIsFactRotating] = useState(false);
 
   const images = [
     '/interior1.webp',
@@ -15,19 +51,15 @@ const HomePage = () => {
     '/interior3.webp',
   ];  
 
+  const valuePropositions = [
+    "Build Better with Engineering Hub",
+    "Your Engineering Career Companion",
+    "Tools, Resources, Community - All in One Place",
+  ];
+
+  const [currentProposition, setCurrentProposition] = useState(0);
+
   useEffect(() => {
-    const facts = [
-      "The Eiffel Tower can be 15 cm taller during the summer.",
-      "The Great Wall of China is not visible from space.",
-      "The Burj Khalifa is the tallest building in the world.",
-      "The Panama Canal uses a system of locks to raise and lower ships.",
-      "The Hoover Dam was built during the Great Depression.",
-      "The Leaning Tower of Pisa is tilted due to unstable foundation soil.",
-      "The Golden Gate Bridge is painted in a color called 'International Orange'.",
-      "The Sydney Opera House has over 1 million roof tiles.",
-      "The Shard in London is the tallest building in the UK.",
-      "The Petronas Towers in Malaysia were the tallest buildings in the world from 1998 to 2004."
-    ];
     const randomIndex = Math.floor(Math.random() * facts.length);
     setRandomFact(facts[randomIndex]);
   
@@ -41,9 +73,129 @@ const HomePage = () => {
       }, 3000);
     }, 8000); // Increased from 6000 to 8000 - overall cycle longer
 
-    return () => clearInterval(interval);
-  }, [images.length]);
+    const propositionInterval = setInterval(() => {
+      setCurrentProposition((prev) => (prev + 1) % valuePropositions.length);
+    }, 4000); // Change every 4 seconds
 
+    return () => {
+      clearInterval(interval);
+      clearInterval(propositionInterval);
+    };
+  }, [images.length, valuePropositions.length]);
+
+  const featuredTools = [
+    {
+      id: 1,
+      name: "Beam Calculator",
+      description: "Calculate beam deflection, moment, and shear force",
+      icon: "🏗️",
+      usageCount: "2.5k",
+      category: "Structural",
+      link: "/tools/beam-calculator"
+    },
+    {
+      id: 2,
+      name: "Unit Converter",
+      description: "Convert between different engineering units",
+      icon: "⚖️",
+      usageCount: "3.8k",
+      category: "General",
+      link: "/tools/unit-conversion"
+    },
+    {
+      id: 3,
+      name: "Steel Section Database",
+      description: "Comprehensive database of steel sections and properties",
+      icon: "🔧",
+      usageCount: "1.9k",
+      category: "Materials",
+      link: "/tools/steel-sections"
+    },
+    {
+      id: 4,
+      name: "Concrete Mix Designer",
+      description: "Design optimal concrete mixes for your projects",
+      icon: "🧱",
+      usageCount: "2.1k",
+      category: "Materials",
+      link: "/tools/concrete-mix-design"
+    }
+  ];
+
+  const upcomingEvents = [
+    {
+      id: 1,
+      title: "Sustainable Engineering Practices Webinar",
+      date: "2024-04-15T14:00:00",
+      type: "Webinar",
+      image: "/front.jpeg",
+      attendees: 234,
+      speaker: "Dr. Sarah Chen",
+      duration: "1.5 hours",
+      link: "/webinars/sustainable-practices"
+    },
+    {
+      id: 2,
+      title: "Annual Engineering Conference 2024",
+      date: "2024-05-20T09:00:00",
+      type: "Conference",
+      image: "/interior4.jpg",
+      attendees: 500,
+      location: "Virtual Event",
+      duration: "2 days",
+      link: "/events/annual-conference"
+    },
+    {
+      id: 3,
+      title: "BIM Workshop Series",
+      date: "2024-04-28T15:00:00",
+      type: "Workshop",
+      image: "/build.jpg",
+      attendees: 150,
+      speaker: "John Smith",
+      duration: "2 hours",
+      link: "/workshops/bim-series"
+    }
+  ];
+
+  const featuredArticles = [
+    {
+      id: 1,
+      title: "Engineering behind Kenya's iconic projects",
+      excerpt: "Discover the latest advancements in construction technology and how they are revolutionizing the industry.",
+      image: "/suez.jpeg", // Using WebP for better performance
+      readTime: "5 min",
+      category: "Technology",
+      link: "/articles/11"
+    },
+    {
+      id: 2,
+      title: "Sustainable Engineering Practices",
+      excerpt: "Learn about sustainable engineering practices that are helping to create a greener future.",
+      image: "/sustainable.jpg",
+      readTime: "7 min",
+      category: "Sustainability",
+      link: "/articles/2"
+    },
+    {
+      id: 3,
+      title: "Understanding structural loads",
+      excerpt: "A comprehensive guide to understanding structural loads. Their types, effects and how to calculate them",
+      image: "/louvre.jpeg",
+      readTime: "6 min",
+      category: "Innovation",
+      link: "/articles/5"
+    }
+  ];
+
+  const rotateFact = () => {
+    if (!isFactRotating) {
+      setIsFactRotating(true);
+      const randomIndex = Math.floor(Math.random() * facts.length);
+      setRandomFact(facts[randomIndex]);
+      setTimeout(() => setIsFactRotating(false), 500);
+    }
+  };
 
   return (
     <>
@@ -81,15 +233,18 @@ const HomePage = () => {
             className={`hero-overlay ${showOverlay ? 'active' : ''}`}
             initial={{ y: 50, opacity: 0 }}
             animate={{ y: 0, opacity: showOverlay ? 1 : 0 }}
-            transition={{ duration: 1.2, ease: "easeOut" }} // Increased duration
+            transition={{ duration: 1.2, ease: "easeOut" }}
           >
             <div className="hero-content">
               <motion.h1
-                initial={{ y: 30, opacity: 0 }}
+                key={currentProposition}
+                initial={{ y: 20, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
-                transition={{ delay: 0.3, duration: 1 }}
+                exit={{ y: -20, opacity: 0 }}
+                transition={{ duration: 0.5 }}
+                className="hero-title"
               >
-                Welcome to the Engineering Hub
+                {valuePropositions[currentProposition]}
               </motion.h1>
               
               <motion.p
@@ -98,25 +253,56 @@ const HomePage = () => {
                 transition={{ delay: 0.5, duration: 1 }}
                 className="hero-description"
               >
-                Empowering Future and Professional Civil Engineers, Architects, Structural Engineers
+                Access professional engineering tools, resources, and a global community
+                of engineers ready to collaborate and grow together.
               </motion.p>
               
               <motion.div
-                className="cta-container"
+                className="hero-cta-group"
                 initial={{ y: 30, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
                 transition={{ delay: 0.7, duration: 1 }}
               >
-                <Link to="/community" className="community-link">
+                <Link to="/community" className="cta-link primary">
                   <motion.button 
-                    className="community-button"
+                    className="cta-button primary"
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
                   >
-                    Join the Community
+                    Join Community
+                  </motion.button>
+                </Link>
+                <Link to="/tools" className="cta-link secondary">
+                  <motion.button 
+                    className="cta-button secondary"
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                  >
+                    Explore Tools
                   </motion.button>
                 </Link>
               </motion.div>
+
+              <div className="hero-stats">
+                <motion.div 
+                  className="stat-item"
+                  initial={{ scale: 0 }}
+                  animate={{ scale: 1 }}
+                  transition={{ delay: 1, duration: 0.5 }}
+                >
+                  <span className="stat-number">5000+</span>
+                  <span className="stat-label">Community Members</span>
+                </motion.div>
+                <motion.div 
+                  className="stat-item"
+                  initial={{ scale: 0 }}
+                  animate={{ scale: 1 }}
+                  transition={{ delay: 1.2, duration: 0.5 }}
+                >
+                  <span className="stat-number">200+</span>
+                  <span className="stat-label">Engineering Tools</span>
+                </motion.div>
+              </div>
             </div>
           </motion.div>
 
@@ -135,92 +321,272 @@ const HomePage = () => {
             <span className="scroll-text">Scroll to explore</span>
           </motion.div>
         </motion.section>
-        <section className="random-fact-section">
-          <h2>Did You Know?</h2>
-          <p>{randomFact}</p>
-        </section>
-        <section className="content-section">
-          <div className="content-card">
-            <img src="/articles.jpg" alt="Articles" className="content-image small-image" />
-            <div className="content-text">
-              <h2>Articles</h2>
-              <p>Explore a wide range of articles on various built environment topics, including construction, sustainability, and project management.</p>
-              <a href="/articles" className="content-link">Read More</a>
-            </div>
+        <motion.section 
+          className="featured-tools-section"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+        >
+          <div className="section-header">
+            <h2>Popular Engineering Tools</h2>
+            <Link to="/tools" className="view-all-link">
+              View All Tools <span>→</span>
+            </Link>
           </div>
-          <div className="content-card">
-            <img src="/designmaterials.jpg" alt="Design materials" className="content-image small-image" />
-            <div className="content-text">
-              <h2>Design Materials</h2>
-              <p>Discover design materials, including cad designs, Cad tools, and learn about their properties and applications.</p>
-              <a href="/design-materials" className="content-link">Explore</a>
-            </div>
+          
+          <div className="tools-grid">
+            {featuredTools.map((tool) => (
+              <motion.div 
+                key={tool.id}
+                className="tool-card"
+                whileHover={{ 
+                  scale: 1.03,
+                  boxShadow: "0 8px 30px rgba(100, 255, 218, 0.15)"
+                }}
+                transition={{ duration: 0.2 }}
+              >
+                <div className="tool-icon">{tool.icon}</div>
+                <div className="tool-usage">{tool.usageCount} uses</div>
+                <h3>{tool.name}</h3>
+                <p>{tool.description}</p>
+                <div className="tool-footer">
+                  <span className="tool-category">{tool.category}</span>
+                  <Link to={tool.link} className="try-tool-link">
+                    Try Tool →
+                  </Link>
+                </div>
+              </motion.div>
+            ))}
           </div>
-          <div className="content-card">
-            <img src="/cad2.jpg" alt="Case Studies" className="content-image small-image" loading='lazy' />
-            <div className="content-text">
-              <h2>Case Studies</h2>
-              <p>Dive into detailed case studies of famous engineering projects, showcasing innovative solutions and best practices.</p>
-              <a href="/case-studies" className="content-link">Explore</a>
-            </div>
+        </motion.section>
+        <motion.section 
+          className="random-fact-section"
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6 }}
+        >
+          <div className="fact-container">
+            <h2>Did You Know?</h2>
+            <motion.div 
+              className="fact-content"
+              animate={{ opacity: isFactRotating ? 0 : 1, y: isFactRotating ? 10 : 0 }}
+              transition={{ duration: 0.3 }}
+            >
+              <span className="fact-icon">{randomFact.icon}</span>
+              <p>{randomFact.fact}</p>
+            </motion.div>
+            <motion.button 
+              className="rotate-fact-button"
+              onClick={rotateFact}
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              disabled={isFactRotating}
+            >
+              <span className="button-text">Another Fact</span>
+              <span className="button-icon">🔄</span>
+            </motion.button>
           </div>
-          <div className="content-card">
-            <img src="/cad3.jpg" alt="Engineering Tools" className="content-image small-image" loading='lazy'/>
-            <div className="content-text">
-              <h2>Engineering Tools</h2>
-              <p>Utilize our interactive tools, including calculators and visualizers, to enhance your learning and project planning.</p>
-              <a href="/tools" className="content-link">Use Features</a>
-            </div>
+        </motion.section>
+        <motion.section 
+          className="content-section"
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6 }}
+        >
+          <div className="section-header">
+            <h2>Learning Resources</h2>
+            <p>Everything you need to advance your engineering career</p>
           </div>
-          <div className="content-card">
-            <img src="/build.jpg" alt="Revision Materials" className="content-image small-image" />
-            <div className="content-text">
-              <h2>Revision Materials</h2>
-              <p>Access a variety of revision materials, including flashcards, summaries, and quizzes, to help you prepare for exams.</p>
-              <a href="/revision-materials" className="content-link">Access Materials</a>
-            </div>
+
+          <div className="resources-grid">
+            {[
+              {
+                title: "Articles",
+                description: "Expert insights on construction, sustainability, and project management",
+                icon: "📚",
+                image: "/articles.jpg",
+                link: "/articles",
+                category: "Knowledge",
+                cta: "Read More"
+              },
+              {
+                title: "Design Materials",
+                description: "CAD designs, tools, and comprehensive material properties guide",
+                icon: "✏️",
+                image: "/designmaterials.jpg",
+                link: "/design-materials",
+                category: "Tools",
+                cta: "Explore"
+              },
+              {
+                title: "Case Studies",
+                description: "Real-world engineering projects and innovative solutions",
+                icon: "🏗️",
+                image: "/cad2.jpg",
+                link: "/case-studies",
+                category: "Practice",
+                cta: "Learn More"
+              },
+              {
+                title: "Engineering Tools",
+                description: "Interactive calculators and visualization tools",
+                icon: "🔧",
+                image: "/cad3.jpg",
+                link: "/tools",
+                category: "Tools",
+                cta: "Use Tools"
+              },
+              {
+                title: "Revision Materials",
+                description: "Exam preparation resources and practice questions",
+                icon: "📝",
+                image: "/build.jpg",
+                link: "/revision-materials",
+                category: "Study",
+                cta: "Start Learning"
+              },
+              {
+                title: "Career Guides",
+                description: "Career paths, interview tips, and skill development",
+                icon: "💼",
+                image: "/last.jpg",
+                link: "/career-guides",
+                category: "Career",
+                cta: "Explore Careers"
+              }
+            ].map((resource, index) => (
+              <motion.div 
+                key={resource.title}
+                className="resource-card"
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.5, delay: index * 0.1 }}
+                whileHover={{ y: -5, boxShadow: "0 10px 30px rgba(0,0,0,0.1)" }}
+              >
+                <div className="resource-image-container">
+                  <img
+                    src={resource.image}
+                    alt={resource.title}
+                    className="resource-image"
+                    loading={index > 2 ? "lazy" : "eager"}
+                  />
+                  <span className="resource-category">{resource.category}</span>
+                  <span className="resource-icon">{resource.icon}</span>
+                </div>
+                
+                <div className="resource-content">
+                  <h3>{resource.title}</h3>
+                  <p>{resource.description}</p>
+                  
+                  <Link to={resource.link} className="resource-link">
+                    {resource.cta}
+                    <motion.span 
+                      className="arrow"
+                      whileHover={{ x: 5 }}
+                      transition={{ duration: 0.2 }}
+                    >
+                      →
+                    </motion.span>
+                  </Link>
+                </div>
+              </motion.div>
+            ))}
           </div>
-          <div className="content-card">
-            <img src="/last.jpg" alt="Career Guides" className="content-image small-image" />
-            <div className="content-text">
-              <h2>Career Guides</h2>
-              <p>Get insights into different career paths, interview preparation tips, and skill development resources for civil engineers.</p>
-              <a href="/career-guides" className="content-link">Learn More</a>
-            </div>
+        </motion.section>
+        <motion.section 
+          className="events-section"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+        >
+          <div className="section-header">
+            <h2>Upcoming Events</h2>
+            <Link to="/events" className="view-all-link">
+              View Calendar <span>→</span>
+            </Link>
           </div>
-          <div className="content-card">
-            <div className="content-text">
-              <h2>Newsletter</h2>
-              <p>Stay updated with the latest news and articles by signing up for our newsletter.</p>
-              <NewsletterSignup />
-            </div>
+
+          <div className="events-grid">
+            {upcomingEvents.map((event) => {
+              const eventDate = new Date(event.date);
+              const isUpcoming = eventDate > new Date();
+              
+              return (
+                <motion.div 
+                  key={event.id}
+                  className="event-card"
+                  whileHover={{ y: -5 }}
+                  transition={{ duration: 0.2 }}
+                >
+                  <div className="event-image-container">
+                    <img
+                      src={event.image}
+                      alt={event.title}
+                      className="event-image"
+                      loading="lazy"
+                    />
+                    <div className="event-type-badge">
+                      {event.type}
+                    </div>
+                    {isUpcoming && (
+                      <div className="live-badge">
+                        <span className="pulse"></span>
+                        Upcoming
+                      </div>
+                    )}
+                  </div>
+                  
+                  <div className="event-content">
+                    <div className="event-meta">
+                      <span className="event-date">
+                        {eventDate.toLocaleDateString('en-US', { 
+                          month: 'short',
+                          day: 'numeric'
+                        })}
+                      </span>
+                      <span className="event-time">
+                        {eventDate.toLocaleTimeString('en-US', { 
+                          hour: '2-digit',
+                          minute: '2-digit'
+                        })}
+                      </span>
+                      <span className="event-duration">{event.duration}</span>
+                    </div>
+
+                    <h3>{event.title}</h3>
+                    
+                    <div className="event-details">
+                      {event.speaker && (
+                        <div className="event-speaker">
+                          <i className="fas fa-user"></i>
+                          {event.speaker}
+                        </div>
+                      )}
+                      {event.location && (
+                        <div className="event-location">
+                          <i className="fas fa-map-marker-alt"></i>
+                          {event.location}
+                        </div>
+                      )}
+                      <div className="event-attendees">
+                        <i className="fas fa-users"></i>
+                        {event.attendees} attending
+                      </div>
+                    </div>
+
+                    <Link to={event.link} className="event-cta">
+                      Register Now
+                      <i className="fas fa-arrow-right"></i>
+                    </Link>
+                  </div>
+                </motion.div>
+              );
+            })}
           </div>
-        </section>
-        <section className="events-section">
-          <h2>Events and Webinars</h2>
-          <div className="featured-events">
-            <div className="event-card">
-              <img
-                src="/front.jpeg"
-                alt="sustainable engineering practices"
-                className="event-image"
-              />
-              <h3>Upcoming Webinar: Sustainable Engineering Practices</h3>
-              <p>Join us for an in-depth discussion on sustainable engineering solutions.</p>
-              <Link to="/webinars" className="content-link">View Webinars</Link>
-            </div>
-            <div className="event-card">
-              <img
-                src="/interior4.jpg"
-                alt="Annual Engineering Conference 2024"
-                className="event-image"
-              />
-              <h3>Annual Engineering Conference 2024</h3>
-              <p>Participate in our annual conference to connect with industry leaders.</p>
-              <Link to="/events" className="content-link">View Events</Link>
-            </div>
-          </div>
-        </section>
+        </motion.section>
         <section className="testimonials-section">
           <h2>What Our Readers Say</h2>
           <div className="testimonial">
@@ -232,52 +598,163 @@ const HomePage = () => {
             <span>- Fred Biya, Structural Engineer</span>
           </div>
         </section>
-        <section className="featured-articles-section">
-          <h2>Featured Articles</h2>
-          <div className="featured-article">
-            <h3>Innovative Construction Techniques</h3>
-            <p>Discover the latest advancements in construction technology and how they are revolutionizing the industry.</p>
-            <a href="/featured-article-1" className="content-link">Read More</a>
+        <motion.section 
+          className="featured-articles-section"
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6 }}
+        >
+          <div className="section-header">
+            <h2>Featured Articles</h2>
+            <Link to="/articles" className="view-all-link">
+              Browse Library <span>→</span>
+            </Link>
           </div>
-          <div className="featured-article">
-            <h3>Sustainable Engineering Practices</h3>
-            <p>Learn about sustainable engineering practices that are helping to create a greener future.</p>
-            <a href="/featured-article-2" className="content-link">Read More</a>
+
+          <div className="articles-grid">
+            {featuredArticles.map((article, index) => (
+              <motion.article 
+                key={article.id}
+                className="article-card"
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.5, delay: index * 0.1 }}
+              >
+                <div className="article-image-container">
+                  <img
+                    src={article.image}
+                    alt={article.title}
+                    loading="lazy"
+                    width="400"
+                    height="225"
+                  />
+                  <span className="article-category">{article.category}</span>
+                </div>
+                
+                <div className="article-content">
+                  <div className="article-meta">
+                    <span className="read-time">
+                      <i className="far fa-clock"></i> {article.readTime}
+                    </span>
+                  </div>
+                  
+                  <h3>{article.title}</h3>
+                  <p>{article.excerpt}</p>
+                  
+                  <Link to={article.link} className="read-more-link">
+                    Read Article
+                    <motion.span 
+                      className="arrow"
+                      whileHover={{ x: 5 }}
+                      transition={{ duration: 0.2 }}
+                    >
+                      →
+                    </motion.span>
+                  </Link>
+                </div>
+              </motion.article>
+            ))}
           </div>
-        </section>
-        <section className="founders-developers-section">
+        </motion.section>
+        <motion.section 
+          className="founders-developers-section"
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6 }}
+        >
           <h2>Team</h2>
-          <div className="founder-developer">
-            <h3>John Micheal</h3>
-            <p>Founder and developer of Engineering Hub</p>
-            <div className="social-links">
-              <a href="https://www.linkedin.com/in/john-micheal-736bb71b4" target="_blank" rel="noreferrer">
-                <i className='fab fa-linkedin'></i>
-              </a>
-              <a href="https://x.com/gacharua?t=QQ2R-UjV2VmgHnkVfBD8OQ&s=08" target="_blank" rel="noreferrer">
-                <i className='fab fa-twitter'></i>
-              </a>
-              <a href="https://www.instagram.com/john.michael4228?igsh=YzljYTk1ODg3Zg==" target='_blank' rel="noreferrer">
-                <i className='fab fa-instagram'></i>
-              </a>
-            </div>
+          <div className="founders-grid">
+            <motion.div 
+              className="founder-developer"
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5 }}
+            >
+              <div className="founder-content">
+                <h3>John Micheal</h3>
+                <p>Founder and developer of Engineering Hub</p>
+                <div className="social-links">
+                  <motion.a 
+                    href="https://www.linkedin.com/in/john-micheal-736bb71b4" 
+                    target="_blank" 
+                    rel="noreferrer"
+                    whileHover={{ y: -3 }}
+                    transition={{ duration: 0.2 }}
+                  >
+                    <i className='fab fa-linkedin'></i>
+                  </motion.a>
+                  <motion.a 
+                    href="https://x.com/gacharua?t=QQ2R-UjV2VmgHnkVfBD8OQ&s=08" 
+                    target="_blank" 
+                    rel="noreferrer"
+                    whileHover={{ y: -3 }}
+                    transition={{ duration: 0.2 }}
+                  >
+                    <i className='fab fa-twitter'></i>
+                  </motion.a>
+                  <motion.a 
+                    href="https://www.instagram.com/john.michael4228?igsh=YzljYTk1ODg3Zg==" 
+                    target='_blank' 
+                    rel="noreferrer"
+                    whileHover={{ y: -3 }}
+                    transition={{ duration: 0.2 }}
+                  >
+                    <i className='fab fa-instagram'></i>
+                  </motion.a>
+                </div>
+              </div>
+            </motion.div>
+
+            <motion.div 
+              className="founder-developer"
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5, delay: 0.2 }}
+            >
+              <div className="founder-content">
+                <h3>Owen Richard</h3>
+                <p>Co-founder of Engineering Hub</p>
+                <div className="social-links">
+                  <motion.a 
+                    href="https://www.linkedin.com/in/owen-richard-93737433a" 
+                    target="_blank" 
+                    rel="noreferrer"
+                    whileHover={{ y: -3 }}
+                    transition={{ duration: 0.2 }}
+                  >
+                    <i className='fab fa-linkedin'></i>
+                  </motion.a>
+                  <motion.a 
+                    href="https://x.com/richar94366?t=Btpo4QaAI6j_zGtEGw73PA&s=09" 
+                    target='_blank' 
+                    rel="noreferrer"
+                    whileHover={{ y: -3 }}
+                    transition={{ duration: 0.2 }}
+                  >
+                    <i className='fab fa-twitter'></i>
+                  </motion.a>
+                  <motion.a 
+                    href="https://www.instagram.com/_si.lento/profilecard/?igsh=d2ZlMm55ZG9xdHVy" 
+                    target='_blank' 
+                    rel="noreferrer"
+                    whileHover={{ y: -3 }}
+                    transition={{ duration: 0.2 }}
+                  >
+                    <i className='fab fa-instagram'></i>
+                  </motion.a>
+                </div>
+              </div>
+            </motion.div>
           </div>
-          <div className="founder-developer">
-            <h3>Owen Richard</h3>
-            <p>Co-founder of Engineering Hub</p>
-            <div className="social-links">
-              <a href="https://www.linkedin.com/in/owen-richard-93737433a?utm_source=share&utm_campaign=share_via&utm_content=profile&utm_medium=android_app" target="_blank" rel="noreferrer">
-                <i className='fab fa-linkedin'></i>
-              </a>
-              <a href="https://x.com/richar94366?t=Btpo4QaAI6j_zGtEGw73PA&s=09" target='_blank' rel="noreferrer">
-                <i className='fab fa-twitter'></i>
-              </a>
-              <a href="https://www.instagram.com/_si.lento/profilecard/?igsh=d2ZlMm55ZG9xdHVy" target='_blank' rel="noreferrer">
-                <i className='fab fa-instagram'></i>
-              </a>
-            </div>
-          </div>
-          </section>
+        </motion.section>
+        <section className="newsletter-section">
+          <NewsletterSignup />
+        </section>
       </div>
     </>
   );
