@@ -81,6 +81,7 @@ import ProjectTimelineGenerator from './tools/ProjectTimelineGenerator';
 import SoilClassificationTool from './tools/SoilClassificationTool';
 import WaterNetworkAnalysis from './tools/WaterNetworkAnalysis';
 import MaterialSelectionTool from './tools/MaterialSelectionTool';
+import AIAssistantPage from './pages/AIAssistantPage';
 import ConstructionManagementFlashcards from './pages/materials/ConstructionManagementFlashcards';
 import BuildingServicesFlashcards from './pages/materials/BuildingServicesFlashcards';
 import SurveyingFundamentalsQuiz from './pages/materials/SurveyingFundamentalsQuiz';
@@ -204,6 +205,7 @@ function App() {
           <Route path="/tools/highway-geometric" element={<HighwayGeometricCalculator />} />
           <Route path="/tools/earth-pressure" element={<EarthPressureCalculator />} />
           <Route path="/tools/column-design" element={<ColumnDesignTool />} />
+          <Route path="/interactive-ai" element={<AIAssistantPage />} />
           <Route path="/tools/rainfall-runoff" element={<RainfallRunoffCalculator />} />
           <Route path="/tools/material-quantity" element={<MaterialQuantityCalculator />} />
           <Route path="/tools/construction-cost" element={<ConstructionCostEstimator />} />

@@ -1,11 +1,15 @@
 import React, { useContext, useEffect, useState } from 'react';
 import InteractiveToolCard from '../components/InteractiveToolCard';
-import InteractiveAI from '../components/InteractiveAI';
 import AuthModal from '../components/AuthModal';
 import './InteractiveToolsPage.css'; // Import the CSS file for styling
 import { AuthContext } from '../contexts/AuthContext';
 
 const tools = [
+  {
+    title: 'Built Environment AI',
+    description: 'Ask questions and get answers from our AI tool.',
+    link: '/interactive-ai', // Replace with the actual link to the tool
+  },
   {
     title: 'Beam Calculator',
     description: 'Calculate the bending moment, shear force, and deflection of beams under various loading conditions.',
@@ -203,7 +207,6 @@ const InteractiveToolsPage = () => {
 
   return (
     <div className="interactive-tools-page">
-      <InteractiveAI />
       {showAuthModal && (
         <AuthModal onClose={() => setShowAuthModal(false)} />
       )}

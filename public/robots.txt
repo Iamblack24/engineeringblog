@@ -1,3 +1,9 @@
 # https://www.robotstxt.org/robotstxt.html
 User-agent: *
-Disallow:
+Allow: /
+
+# Sitemap location
+Sitemap: https://engineeringhub.engineer/sitemap.xml
+
+# Crawl-delay to be nice to servers (optional)
+Crawl-delay: 10

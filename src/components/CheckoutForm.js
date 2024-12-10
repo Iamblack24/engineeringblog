@@ -5,7 +5,7 @@ import axios from 'axios';
 import './CheckoutForm.css'; // Import the CSS file
 
 const CheckoutForm = ({ material }) => {
-  const stripe = useStripe();
+  const stripe = useStripe();  
   const elements = useElements();
   const [error, setError] = useState(null);
   const [processing, setProcessing] = useState(false);
