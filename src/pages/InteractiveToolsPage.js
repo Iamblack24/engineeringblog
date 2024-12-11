@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState, useRef } from 'react';
 import InteractiveToolCard from '../components/InteractiveToolCard';
 import AuthModal from '../components/AuthModal';
 import './InteractiveToolsPage.css'; // Import the CSS file for styling
@@ -190,6 +190,8 @@ const tools = [
 const InteractiveToolsPage = () => {
   const { currentUser } = useContext(AuthContext); // Get authentication status from context
   const [showAuthModal, setShowAuthModal] = useState(false);
+  const [activeFeature, setActiveFeature] = useState(0);
+  const featuresRef = useRef(null);
   
   const handleToolClick = (tool) => {
     if (!currentUser) {
@@ -205,15 +207,79 @@ const InteractiveToolsPage = () => {
     }
   }, [currentUser]);
 
+  // Add scroll event listener for features
+  const handleFeaturesScroll = (event) => {
+    if (window.innerWidth <= 768) {  // Only track scroll on mobile
+      const container = event.target;
+      const scrollPosition = container.scrollLeft;
+      const itemWidth = container.offsetWidth * 0.85; // 85% of viewport
+      const newActive = Math.round(scrollPosition / itemWidth);
+      setActiveFeature(newActive);
+    }
+  };
+
   return (
     <div className="interactive-tools-page">
       {showAuthModal && (
         <AuthModal onClose={() => setShowAuthModal(false)} />
       )}
+      
+      {/* New AI Environment Section */}
+      <div className="ai-environment-section">
+        <h2>Built Environment AI Assistant</h2>
+        <p>
+          Your intelligent companion for engineering queries and problem-solving.
+          Get instant, accurate answers to your technical questions.
+        </p>
+        
+        <div 
+          ref={featuresRef}
+          className="ai-features"
+          onScroll={handleFeaturesScroll}
+        >
+          <div className="feature-item">
+            <i className="fas fa-robot"></i>
+            <h3>Smart Responses</h3>
+            <p>Get detailed answers to complex engineering questions</p>
+          </div>
+          
+          <div className="feature-item">
+            <i className="fas fa-building"></i>
+            <h3>Built Environment Focus</h3>
+            <p>Specialized in construction and engineering domains</p>
+          </div>
+          
+          <div className="feature-item">
+            <i className="fas fa-clock"></i>
+            <h3>24/7 Availability</h3>
+            <p>Access expert knowledge whenever you need it</p>
+          </div>
+        </div>
+
+        {window.innerWidth <= 768 && (
+          <div className="scroll-indicator">
+            {[0, 1, 2].map((index) => (
+              <div 
+                key={index}
+                className={`scroll-dot ${index === activeFeature ? 'active' : ''}`}
+              />
+            ))}
+          </div>
+        )}
+
+        <button 
+          className="try-ai-btn"
+          onClick={() => handleToolClick(tools[0])}
+        >
+          Try Built Environment AI
+        </button>
+      </div>
+
       <h1>Interactive Tools</h1>
-      <p>Explore our interactive tools to assist you in your engineering projects and calculations.REMEMBER CALCULATIONS MAY NOT BE ACCURATE! HAVE SOME IDEA BEFORE INTERACTING.REMEMBER TO REPORT INACCURACY</p>
+      <p>Use our interactive tools to aid your engineering projects. Note: Verify results and report inaccuracies.</p>
       <div className="tools-list">
-        {tools.map((tool, index) => (
+        {/* Start from index 1 since we're featuring the AI tool separately */}
+        {tools.slice(1).map((tool, index) => (
           <InteractiveToolCard
             key={index}
             title={tool.title}

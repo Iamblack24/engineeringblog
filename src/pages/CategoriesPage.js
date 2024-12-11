@@ -32,11 +32,15 @@ const CategoriesPage = () => {
       ) : (
         <>
           <div className="header">
-            <h1>Discussions</h1>
+            <h1>Community Discussions</h1>
           </div>
           <div className="categories">
-            {categories.map((category) => (
-              <div key={category.id} className="category-card">
+            {categories.map((category, index) => (
+              <div 
+                key={category.id} 
+                className="category-card"
+                style={{"--animation-order": index}}
+              >
                 <h2>{category.name}</h2>
                 <p>{category.description}</p>
                 <Link to={`/community/${encodeURIComponent(category.id)}`}>
@@ -46,7 +50,7 @@ const CategoriesPage = () => {
             ))}
           </div>
           <Link to="/community/create-category" className="create-category">
-            Create New Discussion forum
+            Create New Discussion Forum
           </Link>
         </>
       )}

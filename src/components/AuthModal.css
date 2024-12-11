@@ -12,6 +12,12 @@
   z-index: 1000;
   overflow-y: auto; /* Enable vertical scrolling if content overflows */
   padding: 20px; /* Add padding for smaller screens */
+  will-change: opacity;
+  contain: content;
+  transform: translateZ(0);
+  -webkit-font-smoothing: antialiased;
+  background-color: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(5px);
 }
 
 /* Modal Content */
@@ -23,9 +29,12 @@
   border-radius: 8px;
   position: relative;
   text-align: center;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   max-height: 90vh; /* Prevent modal from exceeding viewport height */
   overflow-y: auto; /* Allow scrolling within the modal content */
+  transform: translateZ(0);
+  backface-visibility: hidden;
+  transition: transform 0.2s ease;
 }
 
 /* Close Button */
@@ -108,7 +117,8 @@
   border-radius: 4px;
   cursor: pointer;
   font-size: 1rem;
-  transition: background-color 0.3s ease;
+  transition: background-color 0.2s ease;
+  transform: translateZ(0);
 }
 
 .submit-button:hover {

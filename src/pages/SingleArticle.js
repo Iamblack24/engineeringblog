@@ -12,10 +12,10 @@ import {
   collection,
   addDoc,
   onSnapshot,
-  Timestamp,
   query,
   orderBy,
   limit,
+  serverTimestamp,
 } from 'firebase/firestore';
 import './SingleArticle.css';
 import { Document, Page, pdfjs } from 'react-pdf/dist/esm/entry.webpack';
@@ -48,6 +48,14 @@ const articlesData = [
   },
   // Add more articles as needed
 ];
+
+// Helper function to format date safely
+const formatDate = (timestamp) => {
+  if (!timestamp || !timestamp.seconds) {
+    return 'Date not available';
+  }
+  return new Date(timestamp.seconds * 1000).toLocaleDateString();
+};
 
 const SingleArticle = () => {
   const { id } = useParams();
@@ -220,7 +228,7 @@ const SingleArticle = () => {
 
   const isPDF = article.content.toLowerCase().endsWith('.pdf');
 
-  const handleCommentSubmit =async (e) => {
+  const handleCommentSubmit = async (e) => {
     e.preventDefault();
     if (newComment.trim() === '') {
       setError('Comment cannot be empty.');
@@ -232,7 +240,7 @@ const SingleArticle = () => {
       return;
     }
     
-    //Extract userame from email
+    //Extract username from email
     const email = currentUser.email || '';
     const username = getUsernameFromEmail(email);
 
@@ -242,7 +250,9 @@ const SingleArticle = () => {
         text: newComment,
         userId: currentUser.uid,
         username: username,
-        date: Timestamp.now(),
+        date: serverTimestamp(),
+        parentCommentId: null,
+        level: 1
       });
       setNewComment('');
       setError('');
@@ -264,23 +274,25 @@ const SingleArticle = () => {
       return;
     }
 
-    // Extract username from email
-    const email = currentUser.email || '';
-    const username = getUsernameFromEmail(email);
-
     try {
+      const email = currentUser.email || '';
+      const username = getUsernameFromEmail(email);
+      
       const repliesRef = collection(db, 'articles', id, 'comments', parentId, 'replies');
       await addDoc(repliesRef, {
         text: replyText,
         userId: currentUser.uid,
         username: username,
-        date: Timestamp.now(),
+        date: serverTimestamp(),
+        parentCommentId: parentId,
+        level: 2
       });
+      
       setReplyText('');
       setReplyingTo(null);
       setError('');
     } catch (error) {
-      console.error('Error adding Reply:', error);
+      console.error('Error adding reply:', error);
       setError('Failed to add reply. Please try again.');
     }
   };
@@ -323,7 +335,7 @@ const SingleArticle = () => {
                 <p>{comment.text}</p>
                 <div className="comment-meta">
                   <span className="comment-username">{comment.username}</span>
-                  <span className="comment-date">{new Date(comment.date.seconds * 1000).toLocaleString()}</span>
+                  <span className="comment-date">{formatDate(comment.date)}</span>
                 </div>
                 <button
                   className="reply-button"
@@ -356,7 +368,7 @@ const SingleArticle = () => {
                         <p>{reply.text}</p>
                         <div className="comment-meta">
                           <span className="comment-username">{reply.username}</span>
-                          <span className="comment-date">{new Date(reply.date.seconds * 1000).toLocaleString()}</span>
+                          <span className="comment-date">{formatDate(reply.date)}</span>
                         </div>
                       </div>
                     </li>

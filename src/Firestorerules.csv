@@ -1,0 +1,283 @@
+rules_version = '2';
+
+// Firestore security rules
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ####################################################################
+    // # Users Collection
+    // ####################################################################
+    match /users/{userId} {
+      // Allow users to read and write their own user document
+      allow read, write: if request.auth != null && request.auth.uid == userId;
+
+      // ##############################################################
+      // # Usage Subcollection within Users
+      // ##############################################################
+      match /usage/{usageId} {
+        allow read, write: if request.auth != null && request.auth.uid == userId;
+      }
+
+      // ##############################################################
+      // # History Subcollection within Users (for AI Chat)
+      // ##############################################################
+      match /history/{historyId} {
+        allow read, write: if request.auth != null && request.auth.uid == userId;
+      }
+    }
+
+    // ####################################################################
+    // # Articles Collection
+    // ####################################################################
+    match /articles/{articleId} {
+      // Allow anyone to read articles
+      allow read: if true;
+
+      // Allow authenticated users to create, update, or delete articles
+      allow write: if request.auth != null;
+
+      // ##############################################################
+      // # Likes Subcollection within Articles
+      // ##############################################################
+      match /likes/{userId} {
+        // Allow authenticated users to create, read, update, or delete their own likes
+        allow create, read, update, delete: if request.auth != null && request.auth.uid == userId;
+      }
+
+      // ##############################################################
+      // # Dislikes Subcollection within Articles
+      // ##############################################################
+      match /dislikes/{userId} {
+        // Allow authenticated users to create, read, update, or delete their own dislikes
+        allow create, read, update, delete: if request.auth != null && request.auth.uid == userId;
+      }
+
+      // ##############################################################
+      // # Comments Subcollection within Articles
+      // ##############################################################
+      match /comments/{commentId} {
+        // Allow anyone to read comments
+        allow read: if true;
+
+        // Allow authenticated users to create comments
+        allow create: if request.auth != null
+          && request.resource.data.keys().hasOnly(['text', 'userId', 'username', 'date'])
+          && request.resource.data.text is string
+          && request.resource.data.userId is string
+          && request.resource.data.username is string
+          && request.resource.data.date is timestamp
+          && request.resource.data.text.size() > 0
+          && request.resource.data.userId == request.auth.uid;
+
+        // Allow authenticated users to update or delete only their own comments
+        allow update, delete: if request.auth != null
+          && resource.data.userId == request.auth.uid
+          && (
+            (!('text' in request.resource.data)) || (
+              request.resource.data.keys().hasOnly(['text'])
+              && request.resource.data.text is string
+              && request.resource.data.text.size() > 0
+            )
+          );
+
+        // ##############################################################
+        // # Replies Subcollection within Comments
+        // ##############################################################
+        match /replies/{replyId=**} {
+          // Allow anyone to read replies
+          allow read: if true;
+
+          // Allow authenticated users to create replies within nesting limit
+          allow create: if request.auth != null
+            && isValidReply(request.resource.data)
+            && nestingDepthIsValid();
+
+          // Allow users to update or delete their own replies within nesting limit
+          allow update, delete: if request.auth != null
+            && request.auth.uid == resource.data.userId
+            && nestingDepthIsValid();
+        }
+      }
+    }
+
+    // ####################################################################
+    // # Categories Collection
+    // ####################################################################
+    match /categories/{categoryId} {
+      // Allow anyone to read categories
+      allow read: if true;
+
+      // Allow any authenticated user to create, update, or delete categories
+      allow create, update, delete: if request.auth != null;
+
+      // ##############################################################
+      // # Threads Subcollection within Categories
+      // ##############################################################
+      match /threads/{threadId} {
+        // Allow anyone to read threads
+        allow read: if true;
+
+        // Allow authenticated users to create threads
+        allow create: if request.auth != null && isValidThread(request.resource.data, categoryId);
+
+        // Allow users to update or delete their own threads
+        allow update, delete: if request.auth != null && request.auth.uid == resource.data.userId;
+
+        // ##############################################################
+        // # Posts Subcollection within Threads
+        // ##############################################################
+        match /posts/{postId} {
+          // Allow anyone to read posts
+          allow read: if true;
+
+          // Allow authenticated users to create posts
+          allow create: if request.auth != null && isValidPost(request.resource.data);
+
+          // Allow users to update or delete their own posts
+          allow update, delete: if request.auth != null && request.auth.uid == resource.data.userId;
+
+          // ##############################################################
+          // # Replies Subcollection within Posts
+          // ##############################################################
+          match /replies/{replyId=**} {
+            // Allow anyone to read replies
+            allow read: if true;
+
+            // Allow authenticated users to create replies within nesting limit
+            allow create: if request.auth != null
+              && isValidReply(request.resource.data)
+              && nestingDepthIsValid();
+
+            // Allow users to update or delete their own replies within nesting limit
+            allow update, delete: if request.auth != null
+              && request.auth.uid == resource.data.userId
+              && nestingDepthIsValid();
+          }
+        }
+      }
+    }
+
+    // ####################################################################
+    // # Posts Collection (Outside Threads)
+    // ####################################################################
+    match /posts/{postId} {
+      allow read: if true;
+      allow create: if request.auth != null && isValidPost(request.resource.data);
+      allow update, delete: if request.auth != null && request.auth.uid == resource.data.userId;
+
+      // ##############################################################
+      // # Replies Subcollection within Posts
+      // ##############################################################
+      match /replies/{replyId=**} {
+        // Allow anyone to read replies
+        allow read: if true;
+
+        // Allow authenticated users to create replies within nesting limit
+        allow create: if request.auth != null
+          && isValidReply(request.resource.data)
+          && nestingDepthIsValid();
+
+        // Allow users to update or delete their own replies within nesting limit
+        allow update, delete: if request.auth != null
+          && request.auth.uid == resource.data.userId
+          && nestingDepthIsValid();
+      }
+    }
+
+    // ####################################################################
+    // # Usage Collection (for AI daily limits)
+    // ####################################################################
+    match /usage/{usageId} {
+      // Allow users to read and write their own usage data
+      allow read, write: if request.auth != null 
+        && usageId.matches(request.auth.uid + '_.*')
+        && isValidUsage(request.resource.data);
+    }
+
+    // ####################################################################
+    // # Feedback Collection (for AI responses)
+    // ####################################################################
+    match /feedback/{feedbackId} {
+      // Allow users to create and read their own feedback
+      allow create: if request.auth != null 
+        && feedbackId.matches(request.auth.uid + '_.*')
+        && isValidFeedback(request.resource.data);
+      allow read: if request.auth != null 
+        && request.auth.uid == resource.data.userId;
+    }
+
+    // ####################################################################
+    // # FCM Tokens Collection
+    // ####################################################################
+    match /fcm_tokens/{tokenId} {
+      allow read, write: if request.auth != null;
+    }
+
+    // ####################################################################
+    // # Validation Functions
+    // ####################################################################
+
+    function isValidThread(thread, categoryId) {
+      return thread.title is string
+        && thread.title.size() > 0
+        && thread.title.size() <= 200
+        && thread.categoryId == categoryId
+        && thread.user is string
+        && thread.user.size() > 0
+        && thread.user.size() <= 100
+        && thread.userId is string
+        && thread.userId == request.auth.uid;
+    }
+
+    function isValidPost(post) {
+      return post.content is string
+        && post.content.size() > 0
+        && post.content.size() <= 1000
+        && post.user is string
+        && post.user.size() > 0
+        && post.user.size() <= 100
+        && post.userId is string
+        && post.userId == request.auth.uid;
+    }
+
+    function isValidReply(reply) {
+      return reply.content is string
+        && reply.content.size() > 0
+        && reply.content.size() <= 1000
+        && reply.user is string
+        && reply.user.size() > 0
+        && reply.user.size() <= 100
+        && reply.userId is string
+        && reply.userId == request.auth.uid;
+    }
+
+    function isValidUsage(usage) {
+      return usage.keys().hasAll(['userId', 'date', 'count'])
+        && usage.userId == request.auth.uid
+        && usage.date is string
+        && usage.count is number
+        && usage.count >= 0
+        && usage.count <= 30;  // Maximum daily limit
+    }
+
+    function isValidFeedback(feedback) {
+      return feedback.keys().hasAll(['userId', 'messageId', 'isPositive', 'timestamp'])
+        && feedback.userId == request.auth.uid
+        && feedback.messageId is string
+        && feedback.isPositive is bool
+        && feedback.timestamp is string;
+    }
+
+    function nestingDepthIsValid() {
+      // The base path up to 'replies' (excluding nested replies) has 10 segments:
+      // ['databases', '{database}', 'documents', 'categories', '{categoryId}', 'threads', '{threadId}', 'posts', '{postId}', 'replies']
+      let basePathSize = 10;
+
+      // Each nesting level adds 2 segments: 'replies' and '{replyId}'
+      // Maximum nesting depth: 3
+      // Therefore, maximum allowed segments: basePathSize + (3 * 2) + 1 = 17
+      // +1 accounts for the current '{replyId}' being created
+      return request.path.segments.size() <= 17;
+    }
+  }
+}

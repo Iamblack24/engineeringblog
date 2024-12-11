@@ -12,9 +12,10 @@ const CommunityPage = () => {
       const threadsRef = collection(db, 'categories', categoryId, 'threads');
       const q = query(threadsRef, orderBy('createdAt', 'desc'));
       const unsubscribe = onSnapshot(q, (snapshot) => {
-        const threadsData = snapshot.docs.map((doc) => ({
+        const threadsData = snapshot.docs.map((doc, index) => ({
           id: doc.id,
           ...doc.data(),
+          animationOrder: index
         }));
         setThreads(threadsData);
       });
@@ -24,21 +25,23 @@ const CommunityPage = () => {
   }, [categoryId]);
 
   if (!categoryId) {
-    return <div className="container community-page">Category not found.</div>;
+    return <div className="community-page">Category not found.</div>;
   }
 
   return (
-    <div className="container community-page">
-      {/* Header Section */}
+    <div className="community-page">
       <div className="header">
         <h1>Threads</h1>
       </div>
 
-      {/* Threads List Section */}
       <div className="posts-list">
         {threads.length > 0 ? (
           threads.map((thread) => (
-            <div key={thread.id} className="post-card">
+            <div 
+              key={thread.id} 
+              className="post-card"
+              style={{"--animation-order": thread.animationOrder}}
+            >
               <Link
                 to={`/community/${encodeURIComponent(categoryId)}/threads/${thread.id}`}
                 className="post-card-link"
@@ -55,7 +58,6 @@ const CommunityPage = () => {
         )}
       </div>
 
-      {/* Create New Thread Button */}
       <Link
         to={`/community/${encodeURIComponent(categoryId)}/new-thread`}
         className="create-thread"

@@ -11,6 +11,7 @@ import {
   doc,
   serverTimestamp,
   getDocs,
+  where,
 } from 'firebase/firestore';
 import { auth, db } from '../firebase';
 import './Reply.css';
@@ -24,10 +25,9 @@ const Reply = ({ reply, threadId, categoryId, parentPath, level }) => {
   const postId = parentPath[parentPath.length - 1]; // Assuming parentPath ends with postId or replyId
 
   useEffect(() => {
-    if (!reply.id) {
-      console.error('Reply ID is undefined');
-      return;
-    }
+    if (!reply.id) return;
+
+    console.log('Fetching nested replies for reply:', reply.id, 'Level:', level);
 
     const q = query(
       collection(
@@ -38,39 +38,45 @@ const Reply = ({ reply, threadId, categoryId, parentPath, level }) => {
         threadId,
         'posts',
         postId,
-        'replies',
-        reply.id,
         'replies'
       ),
+      where('parentReplyId', '==', reply.id),
       orderBy('createdAt', 'desc')
     );
 
-    const unsubscribe = onSnapshot(
-      q,
-      (snapshot) => {
-        const repliesData = snapshot.docs.map((doc) => ({
-          id: doc.id,
-          ...doc.data(),
-        }));
-        setReplies(repliesData);
-      },
-      (error) => {
-        console.error('Error fetching nested replies:', error);
-      }
-    );
+    const unsubscribe = onSnapshot(q, (snapshot) => {
+      const repliesData = snapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
+      setReplies(repliesData);
+    });
 
     return () => unsubscribe();
-  }, [threadId, categoryId, postId, reply.id]);
+  }, [threadId, categoryId, postId, reply.id, level]);
 
   const handleReplySubmit = async (e) => {
     e.preventDefault();
-    console.log('Reply.handleReplySubmit called'); // Debugging log
+    if (!auth.currentUser) {
+      alert('Please sign in to reply');
+      return;
+    }
 
-    if (replyContent.trim() && !isSubmitting) { // Prevent multiple submissions
-      setIsSubmitting(true); // Set submitting state
+    if (replyContent.trim() && !isSubmitting) {
+      setIsSubmitting(true);
       try {
         const userEmail = auth.currentUser.email;
         const truncatedEmail = userEmail.split('@')[0];
+
+        const replyData = {
+          content: replyContent.trim(),
+          user: truncatedEmail,
+          userId: auth.currentUser.uid,
+          createdAt: serverTimestamp(),
+          parentReplyId: reply.id,
+          level: level + 1,
+        };
+
         await addDoc(
           collection(
             db,
@@ -80,26 +86,18 @@ const Reply = ({ reply, threadId, categoryId, parentPath, level }) => {
             threadId,
             'posts',
             postId,
-            'replies',
-            reply.id,
             'replies'
           ),
-          {
-            content: replyContent,
-            user: truncatedEmail || 'Anonymous',
-            userId: auth.currentUser.uid,
-            createdAt: serverTimestamp(),
-          }
+          replyData
         );
-        console.log('Nested reply submitted successfully.');
+
         setReplyContent('');
         setShowReplyForm(false);
       } catch (error) {
-        console.error('Error adding nested reply:', error);
+        console.error('Error adding reply:', error);
         alert('Failed to add reply. Please try again.');
       } finally {
-        setIsSubmitting(false); // Reset submitting state
-        console.log('Nested submission state reset.');
+        setIsSubmitting(false);
       }
     }
   };
@@ -181,16 +179,20 @@ const Reply = ({ reply, threadId, categoryId, parentPath, level }) => {
 
       {/* Nested Replies */}
       <div className="replies-list">
-        {replies.map((childReply) => (
-          <Reply
-            key={childReply.id}
-            reply={childReply}
-            threadId={threadId}
-            categoryId={categoryId}
-            parentPath={[...parentPath, 'replies', reply.id]}
-            level={level + 1}
-          />
-        ))}
+        {replies.length > 0 && (
+          <div className="nested-replies">
+            {replies.map((childReply) => (
+              <Reply
+                key={childReply.id}
+                reply={childReply}
+                threadId={threadId}
+                categoryId={categoryId}
+                parentPath={[...parentPath, reply.id]}
+                level={level + 1}
+              />
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );
