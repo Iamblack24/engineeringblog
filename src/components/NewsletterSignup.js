@@ -7,7 +7,7 @@ const NewsletterSignup = () => {
       <h2>Subscribe to Our Newsletter</h2>
       <p>Stay updated with the latest articles, case studies, and tools by subscribing to our newsletter.</p>
       <form
-        action="https://formsubmit.co/ajax/johnicarus2020@gmail.com"
+        action="https://formsubmit.co/ajax/otienojohnmicheal2@gmail.com"
         method="POST"
         className="newsletter-form"
       >

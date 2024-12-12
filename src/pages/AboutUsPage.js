@@ -16,17 +16,23 @@ const AboutUsPage = () => {
   };
 
   const fadeInUp = {
-    initial: { opacity: 0, y: 30 },
+    initial: { opacity: 0, y: 20 },
     whileInView: { opacity: 1, y: 0 },
-    viewport: { once: true },
-    transition: { duration: 0.8 }
+    viewport: { once: true, margin: "-50px" },
+    transition: { duration: 0.5 }
   };
 
   const staggerChildren = {
     initial: { opacity: 0 },
     whileInView: { opacity: 1 },
-    viewport: { once: true },
-    transition: { staggerChildren: 0.2 }
+    viewport: { once: true, margin: "-50px" },
+    transition: { staggerChildren: 0.15 }
+  };
+
+  const cardHover = {
+    whileHover: { scale: 1.02 },
+    whileTap: { scale: 0.98 },
+    transition: { type: "spring", stiffness: 400, damping: 17 }
   };
 
   return (
@@ -58,15 +64,15 @@ const AboutUsPage = () => {
       >
         <h2>AI-Powered Engineering Solutions</h2>
         <div className="ai-features">
-          <motion.div className="feature" variants={fadeInUp}>
+          <motion.div className="feature" variants={fadeInUp} {...cardHover}>
             <h3>Smart Learning Paths</h3>
             <p>Our AI algorithms analyze your learning patterns and create personalized study paths, ensuring efficient knowledge acquisition tailored to your needs.</p>
           </motion.div>
-          <motion.div className="feature" variants={fadeInUp}>
+          <motion.div className="feature" variants={fadeInUp} {...cardHover}>
             <h3>Automated Problem Solving</h3>
             <p>Complex engineering problems broken down into step-by-step solutions, with AI guidance to help you understand each concept thoroughly.</p>
           </motion.div>
-          <motion.div className="feature" variants={fadeInUp}>
+          <motion.div className="feature" variants={fadeInUp} {...cardHover}>
             <h3>Real-time Assistance</h3>
             <p>24/7 AI-powered chat support to answer your engineering queries instantly, complemented by community expert reviews.</p>
           </motion.div>
@@ -82,15 +88,15 @@ const AboutUsPage = () => {
       >
         <h2>Learning Resources</h2>
         <div className="resources-grid">
-          <motion.div className="resource" variants={fadeInUp}>
+          <motion.div className="resource" variants={fadeInUp} {...cardHover}>
             <h3>Technical Articles</h3>
             <p>Peer-reviewed articles covering structural analysis, sustainable design, and cutting-edge engineering practices.</p>
           </motion.div>
-          <motion.div className="resource" variants={fadeInUp}>
+          <motion.div className="resource" variants={fadeInUp} {...cardHover}>
             <h3>Case Studies</h3>
             <p>Real-world engineering projects analyzed in detail, from initial challenge to final implementation, with lessons learned.</p>
           </motion.div>
-          <motion.div className="resource" variants={fadeInUp}>
+          <motion.div className="resource" variants={fadeInUp} {...cardHover}>
             <h3>Interactive Tools</h3>
             <p>Suite of engineering calculators and design tools integrated with AI for enhanced accuracy and learning.</p>
           </motion.div>
@@ -140,7 +146,7 @@ const AboutUsPage = () => {
       >
         <h2>Our Team</h2>
         <div className="team-grid">
-          <motion.div className="team-member" variants={fadeInUp}>
+          <motion.div className="team-member" variants={fadeInUp} {...cardHover}>
             <div className="member-content">
               <h3>John Micheal</h3>
               <p className="role">Founder and Lead Developer</p>
@@ -176,7 +182,7 @@ const AboutUsPage = () => {
               </div>
             </div>
           </motion.div>
-          <motion.div className="team-member" variants={fadeInUp}>
+          <motion.div className="team-member" variants={fadeInUp} {...cardHover}>
             <div className="member-content">
               <h3>Owen Richard</h3>
               <p className="role">Co-founder and Content Director</p>

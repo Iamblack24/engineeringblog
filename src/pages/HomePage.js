@@ -132,7 +132,7 @@ const HomePage = () => {
       attendees: 234,
       speaker: "Dr. Sarah Chen",
       duration: "1.5 hours",
-      link: "/webinars/sustainable-practices"
+      link: "/webinars"
     },
     {
       id: 2,
@@ -143,7 +143,7 @@ const HomePage = () => {
       attendees: 500,
       location: "Virtual Event",
       duration: "2 days",
-      link: "/events/annual-conference"
+      link: "/events"
     },
     {
       id: 3,
@@ -154,7 +154,7 @@ const HomePage = () => {
       attendees: 150,
       speaker: "John Smith",
       duration: "2 hours",
-      link: "/workshops/bim-series"
+      link: "/workshops"
     }
   ];
 
@@ -404,7 +404,7 @@ const HomePage = () => {
             {[
               {
                 title: "Articles",
-                description: "Expert insights on construction, sustainability, and project management",
+                description: "Expert insights on construction, sustainability and project management",
                 icon: "📚",
                 image: "/articles.jpg",
                 link: "/articles",
@@ -413,7 +413,7 @@ const HomePage = () => {
               },
               {
                 title: "Design Materials",
-                description: "CAD designs, tools, and comprehensive material properties guide",
+                description: "CAD designs, AI tools and comprehensive material properties guide",
                 icon: "✏️",
                 image: "/designmaterials.jpg",
                 link: "/design-materials",
@@ -589,13 +589,44 @@ const HomePage = () => {
         </motion.section>
         <section className="testimonials-section">
           <h2>What Our Readers Say</h2>
-          <div className="testimonial">
-            <p>"This site has been an invaluable resource for my studies. The articles and tools are top-notch!"</p>
-            <span>- Bravin Michweya, Civil Engineering Student</span>
-          </div>
-          <div className="testimonial">
-            <p>"The case studies provide great insights into real-world engineering challenges and solutions."</p>
-            <span>- Fred Biya, Structural Engineer</span>
+          <div className="testimonials-grid">
+            <motion.div 
+              className="testimonial"
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5 }}
+            >
+              <p>"This site has been an invaluable resource for my studies. The articles and tools are top-notch!"</p>
+              <div className="testimonial-author">
+                <div className="author-avatar">
+                  BM
+                </div>
+                <div className="author-info">
+                  <div className="author-name">Bravin Michweya</div>
+                  <div className="author-title">Civil Engineering Student</div>
+                </div>
+              </div>
+            </motion.div>
+
+            <motion.div 
+              className="testimonial"
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5, delay: 0.2 }}
+            >
+              <p>"The case studies provide great insights into real-world engineering challenges and solutions."</p>
+              <div className="testimonial-author">
+                <div className="author-avatar">
+                  FB
+                </div>
+                <div className="author-info">
+                  <div className="author-name">Fred Biya</div>
+                  <div className="author-title">Structural Engineer</div>
+                </div>
+              </div>
+            </motion.div>
           </div>
         </section>
         <motion.section 

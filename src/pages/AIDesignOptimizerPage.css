@@ -1,0 +1,230 @@
+/* Base styles */
+.ai-optimizer-page {
+  background-color: var(--background-color);
+  min-height: 100vh;
+  padding: clamp(1rem, 3vw, 2rem);
+  color: var(--text-color);
+}
+
+/* Design Type Selection */
+.design-type-selection {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem 1rem;
+}
+
+.design-type-selection h2 {
+  text-align: center;
+  margin-bottom: 2rem;
+  font-size: clamp(1.5rem, 3vw, 2rem);
+  color: var(--accent-color);
+}
+
+.design-type-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 1.5rem;
+  padding: 0.5rem;
+}
+
+.design-type-card {
+  background: linear-gradient(145deg, 
+    rgba(255, 255, 255, 0.05) 0%,
+    rgba(255, 255, 255, 0.02) 100%);
+  border: 1px solid rgba(100, 255, 218, 0.1);
+  border-radius: 16px;
+  padding: 2rem;
+  position: relative;
+  overflow: hidden;
+  backdrop-filter: blur(10px);
+  transition: all 0.3s ease;
+}
+
+.design-type-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+  border-color: var(--accent-color);
+}
+
+.design-type-card.selected {
+  background: linear-gradient(145deg,
+    rgba(100, 255, 218, 0.1) 0%,
+    rgba(100, 255, 218, 0.05) 100%);
+  border-color: var(--accent-color);
+  box-shadow: 0 0 20px rgba(100, 255, 218, 0.1);
+}
+
+.design-type-card .icon {
+  font-size: 2.5rem;
+  display: block;
+  margin-bottom: 1rem;
+  text-align: center;
+}
+
+.design-type-card h3 {
+  font-size: 1.25rem;
+  margin-bottom: 0.75rem;
+  color: var(--accent-color);
+  font-weight: 600;
+}
+
+.design-type-card p {
+  font-size: 0.9rem;
+  line-height: 1.5;
+  color: var(--text-color-secondary);
+  margin: 0;
+}
+
+/* Card hover effects */
+.design-type-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(
+    circle at var(--mouse-x, 50%) var(--mouse-y, 50%),
+    rgba(100, 255, 218, 0.1) 0%,
+    transparent 100%
+  );
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  pointer-events: none;
+}
+
+.design-type-card:hover::before {
+  opacity: 1;
+}
+
+/* Mobile Optimizations */
+@media (max-width: 768px) {
+  .design-type-grid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  .design-type-card {
+    padding: 1.5rem;
+  }
+
+  .design-type-card .icon {
+    font-size: 2rem;
+  }
+}
+
+/* Form Styles */
+.design-form {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1.25rem;
+  margin-top: 2rem;
+}
+
+.input-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.input-group label {
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: var(--text-color);
+}
+
+.input-group input,
+.input-group select {
+  padding: 0.75rem;
+  border-radius: 8px;
+  border: 1px solid rgba(100, 255, 218, 0.2);
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--text-color);
+  font-size: 1rem;
+}
+
+/* Results Display */
+.results-container {
+  margin-top: 2rem;
+  padding: 1.5rem;
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: 12px;
+}
+
+.visualization-container {
+  margin-top: 1.5rem;
+  padding: 1rem;
+  background: rgba(255, 255, 255, 0.02);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+/* Mobile Optimizations */
+@media (max-width: 768px) {
+  .design-type-grid {
+    grid-template-columns: 1fr;
+    padding: 0 0.5rem;
+  }
+
+  .design-form {
+    grid-template-columns: 1fr;
+  }
+
+  .input-group input,
+  .input-group select {
+    font-size: 16px; /* Prevents iOS zoom */
+    padding: 0.875rem;
+  }
+
+  .results-container {
+    padding: 1rem;
+    margin-top: 1.5rem;
+  }
+
+  .visualization-container {
+    padding: 0.75rem;
+  }
+}
+
+/* Loading States */
+.loading-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.loading-spinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid var(--accent-color);
+  border-top-color: transparent;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+/* Accessibility */
+@media (prefers-reduced-motion: reduce) {
+  .design-card,
+  .loading-spinner {
+    animation: none;
+    transition: none;
+  }
+}
+
+/* Error States */
+.error-message {
+  color: #ff6b6b;
+  font-size: 0.875rem;
+  margin-top: 0.25rem;
+}
+
+.input-error {
+  border-color: #ff6b6b !important;
+}

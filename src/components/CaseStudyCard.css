@@ -44,3 +44,6 @@
 .read-more-button:hover {
   background-color: #0056b3;
 }
+.read-more-link {
+  color: var(--text-color);
+}

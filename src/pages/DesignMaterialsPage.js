@@ -5,6 +5,8 @@ import AffiliateMarketingCard from '../components/AffiliateMarketingcard';
 import AuthModal from '../components/AuthModal';
 import './DesignMaterialsPage.css';
 import { AuthContext } from '../contexts/AuthContext';
+import { Link } from 'react-router-dom';
+import { motion } from 'framer-motion';
 
 const designMaterials = [
   {
@@ -224,6 +226,101 @@ const affiliatemarketing = [
   },
 ];
 
+// SVG Illustrations Components
+const StructuralDesignIllustration = () => (
+  <motion.svg 
+    className="card-illustration" 
+    viewBox="0 0 200 120" 
+    initial="hidden"
+    animate="visible"
+  >
+    <motion.path
+      d="M40 100 L40 40 L160 40 L160 100"
+      stroke="var(--accent-color)"
+      strokeWidth="2"
+      fill="none"
+      variants={{
+        hidden: { pathLength: 0 },
+        visible: { pathLength: 1 }
+      }}
+      transition={{ duration: 2, ease: "easeInOut" }}
+    />
+    {/* Floor lines */}
+    {[60, 80].map((y, i) => (
+      <motion.line
+        key={i}
+        x1="40"
+        y1={y}
+        x2="160"
+        y2={y}
+        stroke="var(--accent-color)"
+        strokeWidth="2"
+        strokeDasharray="5,5"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 1 + (i * 0.3) }}
+      />
+    ))}
+    {/* Windows */}
+    {[1, 2, 3].map((x, i) => (
+      <motion.rect
+        key={i}
+        x={60 + (i * 35)}
+        y="50"
+        width="20"
+        height="20"
+        fill="none"
+        stroke="var(--accent-color)"
+        strokeWidth="2"
+        initial={{ opacity: 0, scale: 0 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ delay: 1.5 + (i * 0.2) }}
+      />
+    ))}
+  </motion.svg>
+);
+
+const InteriorDesignIllustration = () => (
+  <motion.svg 
+    className="card-illustration" 
+    viewBox="0 0 200 120"
+    initial="hidden"
+    animate="visible"
+  >
+    {/* Room outline */}
+    <motion.path
+      d="M40 30 L160 30 L160 100 L40 100 Z"
+      stroke="var(--accent-color)"
+      strokeWidth="2"
+      fill="none"
+      variants={{
+        hidden: { pathLength: 0 },
+        visible: { pathLength: 1 }
+      }}
+      transition={{ duration: 2 }}
+    />
+    {/* Furniture */}
+    <motion.path
+      d="M60 60 L90 60 L90 80 L60 80 Z" // Table
+      stroke="var(--accent-color)"
+      strokeWidth="2"
+      fill="none"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ delay: 1 }}
+    />
+    <motion.path
+      d="M120 50 C120 50, 140 50, 140 70 C140 90, 120 90, 120 70 Z" // Chair
+      stroke="var(--accent-color)"
+      strokeWidth="2"
+      fill="none"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ delay: 1.5 }}
+    />
+  </motion.svg>
+);
+
 const DesignMaterialsPage = () => {
   const { currentUser } = useContext(AuthContext);
   const [showAuthModal, setShowAuthModal] = useState(false);
@@ -247,11 +344,68 @@ const DesignMaterialsPage = () => {
       {showAuthModal && (
         <AuthModal onClose={() => setShowAuthModal(false)} />
       )}
-      {}
+      
+      <section className="ai-optimizer-preview">
+        <motion.div 
+          className="ai-optimizer-card"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+        >
+          <div className="card-content">
+            <h2>AI Engineering Design Optimizer</h2>
+            <p className="description">
+              Harness the power of AI to optimize your engineering designs. 
+              Generate efficient and cost-effective solutions for beams, 
+              trusses, and foundations based on your specific requirements.
+            </p>
+            
+            <div className="features-grid">
+              <div className="feature">
+                <i className="fas fa-bolt"></i>
+                <span>Instant Design Generation</span>
+              </div>
+              <div className="feature">
+                <i className="fas fa-shield-alt"></i>
+                <span>Safety Factor Compliance</span>
+              </div>
+              <div className="feature">
+                <i className="fas fa-coins"></i>
+                <span>Cost Optimization</span>
+              </div>
+            </div>
+
+            <Link 
+              to="/ai-design-optimizer"
+              className="try-optimizer-button"
+              onClick={() => {
+                if (!currentUser) {
+                  handleAuthRequired();
+                  return false;
+                }
+              }}
+            >
+              Try AI Design Optimizer
+              <i className="fas fa-arrow-right"></i>
+            </Link>
+          </div>
+          
+          <div className="card-illustration">
+            <StructuralDesignIllustration />
+          </div>
+        </motion.div>
+      </section>
+
       <h1>Design Materials for Purchase</h1>
       <div className="materials-list">
-        {designMaterials.map((material) => (
-          <DesignMaterialCard key={material.id} material={material} onInteraction={() => { handleInteraction(); handleAuthRequired(); }} />
+        {designMaterials.map((material, index) => (
+          <React.Fragment key={material.id}>
+            <DesignMaterialCard 
+              material={material} 
+              onInteraction={() => { handleInteraction(); handleAuthRequired(); }} 
+            />
+            {index === 0 && <InteriorDesignIllustration />}
+          </React.Fragment>
         ))}
       </div> 
       {/* New Affiliate Marketing Section */}

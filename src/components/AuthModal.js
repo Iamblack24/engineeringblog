@@ -26,7 +26,7 @@ const AuthModal = ({ onClose }) => {
   const toggleAuthMode = () => {
     setIsSignup(!isSignup);
     setError('');
-    setAcceptTerms(false); // Reset the checkbox when toggling
+    setAcceptTerms(false);
   };
 
   const handleInputChange = (e) => {
@@ -41,10 +41,29 @@ const AuthModal = ({ onClose }) => {
     setAcceptTerms(e.target.checked);
   };
 
+  const validateEmail = (email) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  };
+
+  const validatePassword = (password) => {
+    return password.length >= 6; // Example: Minimum 6 characters
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (isSignup && !acceptTerms) {
       setError('You must accept the Terms of Service and Privacy Policy.');
+      return;
+    }
+
+    if (!validateEmail(formData.email)) {
+      setError('Please enter a valid email address.');
+      return;
+    }
+
+    if (!validatePassword(formData.password)) {
+      setError('Password must be at least 6 characters long.');
       return;
     }
 
