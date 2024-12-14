@@ -1,0 +1,276 @@
+/* src/components/AIAssignmentHelper.css */
+.ai-assignment-helper {
+    max-width: 1200px;
+    margin: 2rem auto;
+    padding: 0 1rem;
+    color: #000000;
+  }
+  .ai-assignment-helper h1{
+    color: #000000;
+  }
+
+
+  .assignment-container {
+    background: white;
+    border-radius: 12px;
+    padding: 2rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    color: #000000;
+  }
+  
+  .form-group {
+    margin-bottom: 1.5rem;
+  }
+  
+  .form-group label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+    color: #000000;
+  }
+  
+  .form-group select,
+  .form-group textarea,
+  .form-group input {
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-size: 1rem;
+    background: white;
+    color: #000000;
+  }
+  
+  .form-group textarea {
+    resize: vertical;
+    min-height: 150px;
+  }
+  
+  .submit-btn,
+  .download-btn,
+  .new-assignment-btn {
+    padding: 0.75rem 1.5rem;
+    border: none;
+    border-radius: 6px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-size: 1rem;
+  }
+  
+  .submit-btn:hover,
+  .download-btn:hover,
+  .new-assignment-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+  
+  .submit-btn {
+    background: #3498db;
+    color: white;
+    width: 100%;
+    margin-top: 1rem;
+  }
+  
+  .submit-btn:disabled {
+    background: #ccc;
+    cursor: not-allowed;
+    transform: none;
+  }
+  
+  .solution-container {
+    margin-top: 2rem;
+    padding-top: 2rem;
+    border-top: 1px solid #eee;
+    color: white;
+  }
+  
+  .solution-content {
+    background: white;
+    color: #000000;
+    padding: 1.5rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    margin: 1rem 0;
+    overflow-x: auto;
+  }
+  
+  .solution-content h1,
+  .solution-content h2,
+  .solution-content h3,
+  .solution-content h4,
+  .solution-content h5,
+  .solution-content h6,
+  .solution-content p,
+  .solution-content li,
+  .solution-content table {
+    color: #000000;
+  }
+  .solution-content.markdown-body{
+    background-color: #f6f8fa;
+    color: #000000;
+    padding: 0.2em 0.4em;
+    border-radius: 3px;
+  }
+  
+  .markdown-body {
+    color: #000000;
+    background: white;
+  }
+  
+  .markdown-body pre {
+    background-color: #f6f8fa;
+    color: #000000;
+    padding: 16px;
+    overflow: auto;
+    border-radius: 6px;
+  }
+  
+  .markdown-body code {
+    background-color: #f6f8fa;
+    color: #000000;
+    padding: 0.2em 0.4em;
+    border-radius: 3px;
+  }
+  
+  .action-buttons {
+    display: flex;
+    gap: 1rem;
+    margin-top: 1.5rem;
+  }
+  
+  .download-btn {
+    background: #2ecc71;
+    color: white;
+    flex: 1;
+  }
+  
+  .new-assignment-btn {
+    background: #f1f1f1;
+    color: #000000;
+    flex: 1;
+  }
+  
+  .toggle-details-btn {
+    background: none;
+    border: none;
+    color: #0366d6;
+    padding: 10px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    margin: 10px 0;
+    text-decoration: underline;
+    width: 100%;
+    text-align: left;
+  }
+  
+  .user-details {
+    background: #f8f9fa;
+    padding: 1.5rem;
+    border-radius: 8px;
+    margin: 10px 0;
+    color: #000000;
+  }
+  
+  .error-message {
+    color: #dc3545;
+    background: #fff;
+    padding: 1rem;
+    border-radius: 6px;
+    margin: 1rem 0;
+    border: 1px solid #dc3545;
+  }
+  
+  /* Mobile Responsiveness */
+  @media (max-width: 768px) {
+    .ai-assignment-helper {
+      margin: 1rem auto;
+    }
+  
+    .assignment-container {
+      padding: 1rem;
+    }
+  
+    .form-group select,
+    .form-group textarea,
+    .form-group input {
+      padding: 0.6rem;
+      font-size: 16px;
+    }
+  
+    .form-group textarea {
+      min-height: 120px;
+    }
+  
+    .action-buttons {
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+  
+    .submit-btn,
+    .download-btn,
+    .new-assignment-btn {
+      width: 100%;
+      padding: 0.8rem;
+    }
+  
+    /* Improve table scrolling */
+    .solution-content table {
+      display: block;
+      overflow-x: auto;
+      white-space: nowrap;
+      -webkit-overflow-scrolling: touch;
+    }
+  
+    /* Better code block handling */
+    .solution-content pre {
+      max-width: 100%;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+  }
+  
+  /* Small mobile devices */
+  @media (max-width: 480px) {
+    .assignment-container {
+      padding: 0.75rem;
+    }
+  
+    .form-group {
+      margin-bottom: 1rem;
+    }
+  
+    h1 {
+      font-size: 1.5rem;
+    }
+  
+    h2 {
+      font-size: 1.25rem;
+    }
+  
+    .toggle-details-btn {
+      font-size: 0.8rem;
+    }
+  
+    .user-details {
+      padding: 1rem;
+    }
+  }
+  
+  
+  
+  /* Print styles for PDF generation */
+  @media print {
+    * {
+      color: #000000 !important;
+      background: white !important;
+    }
+  
+    .solution-content {
+      box-shadow: none;
+    }
+  
+    .action-buttons {
+      display: none;
+    }
+  }

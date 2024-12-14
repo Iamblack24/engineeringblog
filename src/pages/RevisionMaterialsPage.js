@@ -166,6 +166,42 @@ const RevisionMaterialsPage = () => {
         />
       )}
 
+      {/* AI Assignment Helper Section */}
+      <div className="ai-assignment-section">
+        <h2>AI Assignment Assistant</h2>
+        <p>
+          Get intelligent assistance with your engineering assignments. Our AI helps you understand concepts,
+          solve problems, and learn effectively.
+        </p>
+        
+        <div className="ai-assignment-features">
+          <div className="feature-item">
+            <i className="fas fa-robot"></i>
+            <h3>Smart Analysis</h3>
+            <p>AI analyzes your assignment requirements and provides detailed solutions</p>
+          </div>
+          
+          <div className="feature-item">
+            <i className="fas fa-file-pdf"></i>
+            <h3>PDF Export</h3>
+            <p>Download complete solutions as professional PDF documents</p>
+          </div>
+          
+          <div className="feature-item">
+            <i className="fas fa-lightbulb"></i>
+            <h3>Learning Focus</h3>
+            <p>Understand the solution process with step-by-step explanations</p>
+          </div>
+        </div>
+
+        <Link 
+          to="/ai-assignment-helper"
+          className="try-assignment-helper-btn"
+        >
+          Try Assignment Helper
+        </Link>
+      </div>
+
       {/* New Educational Resources Card */}
       <EducationalResourcesCard onAuthRequired={handleAuthRequired} />
       <div className="materials-list">

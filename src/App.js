@@ -82,6 +82,7 @@ import SoilClassificationTool from './tools/SoilClassificationTool';
 import WaterNetworkAnalysis from './tools/WaterNetworkAnalysis';
 import MaterialSelectionTool from './tools/MaterialSelectionTool';
 import AIAssistantPage from './pages/AIAssistantPage';
+import AIAssignmentHelper from './components/AIAssignmentHelper';
 import WorkshopsPage from './pages/WorkshopsPage';
 import AIDesignOptimizerPage from './pages/AIDesignOptimizerPage';
 import ConstructionManagementFlashcards from './pages/materials/ConstructionManagementFlashcards';
@@ -183,6 +184,7 @@ function App() {
           <Route path="/tools/matrix-calculator" element={<MatrixCalculator />} />
           <Route path="/tools/stress-strain-generator" element={<StressStrainGenerator />} />
           <Route path="/tools/lcca-tool" element={<LCCATool />} />
+          <Route path="/ai-assignment-helper" element={<AIAssignmentHelper />} />
           <Route path="/tools/area-volume-calculator" element={<AreaVolumeCalculator />} />
           <Route path="/tools/carbon-footprint-calculator" element={<CarbonFootprintCalculator />} />
           <Route path="/tools/project-timeline-generator" element={<ProjectTimelineGenerator />} />

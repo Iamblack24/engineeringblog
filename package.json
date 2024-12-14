@@ -24,6 +24,7 @@
     "firebase-admin": "^13.0.1",
     "framer-motion": "^11.13.1",
     "helmet": "^8.0.0",
+    "html2pdf.js": "^0.10.2",
     "mathjs": "^14.0.0",
     "numeric": "^1.2.6",
     "pdfjs-dist": "^3.0.279",
