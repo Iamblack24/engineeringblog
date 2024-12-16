@@ -1,10 +1,5 @@
 /* DesignVisualizer.css */
 
-/* Global text and background colors */
-* {
-  color: #000000;
-}
-
 .design-visualizer {
   padding-bottom: 100px;
   min-height: calc(100vh - 200px);
@@ -12,7 +7,7 @@
   background-color: #ffffff;
 }
 
-.data-sections {
+.design-visualizer .data-sections {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
   gap: 20px;
@@ -20,7 +15,7 @@
   background-color: #ffffff;
 }
 
-.data-section {
+.design-visualizer .data-section {
   padding: 15px;
   border: 1px solid #ddd;
   border-radius: 8px;
@@ -28,19 +23,19 @@
   box-shadow: 0 1px 3px rgba(0,0,0,0.1);
 }
 
-.data-section h3,
-.data-section h4,
-.data-section p,
-.data-section span {
-  color: #000000;
+.design-visualizer .data-section h3,
+.design-visualizer .data-section h4,
+.design-visualizer .data-section p,
+.design-visualizer .data-section span {
+  color: inherit;
 }
 
-.data-grid {
+.design-visualizer .data-grid {
   display: grid;
   gap: 10px;
 }
 
-.data-item {
+.design-visualizer .data-item {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -50,20 +45,20 @@
   border-radius: 4px;
 }
 
-.data-item .label,
-.data-item .value {
+.design-visualizer .data-item .label,
+.design-visualizer .data-item .value {
   color: #000000;
 }
 
 /* Chart Container Styles */
-.chart-container {
+.design-visualizer .chart-container {
   max-width: 100%;
   margin: 0 auto;
   padding: 15px;
   background-color: #ffffff;
 }
 
-.chart-wrapper {
+.design-visualizer .chart-wrapper {
   margin: 20px 0;
   padding: 20px;
   background: #ffffff;
@@ -74,7 +69,7 @@
 }
 
 /* Performance Metrics */
-.performance-metrics {
+.design-visualizer .performance-metrics {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
   gap: 20px;
@@ -83,93 +78,93 @@
   background-color: #ffffff;
 }
 
-.metric {
+.design-visualizer .metric {
   padding: 15px;
   background: #ffffff;
   border: 1px solid #ddd;
   border-radius: 8px;
 }
 
-.metric h4,
-.metric p {
+.design-visualizer .metric h4,
+.design-visualizer .metric p {
   color: #000000;
 }
 
 /* Mobile Optimization */
 @media (max-width: 768px) {
-  .data-sections {
+  .design-visualizer .data-sections {
     grid-template-columns: 1fr;
     padding: 10px;
   }
 
-  .chart-container {
+  .design-visualizer .chart-container {
     padding: 5px;
   }
 
-  .chart-wrapper {
+  .design-visualizer .chart-wrapper {
     padding: 10px;
     margin: 10px 0;
     max-height: calc(100vh - 200px);
   }
 
   /* Chart specific mobile optimizations */
-  .chart-wrapper canvas {
+  .design-visualizer .chart-wrapper canvas {
     max-width: 100%;
     height: auto !important;
   }
 
-  .performance-metrics {
+  .design-visualizer .performance-metrics {
     grid-template-columns: 1fr;
     padding: 0 10px;
     gap: 15px;
   }
 
-  .metric {
+  .design-visualizer .metric {
     min-height: auto;
     padding: 12px;
   }
 
-  .data-item {
+  .design-visualizer .data-item {
     flex-direction: column;
     align-items: flex-start;
     gap: 5px;
   }
 
   /* Improve readability on mobile */
-  .data-section h3 {
+  .design-visualizer .data-section h3 {
     font-size: 18px;
     margin-bottom: 15px;
   }
 
-  .metric h4 {
+  .design-visualizer .metric h4 {
     font-size: 16px;
   }
 
-  .metric p {
+  .design-visualizer .metric p {
     font-size: 14px;
     line-height: 1.4;
   }
 
-  .performance-charts {
+  .design-visualizer .performance-charts {
     margin-bottom: 60px;
     padding: 10px;
   }
 
-  .chart-wrapper {
+  .design-visualizer .chart-wrapper {
     padding: 10px;
     margin: 10px 0;
     max-height: calc(100vh - 200px);
   }
 
   /* Ensure chart container doesn't overflow */
-  .chart-container {
+  .design-visualizer .chart-container {
     overflow: hidden;
     margin-bottom: 40px;
   }
 }
 
 /* Chart Legend Optimization */
-.chart-wrapper .chartjs-legend {
+.design-visualizer .chart-wrapper .chartjs-legend {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
@@ -177,7 +172,7 @@
   margin-top: 15px;
 }
 
-.chart-wrapper .chartjs-legend li {
+.design-visualizer .chart-wrapper .chartjs-legend li {
   margin: 0;
   padding: 5px 10px;
   background-color: #ffffff;
@@ -187,7 +182,7 @@
 }
 
 /* View Controls */
-.view-controls {
+.design-visualizer .view-controls {
   display: flex;
   gap: 10px;
   margin: 20px 0;
@@ -195,7 +190,7 @@
   background-color: #ffffff;
 }
 
-.view-controls button {
+.design-visualizer .view-controls button {
   padding: 8px 16px;
   border: 1px solid #2196F3;
   border-radius: 4px;
@@ -205,12 +200,12 @@
   transition: background-color 0.3s;
 }
 
-.view-controls button:hover {
+.design-visualizer .view-controls button:hover {
   background-color: #f5f5f5;
 }
 
 /* Visualization Container */
-.visualization-container {
+.design-visualizer .visualization-container {
   width: 100%;
   height: 500px;
   border: 1px solid #ddd;
@@ -221,33 +216,51 @@
 }
 
 @media (max-width: 768px) {
-  .visualization-container {
+  .design-visualizer .visualization-container {
     height: 300px; /* Reduced height for mobile */
   }
 }
 
-/* Ensure all text remains black in all contexts */
-h3, h4, h5, p, span, button, text {
-  color: #000000 !important;
-}
+
 
 /* Chart tooltip styles */
-.chartjs-tooltip {
+/* Replace with this scoped version */
+.design-visualizer h3,
+.design-visualizer h4,
+.design-visualizer h5,
+.design-visualizer p,
+.design-visualizer span,
+.design-visualizer button,
+.design-visualizer text {
+  color: inherit;
+}
+
+/* Remove these !important declarations (lines 232-234) */
+.design-visualizer .chartjs-tooltip {
   background-color: #ffffff !important;
   border: 1px solid #ddd !important;
   color: #000000 !important;
 }
 
-/* Print styles */
-@media print {
-  * {
-    color: #000000 !important;
-    background-color: #ffffff !important;
-  }
+/* Replace with */
+.design-visualizer .chartjs-tooltip {
+  background-color: #ffffff;
+  border: 1px solid #ddd;
+  color: inherit;
+}
+
+.design-visualizer .data-section h3,
+.design-visualizer .data-section h4,
+.design-visualizer .data-section h5,
+.design-visualizer .data-section p,
+.design-visualizer .data-section span,
+.design-visualizer .data-section button,
+.design-visualizer .data-section text {
+  color: black;
 }
 
 /* Chart container spacing */
-.performance-charts {
+.design-visualizer .performance-charts {
   padding: 20px;
   margin-bottom: 80px;
   background: #ffffff;
@@ -256,7 +269,7 @@ h3, h4, h5, p, span, button, text {
 }
 
 /* Additional controls positioning */
-.additional-controls {
+.design-visualizer .additional-controls {
   position: relative;
   margin-top: 20px;
   margin-bottom: 40px;
@@ -266,7 +279,7 @@ h3, h4, h5, p, span, button, text {
 
 /* Add these comparison-specific styles */
 
-.comparison-view {
+.design-visualizer .comparison-view {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 30px;
@@ -275,8 +288,8 @@ h3, h4, h5, p, span, button, text {
   background-color: #ffffff;
 }
 
-.original-design,
-.optimized-design {
+.design-visualizer .original-design,
+.design-visualizer .optimized-design {
   position: relative;
   border: 2px solid #ddd;
   border-radius: 8px;
@@ -284,19 +297,19 @@ h3, h4, h5, p, span, button, text {
   height: 400px;
 }
 
-.original-design {
+.design-visualizer .original-design {
   background-color: #f8f9fa;
   border-color: #2196F3;
 }
 
-.optimized-design {
+.design-visualizer .optimized-design {
   background-color: #f8f9fa;
   border-color: #4CAF50;
 }
 
 /* Labels for comparison */
-.original-design::before,
-.optimized-design::before {
+.design-visualizer .original-design::before,
+.design-visualizer .optimized-design::before {
   content: attr(data-title);
   position: absolute;
   top: -25px;
@@ -309,20 +322,20 @@ h3, h4, h5, p, span, button, text {
   z-index: 1;
 }
 
-.original-design::before {
+.design-visualizer .original-design::before {
   content: "Original Design";
   color: #2196F3;
   border: 2px solid #2196F3;
 }
 
-.optimized-design::before {
+.design-visualizer .optimized-design::before {
   content: "Optimized Design";
   color: #4CAF50;
   border: 2px solid #4CAF50;
 }
 
 /* Comparison metrics */
-.comparison-metrics {
+.design-visualizer .comparison-metrics {
   margin-top: 20px;
   padding: 15px;
   background-color: #ffffff;
@@ -330,7 +343,7 @@ h3, h4, h5, p, span, button, text {
   box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
-.metric-difference {
+.design-visualizer .metric-difference {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -340,25 +353,37 @@ h3, h4, h5, p, span, button, text {
   background-color: #f8f9fa;
 }
 
-.improvement {
+.design-visualizer .improvement {
   color: #4CAF50;
   font-weight: bold;
 }
 
-.decline {
+.design-visualizer .decline {
   color: #f44336;
   font-weight: bold;
 }
 
 /* Mobile responsiveness for comparison */
 @media (max-width: 768px) {
-  .comparison-view {
+  .design-visualizer .comparison-view {
     grid-template-columns: 1fr;
     gap: 40px;
   }
 
-  .original-design,
-  .optimized-design {
+  .design-visualizer .original-design,
+  .design-visualizer .optimized-design {
     height: 300px;
   }
+}
+
+/* Remove global text color overrides */
+.design-visualizer .chartjs-tooltip {
+  background-color: #ffffff;
+  border: 1px solid #ddd;
+  color: inherit;
+}
+
+/* Remove !important declarations */
+.design-visualizer .performance-charts text {
+  fill: currentColor;
 }
