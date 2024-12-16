@@ -40,23 +40,45 @@
 /* Close Button */
 .close-button {
   position: absolute;
-  top: 12px;
+  top: 15px;
   right: 15px;
-  background: transparent;
-  border: none;
+  background-color: #e0e0e0; /* Always visible light gray background */
+  border: 1px solid #ccc; /* Add border for better visibility */
   font-size: 1.5rem;
   color: #333;
   cursor: pointer;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: all 0.2s ease;
+  z-index: 1000;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Add subtle shadow for depth */
 }
 
 .close-button:hover {
-  color: #1abc9c;
+  background-color: #d0d0d0;
+  color: #000;
+  transform: scale(1.1);
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.15);
+}
+
+.close-button:focus {
+  outline: 2px solid #3498db;
+  outline-offset: 2px;
+}
+
+.close-button i {
+  color: #333; /* Ensure icon is always visible */
 }
 
 /* Form Title */
 .auth-modal-content h2 {
   color: #2c3e50;
-  margin-bottom: 20px;
+  margin: 0 30px 20px 0; /* Add right margin to prevent overlap with close button */
+  padding-top: 10px;
 }
 
 /* Error Message */
@@ -213,4 +235,57 @@
   .submit-button {
     padding: 10px 12px;
   }
+}
+
+/* Add visual feedback for mobile devices */
+@media (max-width: 768px) {
+  .close-button {
+    top: 10px;
+    right: 10px;
+    width: 44px; /* Even larger touch target for mobile */
+    height: 44px;
+    font-size: 1.8rem;
+    background-color: #e0e0e0;
+    border: 2px solid #ccc; /* Thicker border for mobile */
+  }
+}
+
+/* Add to AuthModal.css */
+.password-strength {
+  margin: 10px 0;
+  padding: 10px;
+  background-color: #f8f9fa;
+  border-radius: 4px;
+}
+
+.password-strength ul {
+  list-style: none;
+  padding: 0;
+  margin: 5px 0;
+}
+
+.password-strength li {
+  margin: 5px 0;
+  padding-left: 20px;
+  position: relative;
+}
+
+.password-strength li:before {
+  content: '✕';
+  position: absolute;
+  left: 0;
+  color: #dc3545;
+}
+
+.password-strength li.valid:before {
+  content: '✓';
+  color: #28a745;
+}
+
+.invalid {
+  color: #dc3545;
+}
+
+.valid {
+  color: #28a745;
 }

@@ -2,27 +2,76 @@ const express = require('express');
 const path = require('path');
 const helmet = require('helmet');
 const bodyParser = require('body-parser');
-const { db } = require('./firebase'); // Add this import at top
+const admin = require('./firebaseAdmin');
 const { doc, setDoc, Timestamp } = require('firebase/firestore');
+const crypto = require('crypto');
+
+// Only declare db once
+const db = admin.firestore();
 
 const app = express();
+
+// Generate nonce middleware - MOVE THIS TO THE TOP
+app.use((req, res, next) => {
+  res.locals.nonce = crypto.randomBytes(16).toString('base64');
+  next();
+});
 
 // Use Helmet to set various HTTP headers for security
 app.use(helmet());
 
-// Set Content Security Policy
+// Set Content Security Policy with nonce
 app.use(
   helmet.contentSecurityPolicy({
     directives: {
       defaultSrc: ["'self'"],
-      scriptSrc: ["'self'", "https://www.googletagmanager.com"],
-      styleSrc: ["'self'", "'unsafe-inline'"],
-      imgSrc: ["'self'", "data:"],
-      connectSrc: ["'self'"],
-      fontSrc: ["'self'", "https://fonts.gstatic.com"],
+      scriptSrc: [
+        "'self'",
+        (req, res) => `'nonce-${res.locals.nonce}'`, // Dynamic nonce
+        "https://www.googletagmanager.com",
+        "https://pagead2.googlesyndication.com",
+        "https://cdnjs.cloudflare.com",
+      ],
+      styleSrc: [
+        "'self'",
+        "'unsafe-inline'", // For inline styles
+        "https://cdnjs.cloudflare.com", // For Font Awesome
+      ],
+      imgSrc: [
+        "'self'",
+        "data:",
+        "https:", // For ads and other external images
+        "http:",
+      ],
+      connectSrc: [
+        "'self'",
+        "https://www.google-analytics.com",
+        "https://firestore.googleapis.com",
+        "https://firebase.googleapis.com",
+        "https://*.google.com",
+        "https://*.googleapis.com",
+      ],
+      fontSrc: [
+        "'self'",
+        "https://fonts.gstatic.com",
+        "https://cdnjs.cloudflare.com", // For Font Awesome fonts
+      ],
       objectSrc: ["'none'"],
+      frameSrc: [
+        "https://pagead2.googlesyndication.com", // For Google Ads iframes
+      ],
+      manifestSrc: ["'self'"],
+      mediaSrc: ["'self'"],
+      workerSrc: [
+        "'self'",
+        "blob:", // For service workers
+      ],
+      childSrc: ["'self'", "blob:"],
+      baseUri: ["'self'"],
+      formAction: ["'self'"],
       upgradeInsecureRequests: [],
     },
+    reportOnly: false, // Set to true initially to test without blocking
   })
 );
 
@@ -33,6 +82,11 @@ app.use(bodyParser.json());
 app.use(express.static(path.join(__dirname, 'build'), {
   maxAge: '1y',
   etag: false,
+  setHeaders: (res, path) => {
+    if (path.endsWith('.html')) {
+      res.setHeader('Cache-Control', 'no-cache');
+    }
+  }
 }));
 
 //serve the service worker file from public directory
@@ -91,11 +145,14 @@ app.post('/api/send-notification', async (req, res) => {
 // The "catchall" handler: for any request that doesn't
 // match one above, send back React's index.html file.
 app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, 'build', 'index.html'));
+  const indexPath = path.join(__dirname, 'build', 'index.html');
+  const html = require('fs').readFileSync(indexPath, 'utf8');
+  const renderedHtml = html.replace(/<%- nonce %>/g, res.locals.nonce);
+  res.send(renderedHtml);
 });
 
 // Start the server
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });

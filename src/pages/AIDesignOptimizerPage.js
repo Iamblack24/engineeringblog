@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import './AIDesignOptimizerPage.css';
-import { Line } from 'react-chartjs-2';
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -12,6 +11,7 @@ import {
   Tooltip,
   Legend
 } from 'chart.js';
+import DesignVisualizer from '../components/DesignVisualizer';
 
 // Register ChartJS components
 ChartJS.register(
@@ -31,6 +31,9 @@ const AIDesignOptimizerPage = () => {
   const [optimizationResult, setOptimizationResult] = useState(null);
   const [formInputs, setFormInputs] = useState({});
   const [error, setError] = useState(null);
+  const [currentSection, setCurrentSection] = useState('project');
+  const [originalDesign, setOriginalDesign] = useState(null);
+  //const [formSections, setFormSections] = useState([]);
 
   // Design type definitions
   const designTypes = [
@@ -38,43 +41,508 @@ const AIDesignOptimizerPage = () => {
       id: 'beam',
       title: 'Beam Design',
       icon: '🏗️',
-      description: 'Optimize beam designs for maximum efficiency and cost-effectiveness',
+      description: 'Optimize reinforced concrete or steel beam designs',
       inputs: [
-        { id: 'span', label: 'Span Length (m)', type: 'number', min: 1, max: 30, required: true },
-        { id: 'load', label: 'Design Load (kN/m)', type: 'number', min: 0.5, max: 50, required: true },
-        { id: 'material', label: 'Material Type', type: 'select', required: true,
-          options: ['Reinforced Concrete', 'Steel', 'Timber'] },
-        { id: 'support', label: 'Support Conditions', type: 'select', required: true,
-          options: ['Simply Supported', 'Fixed-Fixed', 'Cantilever'] }
+        // Project Information
+        {
+          id: 'projectName',
+          label: 'Project Name',
+          type: 'text',
+          required: true,
+          section: 'project'
+        },
+        {
+          id: 'designCode',
+          label: 'Design Code',
+          type: 'select',
+          options: ['ACI 318-19', 'Eurocode 2', 'IS 456:2000'],
+          required: true,
+          section: 'project'
+        },
+        // Geometry
+        {
+          id: 'span',
+          label: 'Span Length (m)',
+          type: 'number',
+          min: 0,
+          required: true,
+          section: 'geometry'
+        },
+        {
+          id: 'supportType',
+          label: 'Support Conditions',
+          type: 'select',
+          options: ['Simply Supported', 'Fixed-Fixed', 'Cantilever'],
+          required: true,
+          section: 'geometry'
+        },
+        // Loading
+        {
+          id: 'deadLoad',
+          label: 'Dead Load (kN/m)',
+          type: 'number',
+          min: 0,
+          required: true,
+          section: 'loads'
+        },
+        {
+          id: 'liveLoad',
+          label: 'Live Load (kN/m)',
+          type: 'number',
+          min: 0,
+          required: true,
+          section: 'loads'
+        },
+        {
+          id: 'loadPattern',
+          label: 'Load Pattern',
+          type: 'select',
+          options: ['Uniform', 'Point Load', 'Combined'],
+          required: true,
+          section: 'loads'
+        },
+        // Materials
+        {
+          id: 'material',
+          label: 'Material Type',
+          type: 'select',
+          options: ['Reinforced Concrete', 'Steel'],
+          required: true,
+          section: 'materials'
+        },
+        {
+          id: 'concreteGrade',
+          label: 'Concrete Grade',
+          type: 'select',
+          options: ['M20', 'M25', 'M30', 'M35', 'M40'],
+          required: true,
+          section: 'materials',
+          showIf: (formData) => formData.material === 'Reinforced Concrete'
+        },
+        {
+          id: 'steelGrade',
+          label: 'Steel Grade',
+          type: 'select',
+          options: ['Fe415', 'Fe500', 'Fe550'],
+          required: true,
+          section: 'materials',
+          showIf: (formData) => formData.material === 'Reinforced Concrete'
+        },
+        // Requirements
+        {
+          id: 'deflectionLimit',
+          label: 'Deflection Limit',
+          type: 'select',
+          options: ['L/360', 'L/240', 'L/180'],
+          required: true,
+          section: 'requirements'
+        },
+        {
+          id: 'exposureClass',
+          label: 'Exposure Class',
+          type: 'select',
+          options: ['Mild', 'Moderate', 'Severe', 'Very Severe'],
+          required: true,
+          section: 'requirements'
+        },
+        {
+          id: 'fireRating',
+          label: 'Fire Rating (hours)',
+          type: 'select',
+          options: ['1', '2', '3', '4'],
+          required: true,
+          section: 'requirements'
+        },
+        // Costs
+        {
+          id: 'concreteCost',
+          label: 'Concrete Cost (per m³)',
+          type: 'number',
+          min: 0,
+          required: true,
+          section: 'costs',
+          showIf: (formData) => formData.material === 'Reinforced Concrete'
+        },
+        {
+          id: 'steelCost',
+          label: 'Steel Cost (per kg)',
+          type: 'number',
+          min: 0,
+          required: true,
+          section: 'costs'
+        },
+        {
+          id: 'formworkCost',
+          label: 'Formwork Cost (per m²)',
+          type: 'number',
+          min: 0,
+          required: true,
+          section: 'costs',
+          showIf: (formData) => formData.material === 'Reinforced Concrete'
+        },
+        {
+          id: 'laborCost',
+          label: 'Labor Cost (per day)',
+          type: 'number',
+          min: 0,
+          required: true,
+          section: 'costs'
+        }
+        // ... continue with more inputs
       ]
     },
     {
       id: 'truss',
       title: 'Truss Design',
-      icon: '🌉',
-      description: 'Generate optimized truss configurations for your structural needs',
+      icon: '🔧',
+      description: 'Optimize steel truss designs',
       inputs: [
-        { id: 'span', label: 'Total Span (m)', type: 'number', min: 6, max: 100, required: true },
-        { id: 'height', label: 'Truss Height (m)', type: 'number', min: 1, max: 15, required: true },
-        { id: 'loadType', label: 'Load Type', type: 'select', required: true,
-          options: ['Roof Load', 'Bridge Load', 'Solar Panel Support'] },
-        { id: 'material', label: 'Material', type: 'select', required: true,
-          options: ['Steel', 'Aluminum', 'Timber'] }
+        // Project Information
+        {
+          id: 'projectName',
+          label: 'Project Name',
+          type: 'text',
+          required: true,
+          section: 'project'
+        },
+        {
+          id: 'designCode',
+          label: 'Design Code',
+          type: 'select',
+          options: ['AISC 360', 'Eurocode 3', 'IS 800:2007'],
+          required: true,
+          section: 'project'
+        },
+        // Geometry
+        {
+          id: 'span',
+          label: 'Span (m)',
+          type: 'number',
+          min: 6,
+          max: 100,
+          required: true,
+          section: 'geometry'
+        },
+        {
+          id: 'height',
+          label: 'Height (m)',
+          type: 'number',
+          min: 1,
+          max: 15,
+          required: true,
+          section: 'geometry'
+        },
+        {
+          id: 'roofArea',
+          label: 'Roof Area (m²)',
+          type: 'number',
+          min: 0,
+          required: true,
+          section: 'geometry'
+        },
+        {
+          id: 'trussSpacing',
+          label: 'Truss Spacing (m)',
+          type: 'number',
+          min: 0,
+          required: true,
+          section: 'geometry'
+        },
+        // Loading
+        {
+          id: 'deadLoad',
+          label: 'Dead Load (kN/m²)',
+          type: 'number',
+          min: 0,
+          required: true,
+          section: 'loads'
+        },
+        {
+          id: 'liveLoad',
+          label: 'Live Load (kN/m²)',
+          type: 'number',
+          min: 0,
+          required: true,
+          section: 'loads'
+        },
+        {
+          id: 'windLoad',
+          label: 'Wind Load (kN/m²)',
+          type: 'number',
+          min: 0,
+          required: true,
+          section: 'loads'
+        },
+        // Materials
+        {
+          id: 'material',
+          label: 'Material',
+          type: 'select',
+          options: ['Steel', 'Aluminum', 'Timber'],
+          required: true,
+          section: 'materials'
+        },
+        {
+          id: 'connectionType',
+          label: 'Connection Type',
+          type: 'select',
+          options: ['Welded', 'Bolted'],
+          required: true,
+          section: 'materials'
+        },
+        // Connections
+        {
+          id: 'jointType',
+          label: 'Joint Type',
+          type: 'select',
+          options: ['Gusset Plate', 'Direct Welding', 'Bolted Splice'],
+          required: true,
+          section: 'connections'
+        },
+        {
+          id: 'boltGrade',
+          label: 'Bolt Grade',
+          type: 'select',
+          options: ['4.6', '8.8', '10.9'],
+          required: true,
+          section: 'connections',
+          showIf: (formData) => formData.connectionType === 'Bolted'
+        },
+        {
+          id: 'weldType',
+          label: 'Weld Type',
+          type: 'select',
+          options: ['Fillet', 'Butt', 'Plug'],
+          required: true,
+          section: 'connections',
+          showIf: (formData) => formData.connectionType === 'Welded'
+        },
+        // Costs
+        {
+          id: 'materialCost',
+          label: 'Material Cost (per kg)',
+          type: 'number',
+          min: 0,
+          required: true,
+          section: 'costs'
+        },
+        {
+          id: 'fabricationCost',
+          label: 'Fabrication Cost (per joint)',
+          type: 'number',
+          min: 0,
+          required: true,
+          section: 'costs'
+        },
+        {
+          id: 'transportationCost',
+          label: 'Transportation Cost',
+          type: 'number',
+          min: 0,
+          required: true,
+          section: 'costs'
+        }
       ]
     },
     {
       id: 'foundation',
       title: 'Foundation Design',
-      icon: '🏗️',
+      icon: '🏛️',
       description: 'Optimize foundation designs based on soil conditions and loads',
       inputs: [
-        { id: 'load', label: 'Column Load (kN)', type: 'number', min: 100, max: 5000, required: true },
-        { id: 'soilCapacity', label: 'Soil Bearing Capacity (kN/m²)', type: 'number', min: 50, max: 1000, required: true },
-        { id: 'soilType', label: 'Soil Type', type: 'select', required: true,
-          options: ['Clay', 'Sand', 'Rock', 'Mixed'] },
-        { id: 'depth', label: 'Required Depth (m)', type: 'number', min: 0.5, max: 5, required: true }
+        // Project Information
+        {
+          id: 'projectName',
+          label: 'Project Name',
+          type: 'text',
+          required: true,
+          section: 'project'
+        },
+        {
+          id: 'designCode',
+          label: 'Design Code',
+          type: 'select',
+          options: ['ACI 318-19', 'Eurocode 7', 'IS 456:2000'],
+          required: true,
+          section: 'project'
+        },
+        // Soil Parameters
+        {
+          id: 'soilType',
+          label: 'Soil Type',
+          type: 'select',
+          options: [
+            'Soft Clay',
+            'Stiff Clay',
+            'Loose Sand',
+            'Dense Sand',
+            'Rock'
+          ],
+          required: true,
+          section: 'soil'
+        },
+        {
+          id: 'bearingCapacity',
+          label: 'Safe Bearing Capacity (kN/m²)',
+          type: 'number',
+          min: 0,
+          required: true,
+          section: 'soil'
+        },
+        {
+          id: 'waterTableDepth',
+          label: 'Water Table Depth (m)',
+          type: 'number',
+          min: 0,
+          required: true,
+          section: 'soil'
+        },
+        {
+          id: 'soilLayering',
+          label: 'Soil Layering',
+          type: 'select',
+          options: ['Uniform', 'Layered', 'Variable'],
+          required: true,
+          section: 'soil'
+        },
+        // Loading Conditions
+        {
+          id: 'axialLoad',
+          label: 'Axial Load (kN)',
+          type: 'number',
+          min: 0,
+          required: true,
+          section: 'loads'
+        },
+        {
+          id: 'momentX',
+          label: 'Moment about X-axis (kN-m)',
+          type: 'number',
+          required: true,
+          section: 'loads'
+        },
+        {
+          id: 'momentY',
+          label: 'Moment about Y-axis (kN-m)',
+          type: 'number',
+          required: true,
+          section: 'loads'
+        },
+        {
+          id: 'horizontalForceX',
+          label: 'Horizontal Force X (kN)',
+          type: 'number',
+          required: true,
+          section: 'loads'
+        },
+        {
+          id: 'horizontalForceY',
+          label: 'Horizontal Force Y (kN)',
+          type: 'number',
+          required: true,
+          section: 'loads'
+        },
+        // Foundation Geometry
+        {
+          id: 'foundationType',
+          label: 'Foundation Type',
+          type: 'select',
+          options: [
+            'Isolated Footing',
+            'Strip Footing',
+            'Raft Foundation',
+            'Pile Foundation'
+          ],
+          required: true,
+          section: 'geometry'
+        },
+        {
+          id: 'embedmentDepth',
+          label: 'Embedment Depth (m)',
+          type: 'number',
+          min: 0,
+          required: true,
+          section: 'geometry'
+        },
+        // Material Properties
+        {
+          id: 'concreteGrade',
+          label: 'Concrete Grade',
+          type: 'select',
+          options: ['M20', 'M25', 'M30', 'M35', 'M40'],
+          required: true,
+          section: 'materials'
+        },
+        {
+          id: 'steelGrade',
+          label: 'Steel Grade',
+          type: 'select',
+          options: ['Fe415', 'Fe500', 'Fe550'],
+          required: true,
+          section: 'materials'
+        },
+        // Site Conditions
+        {
+          id: 'adjacentStructures',
+          label: 'Adjacent Structures',
+          type: 'select',
+          options: ['None', 'Light', 'Heavy'],
+          required: true,
+          section: 'site'
+        },
+        {
+          id: 'siteAccessibility',
+          label: 'Site Accessibility',
+          type: 'select',
+          options: ['Easy', 'Moderate', 'Difficult'],
+          required: true,
+          section: 'site'
+        },
+        // Environmental Conditions
+        {
+          id: 'exposureClass',
+          label: 'Environmental Exposure Class',
+          type: 'select',
+          options: ['Mild', 'Moderate', 'Severe', 'Very Severe'],
+          required: true,
+          section: 'environment'
+        },
+        {
+          id: 'seismicZone',
+          label: 'Seismic Zone',
+          type: 'select',
+          options: ['Zone I', 'Zone II', 'Zone III', 'Zone IV', 'Zone V'],
+          required: true,
+          section: 'environment'
+        },
+        // Cost Parameters
+        {
+          id: 'excavationCost',
+          label: 'Excavation Cost (per m³)',
+          type: 'number',
+          min: 0,
+          required: true,
+          section: 'costs'
+        },
+        {
+          id: 'concreteCost',
+          label: 'Concrete Cost (per m³)',
+          type: 'number',
+          min: 0,
+          required: true,
+          section: 'costs'
+        },
+        {
+          id: 'steelCost',
+          label: 'Steel Cost (per kg)',
+          type: 'number',
+          min: 0,
+          required: true,
+          section: 'costs'
+        }
       ]
     }
+    // ... Foundation type definition
   ];
 
   // Input handlers
@@ -91,6 +559,15 @@ const AIDesignOptimizerPage = () => {
     setFormInputs({});
     setOptimizationResult(null);
     setError(null);
+
+    // Initialize with default dimensions and costs
+   const initialDimensions = calculateInitialDimensions();
+   const initialCosts = calculateInitialCosts();
+  
+   setOriginalDesign({
+    dimensions: initialDimensions,
+    costs: initialCosts
+   });
   };
 
   // Form validation
@@ -100,9 +577,13 @@ const AIDesignOptimizerPage = () => {
       return false;
     }
 
-    const missingInputs = selectedDesignType.inputs.filter(
-      input => !formInputs[input.id] && input.required
-    );
+    const missingInputs = selectedDesignType.inputs.filter(input => {
+      // Only validate if the input is required AND
+      // either has no showIf condition OR its showIf condition is met
+      return input.required && 
+             (!input.showIf || input.showIf(formInputs)) && 
+             !formInputs[input.id];
+    });
 
     if (missingInputs.length > 0) {
       setError(`Please fill in all required fields: ${missingInputs.map(i => i.label).join(', ')}`);
@@ -119,282 +600,107 @@ const AIDesignOptimizerPage = () => {
     setIsLoading(true);
     setError(null);
 
+    // Calculate initial values before optimization
+    const initialDimensions = calculateInitialDimensions();
+    const initialCosts = calculateInitialCosts();
+
     try {
       const response = await fetch('https://flashcards-2iat.onrender.com/api/optimize-design', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           designType: selectedDesignType.id,
-          parameters: formInputs
+          parameters: formInputs,
+          initialDesign: {
+            dimensions: initialDimensions,
+            costs: initialCosts
+          }
         })
       });
 
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || 'Optimization failed');
+      const data = await response.json();
+      console.log('API Response:', data);
+      
+      if (response.ok) {
+        setOptimizationResult(data);
+        setOriginalDesign({
+          dimensions: initialDimensions,
+          costs: initialCosts,
+          analysis: {
+            strength: data.originalStrength || 0
+          },
+          materials: {
+            usage: data.originalMaterialUsage || 0
+          },
+          safety: {
+            factor: data.originalSafetyFactor || 0
+          }
+        });
+      } else {
+        setError(data.message || 'Optimization failed');
       }
-
-      const result = await response.json();
-      setOptimizationResult(result);
     } catch (err) {
-      setError(err.message);
+      console.error('Optimization error:', err);
+      setError('Failed to communicate with the server');
     } finally {
       setIsLoading(false);
     }
   };
 
-  // 2D Visualization Components
-  const BeamVisualization = ({ designData }) => {
-    if (!designData?.numericalData?.dimensions) {
-      return <div>No visualization data available</div>;
+  // Helper functions for initial calculations
+  const calculateInitialDimensions = () => {
+    if (!formInputs || !selectedDesignType) return {};
+
+    switch(selectedDesignType.id) {
+      case 'beam':
+        return {
+          span: formInputs.span || 0,
+          depth: (formInputs.span || 0) / 12,
+          width: (formInputs.span || 0) / 24
+        };
+      case 'truss':
+        return {
+          span: formInputs.span || 0,
+          height: formInputs.height || 0
+        };
+      case 'foundation':
+        return {
+          length: Math.sqrt((formInputs.axialLoad || 0) / 100),
+          width: Math.sqrt((formInputs.axialLoad || 0) / 100),
+          depth: formInputs.embedmentDepth || 0
+        };
+      default:
+        return {};
     }
-
-    const { span, depth = 0.6 } = designData.numericalData.dimensions;
-    
-    return (
-      <div className="beam-visualization">
-        <svg width="100%" height="200" viewBox={`0 0 ${span * 50} 200`}>
-          {/* Beam body */}
-          <rect
-            x="0"
-            y="80"
-            width={span * 50}
-            height={depth * 50}
-            fill="#ccc"
-            stroke="#666"
-          />
-          
-          {/* Supports */}
-          {formInputs.support === 'Simply Supported' && (
-            <>
-              <polygon points="0,160 20,140 -20,140" fill="#666"/>
-              <polygon points={`${span * 50},160 ${span * 50 + 20},140 ${span * 50 - 20},140`} fill="#666"/>
-            </>
-          )}
-          
-          {formInputs.support === 'Fixed-Fixed' && (
-            <>
-              <rect x="-10" y="60" width="10" height="100" fill="#666"/>
-              <rect x={span * 50} y="60" width="10" height="100" fill="#666"/>
-            </>
-          )}
-          
-          {formInputs.support === 'Cantilever' && (
-            <rect x="-10" y="60" width="10" height="100" fill="#666"/>
-          )}
-
-          {/* Load arrows */}
-          {Array.from({ length: Math.floor(span) }).map((_, i) => (
-            <path
-              key={i}
-              d={`M${(i + 0.5) * 50},40 L${(i + 0.5) * 50},80`}
-              stroke="#f00"
-              markerEnd="url(#arrowhead)"
-            />
-          ))}
-          
-          {/* Arrow marker definition */}
-          <defs>
-            <marker
-              id="arrowhead"
-              markerWidth="10"
-              markerHeight="7"
-              refX="9"
-              refY="3.5"
-              orient="auto"
-            >
-              <polygon points="0 0, 10 3.5, 0 7" fill="#f00"/>
-            </marker>
-          </defs>
-        </svg>
-      </div>
-    );
   };
 
-  const TrussVisualization = ({ designData }) => {
-    if (!designData?.numericalData?.dimensions) {
-      return <div>No visualization data available</div>;
-    }
+  const calculateInitialCosts = () => {
+    if (!formInputs || !selectedDesignType) return {};
 
-    const { span } = designData.numericalData.dimensions;
-    const numPanels = Math.floor(span / 3); // Assuming 3m panel length
-    const panelWidth = (span * 50) / numPanels;
+    const materialCost = formInputs.materialCost || 0;
+    const fabricationCost = formInputs.fabricationCost || 0;
+    const transportationCost = formInputs.transportationCost || 0;
 
-    const generateTrussPoints = () => {
-      const points = {
-        top: [],
-        bottom: [],
-        web: []
-      };
+    // Basic initial cost calculation
+    const dimensions = calculateInitialDimensions();
+    const volume = Object.values(dimensions).reduce((a, b) => a * b, 1);
+    const estimatedWeight = volume * 7850; // Assuming steel density in kg/m³
 
-      // Generate top and bottom chord points
-      for (let i = 0; i <= numPanels; i++) {
-        points.top.push({ x: i * panelWidth, y: 50 });
-        points.bottom.push({ x: i * panelWidth, y: 150 });
-      }
-
-      // Generate web members
-      for (let i = 0; i < numPanels; i++) {
-        points.web.push({
-          start: points.bottom[i],
-          end: points.top[i + 1]
-        });
-        points.web.push({
-          start: points.bottom[i],
-          end: points.top[i]
-        });
-      }
-
-      return points;
+    return {
+      total: (materialCost * estimatedWeight) + fabricationCost + transportationCost,
+      materials: materialCost * estimatedWeight,
+      fabrication: fabricationCost,
+      transportation: transportationCost
     };
-
-    const trussPoints = generateTrussPoints();
-
-    return (
-      <div className="truss-visualization">
-        <svg width="100%" height="200" viewBox={`0 0 ${span * 50} 200`}>
-          {/* Draw top chord */}
-          {trussPoints.top.map((point, i, arr) => {
-            if (i === arr.length - 1) return null;
-            return (
-              <line
-                key={`top-${i}`}
-                x1={point.x}
-                y1={point.y}
-                x2={arr[i + 1].x}
-                y2={arr[i + 1].y}
-                stroke="#666"
-                strokeWidth="2"
-              />
-            );
-          })}
-
-          {/* Draw bottom chord */}
-          {trussPoints.bottom.map((point, i, arr) => {
-            if (i === arr.length - 1) return null;
-            return (
-              <line
-                key={`bottom-${i}`}
-                x1={point.x}
-                y1={point.y}
-                x2={arr[i + 1].x}
-                y2={arr[i + 1].y}
-                stroke="#666"
-                strokeWidth="2"
-              />
-            );
-          })}
-
-          {/* Draw web members */}
-          {trussPoints.web.map((member, i) => (
-            <line
-              key={`web-${i}`}
-              x1={member.start.x}
-              y1={member.start.y}
-              x2={member.end.x}
-              y2={member.end.y}
-              stroke="#666"
-              strokeWidth="2"
-            />
-          ))}
-
-          {/* Support triangles */}
-          <polygon points="0,170 20,150 -20,150" fill="#666"/>
-          <polygon points={`${span * 50},170 ${span * 50 + 20},150 ${span * 50 - 20},150`} fill="#666"/>
-        </svg>
-      </div>
-    );
-  };
-  const FoundationVisualization = ({ designData }) => {
-    if (!designData?.numericalData?.dimensions) {
-      return <div>No visualization data available</div>;
-    }
-
-    const { length = 3, width = 3, depth = 0.6 } = designData.numericalData.dimensions;
-    const scale = 50; // pixels per meter
-
-    return (
-      <div className="foundation-visualization">
-        <svg width="100%" height="300" viewBox={`0 0 ${width * scale * 1.5} ${depth * scale * 2}`}>
-          {/* Plan view */}
-          <g transform={`translate(${width * scale * 0.25}, 0)`}>
-            <rect
-              x="0"
-              y="0"
-              width={width * scale}
-              height={length * scale}
-              fill="#ddd"
-              stroke="#666"
-              strokeWidth="2"
-            />
-            {/* Column indication */}
-            <rect
-              x={width * scale * 0.4}
-              y={length * scale * 0.4}
-              width={width * scale * 0.2}
-              height={length * scale * 0.2}
-              fill="#999"
-              stroke="#666"
-            />
-          </g>
-
-          {/* Section view */}
-          <g transform={`translate(${width * scale * 0.25}, ${length * scale * 1.2})`}>
-            <rect
-              x="0"
-              y="0"
-              width={width * scale}
-              height={depth * scale}
-              fill="#ddd"
-              stroke="#666"
-              strokeWidth="2"
-            />
-            {/* Soil layers */}
-            <path
-              d={`M0,${depth * scale} h${width * scale}`}
-              stroke="#8b4513"
-              strokeWidth="2"
-              strokeDasharray="5,5"
-            />
-            {/* Load arrow */}
-            <path
-              d={`M${width * scale * 0.5},-20 v40`}
-              stroke="#f00"
-              strokeWidth="2"
-              markerEnd="url(#arrowhead)"
-            />
-          </g>
-        </svg>
-      </div>
-    );
   };
 
-  const ResultsChart = ({ data, title }) => {
-    if (!data?.labels?.length || !data?.datasets?.length) {
-      return null;
-    }
-
-    const options = {
-      responsive: true,
-      plugins: {
-        legend: {
-          position: 'top',
-        },
-        title: {
-          display: true,
-          text: title
-        }
-      },
-      scales: {
-        y: {
-          beginAtZero: true
-        }
-      }
-    };
-
-    return <Line options={options} data={data} />;
+  const ResultsChart = ({ data }) => {
+    // Implementation of chart component
+    return (
+      <div className="results-chart">
+        {/* Chart implementation */}
+      </div>
+    );
   };
 
   const ResultsDisplay = ({ result }) => {
@@ -402,64 +708,72 @@ const AIDesignOptimizerPage = () => {
 
     const { dimensions, analysis, materials, costs, safety } = result.data;
 
-    // Add chart data if available
-    const chartData = result.data.numericalData?.chartData;
-    
     return (
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         className="results-container"
       >
-        {chartData && (
-          <ResultsChart 
-            data={chartData} 
-            title="Analysis Results"
-          />
-        )}
-        <div className="results-section">
-          <h3>Dimensions</h3>
-          <ul>
-            {dimensions?.map((dim, index) => (
-              <li key={`dim-${index}`}>{dim}</li>
-            ))}
-          </ul>
-        </div>
+        <div className="results-grid">
+          {/* Dimensions Section */}
+          <div className="result-section">
+            <h4>Dimensions</h4>
+            <div className="result-items">
+              {dimensions?.map((dim, index) => (
+                <div key={`dim-${index}`} className="result-item">
+                  {dim}
+                </div>
+              ))}
+            </div>
+          </div>
 
-        <div className="results-section">
-          <h3>Analysis Results</h3>
-          <ul>
-            {analysis?.map((item, index) => (
-              <li key={`analysis-${index}`}>{item}</li>
-            ))}
-          </ul>
-        </div>
+          {/* Analysis Section */}
+          <div className="result-section">
+            <h4>Analysis Results</h4>
+            <div className="result-items">
+              {analysis?.map((item, index) => (
+                <div key={`analysis-${index}`} className="result-item">
+                  {item}
+                </div>
+              ))}
+            </div>
+          </div>
 
-        <div className="results-section">
-          <h3>Materials</h3>
-          <ul>
-            {materials?.map((material, index) => (
-              <li key={`material-${index}`}>{material}</li>
-            ))}
-          </ul>
-        </div>
+          {/* Materials Section */}
+          <div className="result-section">
+            <h4>Materials</h4>
+            <div className="result-items">
+              {materials?.map((material, index) => (
+                <div key={`material-${index}`} className="result-item">
+                  {material}
+                </div>
+              ))}
+            </div>
+          </div>
 
-        <div className="results-section">
-          <h3>Cost Breakdown</h3>
-          <ul>
-            {costs?.map((cost, index) => (
-              <li key={`cost-${index}`}>{cost}</li>
-            ))}
-          </ul>
-        </div>
+          {/* Costs Section */}
+          <div className="result-section">
+            <h4>Cost Breakdown</h4>
+            <div className="result-items">
+              {costs?.map((cost, index) => (
+                <div key={`cost-${index}`} className="result-item">
+                  {cost}
+                </div>
+              ))}
+            </div>
+          </div>
 
-        <div className="results-section">
-          <h3>Safety Factors</h3>
-          <ul>
-            {safety?.map((factor, index) => (
-              <li key={`safety-${index}`}>{factor}</li>
-            ))}
-          </ul>
+          {/* Safety Section */}
+          <div className="result-section">
+            <h4>Safety Factors</h4>
+            <div className="result-items">
+              {safety?.map((factor, index) => (
+                <div key={`safety-${index}`} className="result-item">
+                  {factor}
+                </div>
+              ))}
+            </div>
+          </div>
         </div>
       </motion.div>
     );
@@ -488,6 +802,176 @@ const AIDesignOptimizerPage = () => {
       });
     };
   }, [selectedDesignType]); // Re-run when selectedDesignType changes
+
+  // Add section definitions
+  const sectionOrder = {
+    beam: ['project', 'geometry', 'loads', 'materials', 'requirements', 'costs'],
+    truss: ['project', 'geometry', 'loads', 'materials', 'connections', 'costs'],
+    foundation: ['project', 'soil', 'loads', 'geometry', 'materials', 'site', 'environment', 'costs']
+  };
+
+  // Modify form rendering to handle sections
+  const renderFormSection = (section) => {
+    const sectionInputs = selectedDesignType.inputs.filter(
+      input => input.section === section && 
+      (!input.showIf || input.showIf(formInputs))
+    );
+
+    return (
+      <div className="form-section">
+        <h4>{section.charAt(0).toUpperCase() + section.slice(1)}</h4>
+        {sectionInputs.map(input => (
+          <div key={input.id} className="form-group">
+            <label htmlFor={input.id}>
+              {input.label}
+              {input.required && <span className="required">*</span>}
+            </label>
+            {renderInput(input)}
+            {input.description && (
+              <small className="input-description">{input.description}</small>
+            )}
+          </div>
+        ))}
+      </div>
+    );
+  };
+
+  // Enhanced input rendering
+  const renderInput = (input) => {
+    switch (input.type) {
+      case 'select':
+        return (
+          <select
+            id={input.id}
+            name={input.id}
+            value={formInputs[input.id] || ''}
+            onChange={handleInputChange}
+            required={input.required}
+            className="form-select"
+          >
+            <option value="">Select {input.label}</option>
+            {input.options.map(option => (
+              <option key={option} value={option}>{option}</option>
+            ))}
+          </select>
+        );
+
+      case 'number':
+        return (
+          <div className="number-input-group">
+            <input
+              type="number"
+              id={input.id}
+              name={input.id}
+              min={input.min}
+              max={input.max}
+              step={input.step || 'any'}
+              value={formInputs[input.id] || ''}
+              onChange={handleInputChange}
+              required={input.required}
+              className="form-input"
+            />
+            {input.unit && <span className="unit">{input.unit}</span>}
+          </div>
+        );
+
+      case 'checkbox':
+        return (
+          <input
+            type="checkbox"
+            id={input.id}
+            name={input.id}
+            checked={formInputs[input.id] || false}
+            onChange={(e) => handleInputChange({
+              target: {
+                name: input.id,
+                value: e.target.checked,
+                type: 'checkbox'
+              }
+            })}
+            className="form-checkbox"
+          />
+        );
+
+      default:
+        return (
+          <input
+            type={input.type}
+            id={input.id}
+            name={input.id}
+            value={formInputs[input.id] || ''}
+            onChange={handleInputChange}
+            required={input.required}
+            className="form-input"
+          />
+        );
+    }
+  };
+
+  // Update form container
+  const renderForm = () => (
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      className="design-form-container"
+    >
+      <h3>Enter Design Parameters</h3>
+      <div className="section-navigation">
+        {sectionOrder[selectedDesignType.id].map(section => (
+          <button
+            key={section}
+            className={`section-tab ${currentSection === section ? 'active' : ''}`}
+            onClick={() => setCurrentSection(section)}
+          >
+            {section.charAt(0).toUpperCase() + section.slice(1)}
+          </button>
+        ))}
+      </div>
+      <form onSubmit={handleOptimize}>
+        {renderFormSection(currentSection)}
+        <div className="form-navigation">
+          {currentSection !== sectionOrder[selectedDesignType.id][0] && (
+            <button
+              type="button"
+              onClick={() => handleSectionChange('prev')}
+              className="nav-button"
+            >
+              Previous
+            </button>
+          )}
+          {currentSection !== sectionOrder[selectedDesignType.id].slice(-1)[0] ? (
+            <button
+              type="button"
+              onClick={() => handleSectionChange('next')}
+              className="nav-button"
+            >
+              Next
+            </button>
+          ) : (
+            <button
+              type="submit"
+              disabled={isLoading}
+              className="submit-button"
+            >
+              {isLoading ? 'Optimizing...' : 'Optimize Design'}
+            </button>
+          )}
+        </div>
+      </form>
+    </motion.div>
+  );
+
+  // Add section navigation handler
+  const handleSectionChange = (direction) => {
+    const sections = sectionOrder[selectedDesignType.id];
+    const currentIndex = sections.indexOf(currentSection);
+    
+    if (direction === 'next' && currentIndex < sections.length - 1) {
+      setCurrentSection(sections[currentIndex + 1]);
+    } else if (direction === 'prev' && currentIndex > 0) {
+      setCurrentSection(sections[currentIndex - 1]);
+    }
+  };
 
   // Main render method
   return (
@@ -521,44 +1005,7 @@ const AIDesignOptimizerPage = () => {
           animate={{ opacity: 1, y: 0 }}
           className="design-form-container"
         >
-          <h3>Enter Design Parameters</h3>
-          <form onSubmit={handleOptimize}>
-            {selectedDesignType.inputs.map(input => (
-              <div key={input.id} className="form-group">
-                <label htmlFor={input.id}>{input.label}</label>
-                {input.type === 'select' ? (
-                  <select
-                    id={input.id}
-                    name={input.id}
-                    value={formInputs[input.id] || ''}
-                    onChange={handleInputChange}
-                    required={input.required}
-                  >
-                    <option value="">Select {input.label}</option>
-                    {input.options.map(option => (
-                      <option key={option} value={option}>
-                        {option}
-                      </option>
-                    ))}
-                  </select>
-                ) : (
-                  <input
-                    type={input.type}
-                    id={input.id}
-                    name={input.id}
-                    min={input.min}
-                    max={input.max}
-                    value={formInputs[input.id] || ''}
-                    onChange={handleInputChange}
-                    required={input.required}
-                  />
-                )}
-              </div>
-            ))}
-            <button type="submit" disabled={isLoading}>
-              {isLoading ? 'Optimizing...' : 'Optimize Design'}
-            </button>
-          </form>
+          {renderForm()}
         </motion.div>
       )}
 
@@ -573,23 +1020,16 @@ const AIDesignOptimizerPage = () => {
       )}
 
       {optimizationResult && (
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="results-visualization"
-        >
-          <h3>Design Visualization</h3>
-          {selectedDesignType?.id === 'beam' && (
-            <BeamVisualization designData={optimizationResult.data} />
-          )}
-          {selectedDesignType?.id === 'truss' && (
-            <TrussVisualization designData={optimizationResult.data} />
-          )}
-          {selectedDesignType?.id === 'foundation' && (
-            <FoundationVisualization designData={optimizationResult.data} />
-          )}
+        <>
           <ResultsDisplay result={optimizationResult} />
-        </motion.div>
+          <ResultsChart data={optimizationResult} />
+          <DesignVisualizer
+            designType={selectedDesignType?.id}
+            parameters={formInputs}
+            optimizationResult={optimizationResult}
+            originalDesign={originalDesign}
+          />
+        </>
       )}
     </div>
   );

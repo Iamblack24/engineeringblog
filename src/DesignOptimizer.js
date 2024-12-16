@@ -40,22 +40,68 @@ router.use(apiLimiter);
 // Validation rules for different design types
 const VALIDATION_RULES = {
   beam: {
-    span: { min: 1, max: 30 },
-    load: { min: 0.5, max: 50 },
-    material: ['Reinforced Concrete', 'Steel', 'Timber'],
-    support: ['Simply Supported', 'Fixed-Fixed', 'Cantilever']
+    // Project Information
+    projectName: { type: 'string', required: true },
+    designCode: { type: 'string', required: true, options: ['ACI 318-19', 'Eurocode 2', 'IS 456:2000'] },
+    
+    // Geometry
+    span: { type: 'number', min: 0, required: true },
+    supportType: { type: 'string', required: true, options: ['Simply Supported', 'Fixed-Fixed', 'Cantilever'] },
+    
+    // Loading
+    deadLoad: { type: 'number', min: 0, required: true },
+    liveLoad: { type: 'number', min: 0, required: true },
+    loadPattern: { type: 'string', required: true, options: ['Uniform', 'Point Load', 'Combined'] },
+    
+    // Materials
+    material: { type: 'string', required: true, options: ['Reinforced Concrete', 'Steel'] },
+    concreteGrade: { type: 'string', options: ['M20', 'M25', 'M30', 'M35', 'M40'] },
+    steelGrade: { type: 'string', options: ['Fe415', 'Fe500', 'Fe550'] }
   },
+  
   truss: {
-    span: { min: 6, max: 100 },
-    height: { min: 1, max: 15 },
-    loadType: ['Roof Load', 'Bridge Load', 'Solar Panel Support'],
-    material: ['Steel', 'Aluminum', 'Timber']
+    // Project Information
+    projectName: { type: 'string', required: true },
+    designCode: { type: 'string', required: true },
+    
+    // Geometry
+    span: { type: 'number', min: 0, required: true },
+    height: { type: 'number', min: 0, required: true },
+    roofArea: { type: 'number', min: 0, required: true },
+    trussSpacing: { type: 'number', min: 0, required: true },
+    
+    // Loading
+    deadLoad: { type: 'number', min: 0, required: true },
+    liveLoad: { type: 'number', min: 0, required: true },
+    windLoad: { type: 'number', min: 0, required: true },
+    
+    // Materials
+    material: { type: 'string', required: true },
+    connectionType: { type: 'string', required: true, options: ['Welded', 'Bolted'] }
   },
+  
   foundation: {
-    load: { min: 100, max: 5000 },
-    soilCapacity: { min: 50, max: 1000 },
-    depth: { min: 0.5, max: 5 },
-    soilType: ['Clay', 'Sand', 'Rock', 'Mixed']
+    // Project Information
+    projectName: { type: 'string', required: true },
+    designCode: { type: 'string', required: true },
+    
+    // Soil Parameters
+    soilType: { type: 'string', required: true },
+    bearingCapacity: { type: 'number', min: 0, required: true },
+    waterTableDepth: { type: 'number', min: 0, required: true },
+    soilLayering: { type: 'string', required: true },
+    
+    // Loading
+    axialLoad: { type: 'number', min: 0, required: true },
+    momentX: { type: 'number', required: true },
+    momentY: { type: 'number', required: true },
+    
+    // Geometry
+    embedmentDepth: { type: 'number', min: 0, required: true },
+    
+    // Materials
+    concreteGrade: { type: 'string', required: true },
+    steelGrade: { type: 'string', required: true }
   }
 };
 
@@ -80,220 +126,330 @@ const ENGINEERING_CONTEXT = {
     2. Settlement analysis
     3. Soil pressure distribution
     4. Reinforcement requirements
-    Provide dimensions, reinforcement details, and safety factors.`
+    
+    For strip footings:
+    - Width should be 30-50% of length
+    - Depth should be 20-50% of width
+    - Consider overturning and sliding stability
+    - Account for soil bearing capacity
+    - Design for given moments and forces
+    - Ensure adequate reinforcement
+    
+    Provide dimensions, reinforcement details, and safety factors.
+    Use standard engineering ratios and practices.
+    Consider cost optimization while maintaining safety.
+    
+    Important: Ensure width is adequate for the given loads and moments.
+    For strip footings with significant moments, width is typically 2-4m.`
 };
 
 // Example responses for AI guidance
 const EXAMPLE_RESPONSES = {
   beam: {
-    dimensions: [
-      "Beam depth: 450 mm",
-      "Beam width: 300 mm",
-      "Main reinforcement: 3 x 20mm diameter bars",
-      "Shear reinforcement: 10mm stirrups at 200mm spacing"
-    ],
-    analysis: [
-      "Maximum bending moment: 125 kN.m",
-      "Maximum shear force: 84 kN",
-      "Maximum deflection: 15 mm (within limit of span/360)",
-      "Stress utilization: 85%"
-    ],
-    materials: [
-      "Concrete grade: C30/37",
-      "Steel reinforcement grade: B500B",
-      "Required concrete volume: 0.45 m³",
-      "Total steel weight: 85 kg"
-    ],
-    costs: [
-      "Concrete cost: $180",
-      "Steel reinforcement cost: $255",
-      "Formwork cost: $320",
-      "Total cost: $755"
-    ],
-    safety: [
-      "Bending moment safety factor: 1.8",
-      "Shear force safety factor: 2.1",
-      "Deflection ratio: 0.75 of allowable",
-      "Overall structural reliability index: 3.8"
-    ],
-    numericalData: {
+    data: {
       dimensions: {
+        span: 6.0,
         depth: 0.45,
-        width: 0.3,
-        length: 6.0
+        width: 0.3
       },
-      forces: [
-        { position: 0, moment: 0, shear: 84 },
-        { position: 1.5, moment: 95, shear: 42 },
-        { position: 3.0, moment: 125, shear: 0 },
-        { position: 4.5, moment: 95, shear: -42 },
-        { position: 6.0, moment: 0, shear: -84 }
-      ],
-      deflection: [
-        { position: 0, value: 0 },
-        { position: 1.5, value: 8 },
-        { position: 3.0, value: 15 },
-        { position: 4.5, value: 8 },
-        { position: 6.0, value: 0 }
-      ]
+      analysis: {
+        strength: 85,
+        maxMoment: 125,
+        maxShear: 84,
+        deflection: 15
+      },
+      materials: {
+        usage: 0.85,
+        concrete: {
+          grade: 'C30/37',
+          volume: 0.45
+        },
+        steel: {
+          grade: 'B500B',
+          weight: 85
+        }
+      },
+      costs: {
+        total: 43000,
+        concrete: 12000,
+        steel: 15000,
+        formwork: 16000
+      },
+      safety: {
+        factor: 1.8,
+        momentRatio: 0.75,
+        shearRatio: 0.65,
+        deflectionRatio: 0.75
+      }
     }
   },
+  
   truss: {
-    dimensions: [
-      "Total span: 24 meters",
-      "Height at center: 3.6 meters",
-      "Panel length: 3 meters",
-      "Member sizes: Top chord - 2L150x150x15, Bottom chord - 2L125x125x12"
-    ],
-    analysis: [
-      "Maximum axial force (compression): 450 kN",
-      "Maximum axial force (tension): 380 kN",
-      "Maximum joint displacement: 12 mm",
-      "Critical buckling load factor: 2.8"
-    ],
-    materials: [
-      "Steel grade: S355",
-      "Total steel weight: 2850 kg",
-      "Connection plates: 24 pieces",
-      "Bolts: 144 pieces M20 grade 8.8"
-    ],
-    costs: [
-      "Steel members cost: $8,550",
-      "Connection materials: $1,200",
-      "Fabrication cost: $4,275",
-      "Total cost: $14,025"
-    ],
-    safety: [
-      "Member strength utilization: 0.85",
-      "Joint capacity safety factor: 1.9",
-      "Stability safety factor: 2.8",
-      "Overall structural reliability index: 4.2"
-    ],
-    numericalData: {
+    data: {
       dimensions: {
         span: 24.0,
         height: 3.6,
         panelLength: 3.0
       },
-      memberForces: [
-        { member: "TC1", force: -450 },
-        { member: "BC1", force: 380 },
-        { member: "D1", force: -120 },
-        { member: "D2", force: 85 }
-      ],
-      joints: [
-        { x: 0, y: 0 },
-        { x: 3, y: 0.9 },
-        { x: 6, y: 1.8 }
-      ]
+      analysis: {
+        strength: 85,
+        maxAxialForce: {
+          compression: 450,
+          tension: 380
+        },
+        displacement: 12
+      },
+      materials: {
+        usage: 0.85,
+        steel: {
+          grade: 'S355',
+          totalWeight: 2850,
+          members: {
+            topChord: '2L150x150x15',
+            bottomChord: '2L125x125x12',
+            verticals: 'L100x100x10',
+            diagonals: 'L100x100x12'
+          }
+        },
+        connections: {
+          type: 'Bolted',
+          boltGrade: '8.8',
+          plateThickness: 12
+        }
+      },
+      costs: {
+        total: 50000,
+        steel: 20000,
+        connections: 20000,
+        fabrication: 10000
+      },
+      safety: {
+        factor: 2.1,
+        stabilityFactor: 2.8,
+        jointUtilization: 0.85
+      },
+      numericalData: {
+        nodes: [
+          { id: 0, x: 0, y: 0 },
+          { id: 1, x: 3, y: 0.9 },
+          { id: 2, x: 6, y: 1.8 },
+          { id: 3, x: 9, y: 2.7 },
+          { id: 4, x: 12, y: 3.6 }
+        ],
+        members: [
+          { start: 0, end: 1, type: 'topChord', force: -450 },
+          { start: 1, end: 2, type: 'topChord', force: -420 },
+          { start: 0, end: 5, type: 'bottomChord', force: 380 },
+          { start: 5, end: 6, type: 'bottomChord', force: 350 },
+          { start: 0, end: 6, type: 'diagonal', force: -220 },
+          { start: 6, end: 1, type: 'diagonal', force: 200 }
+        ]
+      }
+    }
+  },
+  
+  foundation: {
+    data: {
+      dimensions: {
+        length: 6.0,
+        width: 3.0,
+        depth: 1.5,
+        thickness: 0.6
+      },
+      analysis: {
+        strength: 90,
+        bearingPressure: 200,
+        settlement: 12,
+        momentCapacity: 500
+      },
+      materials: {
+        usage: 0.85,
+        concrete: {
+          grade: "M30",
+          volume: 27
+        },
+        steel: {
+          grade: "Fe500",
+          weight: 2400
+        },
+        soil: {
+          type: "Stiff Clay",
+          bearingCapacity: 7867
+        }
+      },
+      costs: {
+        total: 78000,
+        concrete: 32000,
+        steel: 27000,
+        excavation: 19000
+      },
+      safety: {
+        factor: 2.6,
+        overturning: 2.9,
+        sliding: 2.3,
+        settlement: 0.6
+      },
+      numericalData: {
+        soilPressure: [
+          { x: 0, pressure: 170 },
+          { x: 1.5, pressure: 185 },
+          { x: 3, pressure: 200 },
+          { x: 4.5, pressure: 185 },
+          { x: 6, pressure: 170 }
+        ],
+        reinforcement: {
+          topMesh: { size: 18, spacing: 200 },
+          bottomMesh: { size: 22, spacing: 150 },
+          edges: { size: 14, spacing: 200 }
+        }
+      }
+    }
+  }
+};
+
+// Add validation schema
+const RESPONSE_VALIDATION_SCHEMA = {
+  beam: {
+    required: ['data.dimensions.span', 'data.dimensions.depth', 'data.dimensions.width'],
+    schema: {
+      data: {
+        dimensions: {
+          span: 'number',
+          depth: 'number',
+          width: 'number'
+        }
+      }
+    }
+  },
+  truss: {
+    required: ['data.dimensions.span', 'data.dimensions.height'],
+    schema: {
+      data: {
+        dimensions: {
+          span: 'number',
+          height: 'number'
+        }
+      }
     }
   },
   foundation: {
-    dimensions: [
-      "Length: 3.5 meters",
-      "Width: 3.5 meters",
-      "Depth: 0.8 meters",
-      "Edge thickness: 0.4 meters"
-    ],
-    analysis: [
-      "Maximum soil pressure: 180 kN/m²",
-      "Predicted settlement: 15 mm",
-      "Eccentricity ratio: 0.05",
-      "Base pressure distribution uniformity: 0.92"
-    ],
-    materials: [
-      "Concrete grade: C25/30",
-      "Reinforcement mesh: 16mm @ 200mm c/c",
-      "Required concrete volume: 9.8 m³",
-      "Total steel weight: 785 kg"
-    ],
-    costs: [
-      "Concrete cost: $1,470",
-      "Steel reinforcement cost: $2,355",
-      "Excavation cost: $450",
-      "Total cost: $4,275"
-    ],
-    safety: [
-      "Bearing capacity safety factor: 2.5",
-      "Sliding safety factor: 3.2",
-      "Overturning safety factor: 4.1",
-      "Settlement safety factor: 1.8"
-    ],
-    numericalData: {
-      dimensions: {
-        length: 3.5,
-        width: 3.5,
-        depth: 0.8,
-        thickness: 0.4
-      },
-      pressures: [
-        { position: 0, value: 165 },
-        { position: 0.875, value: 172 },
-        { position: 1.75, value: 180 },
-        { position: 2.625, value: 172 },
-        { position: 3.5, value: 165 }
-      ],
-      settlement: [
-        { time: 0, value: 0 },
-        { time: 7, value: 8 },
-        { time: 30, value: 12 },
-        { time: 365, value: 15 }
-      ]
+    required: ['data.dimensions.length', 'data.dimensions.width', 'data.dimensions.depth'],
+    schema: {
+      data: {
+        dimensions: {
+          length: 'number',
+          width: 'number',
+          depth: 'number'
+        }
+      }
+    }
+  }
+};
+
+// Add engineering validation rules
+const ENGINEERING_VALIDATION = {
+  foundation: {
+    stripFooting: {
+      minWidthRatio: 0.3, // Width should be at least 30% of length
+      maxWidthRatio: 0.5, // Width should not exceed 50% of length
+      minDepthRatio: 0.2, // Depth should be at least 20% of width
+      maxDepthRatio: 0.5  // Depth should not exceed 50% of width
     }
   }
 };
 
 // Main optimization endpoint
-router.post('/optimize-design', async (req, res) => {
-  console.log(`Design request received - Type: ${req.body.designType}`);
-  
+router.post('/optimize', async (req, res) => {
   try {
     const { designType, parameters } = req.body;
-
-    // Add this validation call
-    const validationError = validateParameters(designType, parameters);
-    if (validationError) {
+    
+    if (!designType || !parameters) {
       return res.status(400).json({
         success: false,
-        error: validationError
+        error: 'Missing required parameters'
       });
     }
 
+    console.log('Design request received - Type:', designType);
     const optimizedDesign = await generateOptimizedDesign(designType, parameters);
-    res.json({ success: true, data: optimizedDesign });
+
+    // Restructure the response to avoid double nesting
+    const responseData = {
+      success: true,
+      dimensions: optimizedDesign.data.dimensions,
+      analysis: optimizedDesign.data.analysis,
+      materials: optimizedDesign.data.materials,
+      costs: optimizedDesign.data.costs,
+      safety: optimizedDesign.data.safety,
+      numericalData: optimizedDesign.data.numericalData,
+      metadata: optimizedDesign.metadata
+    };
+
+    console.log('Sending restructured response:', JSON.stringify(responseData, null, 2));
+
+    res.status(200).json(responseData);
+
   } catch (error) {
     console.error('Optimization error:', error);
-    res.status(400).json({
+    res.status(500).json({
       success: false,
       error: error.message
     });
   }
 });
 
+// Add response interceptor for debugging
+router.use((req, res, next) => {
+  const originalJson = res.json;
+  res.json = function(data) {
+    console.log('Response being sent:', JSON.stringify(data, null, 2));
+    return originalJson.call(this, data);
+  };
+  next();
+});
+
 // Parameter validation function
 const validateParameters = (designType, parameters) => {
   const rules = VALIDATION_RULES[designType];
   
-  // Check if all required parameters are present
-  const requiredParams = Object.keys(rules);
-  const missingParams = requiredParams.filter(param => !parameters[param]);
-  
-  if (missingParams.length > 0) {
-    return `Missing required parameters: ${missingParams.join(', ')}`;
+  // Check if design type exists
+  if (!rules) {
+    return `Invalid design type: ${designType}`;
   }
   
-  // Validate parameter values
-  for (const [key, value] of Object.entries(parameters)) {
-    if (rules[key]) {
-      if (rules[key].min !== undefined && value < rules[key].min) {
-        return `${key} must be at least ${rules[key].min}`;
+  // Validate required parameters and their types
+  for (const [param, rule] of Object.entries(rules)) {
+    if (rule.required && !parameters[param]) {
+      return `Missing required parameter: ${param}`;
+    }
+    
+    if (parameters[param]) {
+      // Type validation
+      if (rule.type === 'number' && typeof parameters[param] !== 'number') {
+        return `${param} must be a number`;
       }
-      if (rules[key].max !== undefined && value > rules[key].max) {
-        return `${key} must not exceed ${rules[key].max}`;
+      
+      // Range validation for numbers
+      if (rule.type === 'number') {
+        if (rule.min !== undefined && parameters[param] < rule.min) {
+          return `${param} must be at least ${rule.min}`;
+        }
+        if (rule.max !== undefined && parameters[param] > rule.max) {
+          return `${param} must not exceed ${rule.max}`;
+        }
       }
-      if (Array.isArray(rules[key]) && !rules[key].includes(value)) {
-        return `Invalid ${key}: ${value}`;
+      
+      // Options validation
+      if (rule.options && !rule.options.includes(parameters[param])) {
+        return `Invalid ${param}: ${parameters[param]}. Must be one of: ${rule.options.join(', ')}`;
       }
+    }
+  }
+  
+  // Conditional validations
+  if (designType === 'beam') {
+    if (parameters.material === 'Reinforced Concrete' && !parameters.concreteGrade) {
+      return 'Concrete grade is required for reinforced concrete beams';
     }
   }
   
@@ -303,53 +459,62 @@ const validateParameters = (designType, parameters) => {
 // Generate AI-optimized design
 const generateOptimizedDesign = async (designType, parameters) => {
   try {
-    const prompt = generatePrompt(designType, parameters);
+    console.log('Generating design for:', { designType, parameters });
 
-    const completion = await Promise.race([
-      openai.chat.completions.create({
-        model: "gpt-3.5-turbo-0125",
-        messages: [
-          { 
-            role: "system", 
-            content: `${ENGINEERING_CONTEXT[designType]} 
-                      You are a structural engineering expert. Your response must:
-                      1. Be valid JSON only
-                      2. Follow the exact structure of the example provided
-                      3. Include all required fields: dimensions, analysis, materials, costs, safety, numericalData
-                      4. Contain realistic engineering values
-                      5. Not include any HTML or additional text` 
-          },
-          { 
-            role: "user", 
-            content: prompt 
-          }
-        ],
-        temperature: 0.7,
-        max_tokens: 2000,
-        response_format: { type: "json_object" }
-      }),
-      new Promise((_, reject) => 
-        setTimeout(() => reject(new Error('OpenAI API timeout')), 30000)
-      )
-    ]);
+    // Prepare the prompt with example response
+    const prompt = `${ENGINEERING_CONTEXT[designType]}
+    
+    You must respond with valid JSON only, no markdown formatting or other text.
+    Use this exact format:
+    ${JSON.stringify(EXAMPLE_RESPONSES[designType], null, 2)}
+    
+    Parameters:
+    ${JSON.stringify(parameters, null, 2)}
+    
+    Respond with a single JSON object following the exact same structure as the example.`;
 
-    let parsedResponse;
+    const completion = await openai.chat.completions.create({
+      model: "gpt-4",
+      messages: [{
+        role: "system",
+        content: "You are an expert structural engineer. Provide design calculations in JSON format only. Do not include markdown formatting or explanatory text."
+      }, {
+        role: "user",
+        content: prompt
+      }],
+      temperature: 0.7,
+      max_tokens: 2000
+    });
+
+    let response;
     try {
-      const rawResponse = completion.choices[0].message.content;
-      parsedResponse = JSON.parse(rawResponse);
+      // Clean the response of any markdown or extra text
+      const cleanedContent = completion.choices[0].message.content
+        .replace(/```json\n?/g, '')
+        .replace(/```\n?/g, '')
+        .trim();
       
-      // Validate the structure before processing
-      validateAIResponse(parsedResponse);
-      
-      // If validation passes, format the response
-      return formatDesignResponse(designType, parameters, parsedResponse);
+      console.log('Cleaned AI response:', cleanedContent);
+      response = JSON.parse(cleanedContent);
     } catch (error) {
-      if (error instanceof SyntaxError) {
-        console.error('Raw AI response:', completion.choices[0].message.content);
-        throw new Error('Invalid JSON response from AI');
-      }
-      throw error;
+      console.error('Raw AI response:', completion.choices[0].message.content);
+      console.error('Failed to parse AI response:', error);
+      throw new Error('Invalid AI response format');
     }
+
+    // Validate the response
+    const validatedResponse = validateAIResponse(response, designType);
+    console.log('Full validated response:', JSON.stringify(validatedResponse, null, 2));
+
+    // Return flattened structure
+    return {
+      data: validatedResponse.data,
+      metadata: {
+        designType,
+        timestamp: new Date().toISOString(),
+        parameters: parameters
+      }
+    };
 
   } catch (error) {
     console.error('AI Generation Error:', error);
@@ -357,134 +522,48 @@ const generateOptimizedDesign = async (designType, parameters) => {
   }
 };
 
-// Generate prompt based on design type and parameters
-const generatePrompt = (designType, parameters) => {
-  const example = EXAMPLE_RESPONSES[designType];
-  const basePrompt = getBasePrompt(designType, parameters);
-
-  return `${basePrompt}
-
-Here's an example of the expected response format:
-${JSON.stringify(example, null, 2)}
-
-Please provide a similar JSON response for the given parameters, maintaining the same structure but with appropriate values for the specified design conditions.`;
-};
-
-// Base prompt function
-const getBasePrompt = (designType, parameters) => {
-  switch (designType) {
-    case 'beam':
-      return `Design an optimized ${parameters.material} beam with:
-        - Span: ${parameters.span} meters
-        - Design Load: ${parameters.load} kN/m
-        - Support Condition: ${parameters.support}`;
-    case 'truss':
-      return `Design an optimized ${parameters.material} truss with:
-        - Span: ${parameters.span} meters
-        - Height: ${parameters.height} meters
-        - Load Type: ${parameters.loadType}`;
-    case 'foundation':
-      return `Design an optimized foundation with:
-        - Column Load: ${parameters.load} kN
-        - Soil Capacity: ${parameters.soilCapacity} kN/m²
-        - Soil Type: ${parameters.soilType}
-        - Depth: ${parameters.depth} m`;
-    default:
-      throw new Error('Invalid design type');
-  }
-};
-
-// Format design response with additional checks
-const formatDesignResponse = (designType, parameters, aiResponse) => {
-  try {
-    // Validate response structure again
-    validateAIResponse(aiResponse);
-
-    // Generate visualization data
-    const visualizationData = generateVisualizationData(designType, parameters, aiResponse);
-
-    // Combine the data
-    return {
-      ...aiResponse,
-      numericalData: {
-        ...aiResponse.numericalData,
-        ...visualizationData
-      }
-    };
-  } catch (error) {
-    console.error('Response formatting error:', error);
-    throw new Error(`Failed to format design response: ${error.message}`);
-  }
-};
-
-// Generate visualization data
-const generateVisualizationData = (designType, parameters, aiResponse) => {
-  const baseData = aiResponse.numericalData;
-
-  switch (designType) {
-    case 'beam':
-      return {
-        ...baseData,
-        dimensions: {
-          span: parameters.span,
-          depth: baseData.dimensions.depth || 0.6,
-          width: baseData.dimensions.width || 0.3
-        },
-        supportType: parameters.support
-      };
-
-    case 'truss':
-      return {
-        ...baseData,
-        dimensions: {
-          span: parameters.span,
-          height: parameters.height
-        },
-        loadType: parameters.loadType
-      };
-
-    case 'foundation':
-      return {
-        ...baseData,
-        dimensions: {
-          length: baseData.dimensions.length || Math.sqrt(parameters.load / parameters.soilCapacity),
-          width: baseData.dimensions.width || Math.sqrt(parameters.load / parameters.soilCapacity),
-          depth: parameters.depth
-        },
-        soilType: parameters.soilType
-      };
-
-    default:
-      return baseData;
-  }
-};
-
-// Enhanced validation function
-const validateAIResponse = (response) => {
-  const requiredFields = ['dimensions', 'analysis', 'materials', 'costs', 'safety', 'numericalData'];
+// Update validation function
+const validateAIResponse = (response, designType) => {
+  console.log('Validating AI response:', { designType, response });
   
-  // Check if response is an object
-  if (!response || typeof response !== 'object') {
-    throw new Error('Invalid response format: not an object');
+  if (!response || !response.data) {
+    throw new Error('Invalid AI response: missing data structure');
   }
 
-  // Check for required fields
-  for (const field of requiredFields) {
-    if (!response[field]) {
-      throw new Error(`Invalid AI response: missing ${field}`);
+  // Basic schema validation
+  const schema = RESPONSE_VALIDATION_SCHEMA[designType];
+  if (!schema) {
+    throw new Error(`Unknown design type: ${designType}`);
+  }
+
+  // Check required fields
+  for (const field of schema.required) {
+    const value = field.split('.').reduce((obj, key) => obj?.[key], response);
+    if (value === undefined || value === null) {
+      console.error(`Missing required field: ${field}`);
+      throw new Error(`Invalid AI response: missing ${field.split('.').pop()}`);
     }
   }
 
-  // Check numericalData structure
-  if (typeof response.numericalData !== 'object') {
-    throw new Error('Invalid AI response: numericalData should be an object');
+  // Engineering validation for foundations
+  if (designType === 'foundation') {
+    const { length, width, depth } = response.data.dimensions;
+    const rules = ENGINEERING_VALIDATION.foundation.stripFooting;
+
+    // Width validation
+    const widthRatio = width / length;
+    if (widthRatio < rules.minWidthRatio || widthRatio > rules.maxWidthRatio) {
+      throw new Error(`Invalid foundation width ratio: ${widthRatio.toFixed(2)}`);
+    }
+
+    // Depth validation
+    const depthRatio = depth / width;
+    if (depthRatio < rules.minDepthRatio || depthRatio > rules.maxDepthRatio) {
+      throw new Error(`Invalid foundation depth ratio: ${depthRatio.toFixed(2)}`);
+    }
   }
 
-  if (!response.numericalData.dimensions) {
-    throw new Error('Invalid AI response: numericalData.dimensions missing');
-  }
-
-  return true; // Validation passed
+  return response;
 };
 
 // Endpoint for CAD file generation
@@ -514,5 +593,19 @@ router.post('/generate-report', async (req, res) => {
     });
   }
 });
+
+// Add data validation middleware
+const validateData = (req, res, next) => {
+  const { data } = res.locals;
+  if (!data || !data.dimensions) {
+    return res.status(500).json({
+      success: false,
+      error: 'Invalid data structure in response'
+    });
+  }
+  next();
+};
+
+router.use(validateData);
 
 module.exports = router;

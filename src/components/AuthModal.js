@@ -22,48 +22,142 @@ const AuthModal = ({ onClose }) => {
   });
   const [acceptTerms, setAcceptTerms] = useState(false);
   const [error, setError] = useState('');
+  const [passwordStrength, setPasswordStrength] = useState({
+    length: false,
+    uppercase: false,
+    lowercase: false,
+    number: false,
+    special: false
+  });
 
-  const toggleAuthMode = () => {
-    setIsSignup(!isSignup);
-    setError('');
-    setAcceptTerms(false);
+  // Validation patterns
+  const patterns = {
+    username: /^[a-zA-Z0-9_-]{3,20}$/, // 3-20 characters, letters, numbers, underscore, hyphen
+    email: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+    phone: /^[0-9]{10}$/, // 10 digits
+    password: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/
+  };
+
+  const validateUsername = (username) => {
+    if (!patterns.username.test(username)) {
+      return 'Username must be 3-20 characters long and can only contain letters, numbers, underscore, and hyphen';
+    }
+    if (username.includes('@')) {
+      return 'Username cannot contain @ symbol';
+    }
+    // Check for SQL injection patterns
+    const sqlInjectionPattern = /(\b(select|insert|update|delete|drop|union|exec|declare)\b)|(['"\\;])/i;
+    if (sqlInjectionPattern.test(username)) {
+      return 'Invalid username format';
+    }
+    return '';
+  };
+
+  const validatePhoneNumber = (phone) => {
+    if (!patterns.phone.test(phone)) {
+      return 'Phone number must be 10 digits';
+    }
+    return '';
+  };
+
+  const validatePassword = (password) => {
+    const strength = {
+      length: password.length >= 8,
+      uppercase: /[A-Z]/.test(password),
+      lowercase: /[a-z]/.test(password),
+      number: /\d/.test(password),
+      special: /[@$!%*?&]/.test(password)
+    };
+    setPasswordStrength(strength);
+
+    if (!patterns.password.test(password)) {
+      return 'Password must be at least 8 characters long and contain at least one uppercase letter, one lowercase letter, one number, and one special character (@$!%*?&)';
+    }
+    return '';
+  };
+
+  const validateEmail = (email) => {
+    if (!patterns.email.test(email)) {
+      return 'Please enter a valid email address';
+    }
+    return '';
+  };
+
+  const sanitizeInput = (input) => {
+    // Basic XSS prevention
+    return input.replace(/[<>]/g, '');
   };
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setFormData((prevData) => ({
+    const sanitizedValue = sanitizeInput(value);
+    
+    setFormData(prevData => ({
       ...prevData,
-      [name]: value,
+      [name]: sanitizedValue,
     }));
+
+    // Clear previous errors
+    setError('');
+
+    // Validate input based on field type
+    switch (name) {
+      case 'username':
+        const usernameError = validateUsername(sanitizedValue);
+        if (usernameError) setError(usernameError);
+        break;
+      case 'email':
+        const emailError = validateEmail(sanitizedValue);
+        if (emailError) setError(emailError);
+        break;
+      case 'password':
+        const passwordError = validatePassword(sanitizedValue);
+        if (passwordError) setError(passwordError);
+        break;
+      case 'phoneNumber':
+        const phoneError = validatePhoneNumber(sanitizedValue);
+        if (phoneError) setError(phoneError);
+        break;
+      default:
+        break;
+    }
   };
 
-  const handleCheckboxChange = (e) => {
-    setAcceptTerms(e.target.checked);
-  };
+  const handlePhoneInput = (e) => {
+    const value = e.target.value;
+    // Only allow digits
+    const numbersOnly = value.replace(/[^0-9]/g, '');
+    
+    // Update form with numbers only
+    setFormData(prev => ({
+      ...prev,
+      phoneNumber: numbersOnly
+    }));
 
-  const validateEmail = (email) => {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return emailRegex.test(email);
-  };
-
-  const validatePassword = (password) => {
-    return password.length >= 6; // Example: Minimum 6 characters
+    // Validate length
+    if (numbersOnly.length > 0 && numbersOnly.length !== 10) {
+      setError('Phone number must be exactly 10 digits');
+    } else {
+      setError('');
+    }
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    
+    // Validate all fields before submission
+    const usernameError = isSignup ? validateUsername(formData.username) : '';
+    const emailError = validateEmail(formData.email);
+    const passwordError = validatePassword(formData.password);
+    const phoneError = isSignup ? validatePhoneNumber(formData.phoneNumber) : '';
+
+    if (usernameError || emailError || passwordError || phoneError) {
+      setError(usernameError || emailError || passwordError || phoneError);
+      return;
+    }
+
     if (isSignup && !acceptTerms) {
       setError('You must accept the Terms of Service and Privacy Policy.');
-      return;
-    }
-
-    if (!validateEmail(formData.email)) {
-      setError('Please enter a valid email address.');
-      return;
-    }
-
-    if (!validatePassword(formData.password)) {
-      setError('Password must be at least 6 characters long.');
       return;
     }
 
@@ -87,6 +181,16 @@ const AuthModal = ({ onClose }) => {
     }
   };
 
+  const toggleAuthMode = () => {
+    setIsSignup(!isSignup);
+    setError('');
+    setAcceptTerms(false);
+  };
+
+  const handleCheckboxChange = (e) => {
+    setAcceptTerms(e.target.checked);
+  };
+
   const handleForgotPassword = async () => {
     if (!formData.email) {
       setError('Please enter your email address.');
@@ -103,8 +207,12 @@ const AuthModal = ({ onClose }) => {
   return (
     <div className="auth-modal">
       <div className="auth-modal-content">
-        <button className="close-button" onClick={onClose}>
-          &times;
+        <button 
+          className="close-button" 
+          onClick={onClose}
+          aria-label="Close modal"
+        >
+          <i className="fas fa-times"></i>
         </button>
         <h2>{isSignup ? 'Sign Up' : 'Log In'}</h2>
         {error && <p className="error-message">{error}</p>}
@@ -125,11 +233,14 @@ const AuthModal = ({ onClose }) => {
               <div className="form-group">
                 <label htmlFor="phoneNumber">Phone Number</label>
                 <input
-                  type="text"
+                  type="tel"
                   id="phoneNumber"
                   name="phoneNumber"
                   value={formData.phoneNumber}
-                  onChange={handleInputChange}
+                  onChange={handlePhoneInput}
+                  maxLength="10"
+                  pattern="[0-9]{10}"
+                  placeholder="Enter 10 digit number"
                   required
                 />
               </div>
@@ -221,6 +332,28 @@ const AuthModal = ({ onClose }) => {
             </span>
           </p>
         </form>
+        {isSignup && formData.password && (
+          <div className="password-strength">
+            <p>Password Requirements:</p>
+            <ul>
+              <li className={passwordStrength.length ? 'valid' : 'invalid'}>
+                At least 8 characters
+              </li>
+              <li className={passwordStrength.uppercase ? 'valid' : 'invalid'}>
+                One uppercase letter
+              </li>
+              <li className={passwordStrength.lowercase ? 'valid' : 'invalid'}>
+                One lowercase letter
+              </li>
+              <li className={passwordStrength.number ? 'valid' : 'invalid'}>
+                One number
+              </li>
+              <li className={passwordStrength.special ? 'valid' : 'invalid'}>
+                One special character (@$!%*?&)
+              </li>
+            </ul>
+          </div>
+        )}
       </div>
     </div>
   );

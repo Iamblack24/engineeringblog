@@ -73,9 +73,9 @@
     <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     
-    <!-- Google Analytics -->
-    <script defer src="https://www.googletagmanager.com/gtag/js?id=G-8P8ZFVLEYN"></script>
-    <script>
+    <!-- Google Analytics with nonce template -->
+    <script nonce="<%= nonce %>" defer src="https://www.googletagmanager.com/gtag/js?id=G-8P8ZFVLEYN"></script>
+    <script nonce="<%= nonce %>">
       window.dataLayer = window.dataLayer || [];
       function gtag(){dataLayer.push(arguments);}
       gtag('js', new Date());
@@ -94,7 +94,6 @@
   </head>
   <body>
     <noscript>You need to enable JavaScript to run this app.</noscript>
-    <!-- Google Analytics -->
     <div id="root"></div>
   </body>
 </html>

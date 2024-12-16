@@ -4,11 +4,12 @@
   "private": true,
   "dependencies": {
     "@babel/plugin-transform-private-property-in-object": "^7.25.9",
+    "@craco/craco": "^7.1.0",
     "@fortawesome/fontawesome-free": "^6.6.0",
     "@fullhuman/postcss-purgecss": "^6.0.0",
     "@hcaptcha/react-hcaptcha": "^1.11.0",
     "@react-three/drei": "^9.77.0",
-    "@react-three/fiber": "^8.13.3",
+    "@react-three/fiber": "^8.13.0",
     "@stripe/react-stripe-js": "^2.8.1",
     "@stripe/stripe-js": "^4.9.0",
     "@testing-library/jest-dom": "^6.6.3",
@@ -18,12 +19,14 @@
     "canvasjs": "^1.8.3",
     "canvasjs-react-charts": "^1.0.5",
     "chart.js": "^4.4.1",
+    "ejs": "^3.1.10",
     "emailjs-com": "^3.2.0",
     "express": "^4.21.1",
     "firebase": "^11.0.1",
     "firebase-admin": "^13.0.1",
     "framer-motion": "^11.13.1",
     "helmet": "^8.0.0",
+    "html-loader": "^5.1.0",
     "html2pdf.js": "^0.10.2",
     "mathjs": "^14.0.0",
     "numeric": "^1.2.6",
@@ -46,10 +49,11 @@
     "web-vitals": "^4.2.4"
   },
   "scripts": {
-    "start": "react-scripts start",
-    "build": "cross-env GENERATE_SOURCEMAP=false react-scripts build",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "start": "craco start",
+    "build": "craco build",
+    "test": "craco test",
+    "server": "node server.js",
+    "dev": "concurrently \"npm run start\" \"npm run server\""
   },
   "eslintConfig": {
     "extends": [
@@ -72,6 +76,7 @@
   "devDependencies": {
     "@babel/plugin-proposal-export-default-from": "^7.25.9",
     "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
+    "concurrently": "^9.1.0",
     "cross-env": "^7.0.3",
     "del-cli": "^6.0.0",
     "rimraf": "^6.0.1"
@@ -80,5 +85,6 @@
     "plugins": [
       "@babel/plugin-proposal-export-default-from"
     ]
-  }
+  },
+  "proxy": "http://localhost:3000"
 }
