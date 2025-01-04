@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import './AIFlashcardGenerator.css';
 
-const API_BASE_URL = 'https://flashcards-2iat.onrender.com/api';
+const API_BASE_URL = 'https://flashcards-2iat.onrender.com/flashcards';
 
 const AIFlashcardGenerator = ({ onClose }) => {
   const [unit, setUnit] = useState('');

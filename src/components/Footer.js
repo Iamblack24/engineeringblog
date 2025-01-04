@@ -20,7 +20,7 @@ const Footer = () => {
             Embakasi, Tassia<br />
             Nairobi, Kenya<br />
             Phone: +254 799 129 637<br />
-            Email: otienojohnmicheal2@gmail.com
+            Email: engineeringhub24@gmail.com
           </p>
         </div>
         <div className="footer-section">

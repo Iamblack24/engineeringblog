@@ -25,13 +25,16 @@ const sendTokenToServer = async (token) => {
       },
       body: JSON.stringify({ token }),
     });
+    
     if (!response.ok) {
-      const errorText = await response.text();
-      throw new Error(`Failed to send token to server: ${response.status} ${response.statusText} - ${errorText}`);
+      const errorData = await response.json();
+      throw new Error(`Failed to send token to server: ${response.status} ${response.statusText} - ${JSON.stringify(errorData)}`);
     }
-    console.log('Token sent to server successfully');
+    
+    return await response.json();
   } catch (error) {
-    console.error('An error occurred while sending token to server. ', error);
+    console.error('Error sending token to server:', error);
+    throw error;
   }
 };
 

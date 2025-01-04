@@ -3,12 +3,48 @@ import InteractiveToolCard from '../components/InteractiveToolCard';
 import AuthModal from '../components/AuthModal';
 import './InteractiveToolsPage.css'; // Import the CSS file for styling
 import { AuthContext } from '../contexts/AuthContext';
+import { motion } from 'framer-motion';
 
 const tools = [
   {
-    title: 'Built Environment AI',
-    description: 'Ask questions and get answers from our AI tool.',
+    title: 'Built Environment AI Assistant',
+    description: 'Get instant, accurate answers to your technical questions.',
     link: '/interactive-ai', // Replace with the actual link to the tool
+  },
+  {
+    title: 'Project Management Tool',
+    description: 'Manage your engineering projects with ease and efficiency.',
+    link: '/project-collaboration-ai', // Replace with the actual link to the tool
+  },
+  /*{
+    title: 'AI Room Architect',
+    description: 'Generate and visualize room designs using AI assistance.',
+    link: 'ai-architect',
+  },*/
+  {
+    title: 'Engineering software Tutor',
+    description: 'Get step-by-step tutorials for engineering software tools.',
+    link: '/auto-tutor',
+  },
+  {
+    title: 'Summarize Technical Documents',
+    description: 'Extract key information from technical documents using AI.',
+    link: '/knowledge-extraction',
+  },
+  {
+    title: 'CAD Analysis',
+    description: 'Analyze CAD models for design constraints and requirements.',
+    link: '/cad-validator',
+  },
+  {
+    title: 'Green Building Design',
+    description: 'Get sustainable design suggestions for green buildings.',
+    link: '/green-building-design',
+  },
+  {
+    title: 'Load, fluid simulation and analysis',
+    description: 'Analyze loads and fluid flow in engineering systems.',
+    link: '/simulation-generator',
   },
   {
     title: 'Beam Calculator',
@@ -186,6 +222,30 @@ const tools = [
 
   // Add more tools here
 ];
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.2
+    }
+  }
+};
+
+const itemVariants = {
+  hidden: { 
+    opacity: 0, 
+    y: 20 
+  },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      duration: 0.5,
+      ease: "easeOut"
+    }
+  }
+};
 
 const InteractiveToolsPage = () => {
   const { currentUser } = useContext(AuthContext); // Get authentication status from context
@@ -217,6 +277,8 @@ const InteractiveToolsPage = () => {
       setActiveFeature(newActive);
     }
   };
+
+  
 
   return (
     <div className="interactive-tools-page">
@@ -277,18 +339,32 @@ const InteractiveToolsPage = () => {
 
       <h1>Interactive Tools</h1>
       <p>Use our interactive tools to aid your engineering projects. Note: Verify results and report inaccuracies.</p>
-      <div className="tools-list">
-        {/* Start from index 1 since we're featuring the AI tool separately */}
-        {tools.slice(1).map((tool, index) => (
-          <InteractiveToolCard
+      <motion.div 
+        className="tools-list"
+        variants={containerVariants}
+        initial="hidden"
+        animate="visible"
+        viewport={{ once: true }}
+      >
+        {tools.map((tool, index) => (
+          <motion.div
             key={index}
-            title={tool.title}
-            description={tool.description}
-            link={tool.link}
-            onClick={() => handleToolClick(tool)}
-          />
+            variants={itemVariants}
+            whileHover={{ 
+              scale: 1.05,
+              transition: { duration: 0.2 }
+            }}
+            whileTap={{ scale: 0.95 }}
+          >
+            <InteractiveToolCard
+              title={tool.title}
+              description={tool.description}
+              link={tool.link}
+              onClick={() => handleToolClick(tool)}
+            />
+          </motion.div>
         ))}
-      </div>
+      </motion.div>
     </div>
   );
 };

@@ -44,7 +44,7 @@ const AIAssignmentHelper = () => {
     setError(null);
     
     try {
-      const response = await axios.post('https://flashcards-2iat.onrender.com/api/write-assignment', {
+      const response = await axios.post('https://flashcards-2iat.onrender.com/gemini/write-assignment', {
         ...formData,
         deadline: new Date().toISOString() // Current date as default deadline
       });

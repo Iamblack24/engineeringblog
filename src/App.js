@@ -91,6 +91,13 @@ import SurveyingFundamentalsQuiz from './pages/materials/SurveyingFundamentalsQu
 import HighwayEngineeringFlashcards from './pages/materials/HighwayEngineeringFlashcards';
 import FoundationDesignFlashcards from './pages/materials/FoundationDesignFlashcards';
 import ConstructionMaterialsQuiz from './pages/materials/ConstructionMaterialsQuiz';
+import AIArchitect from './components/AIArchitect/AIArchitect';
+import CadValidator from './pages/CadValidator';
+import ProjectCollaborationAi from './pages/ProjectColaborationAi';
+import SimulationGenerator from './pages/SimulationGenerator';
+import GreenBuildingDesign from './pages/GreenBuildingDesign';
+import KnowledgeExtraction from './pages/KnowledgeExtraction';
+import AutoTutor from './pages/AutoTutor';
 
 function App() {
   const { currentUser } = useContext(AuthContext);
@@ -215,6 +222,13 @@ function App() {
           <Route path="/tools/rainfall-runoff" element={<RainfallRunoffCalculator />} />
           <Route path="/tools/material-quantity" element={<MaterialQuantityCalculator />} />
           <Route path="/tools/construction-cost" element={<ConstructionCostEstimator />} />
+          <Route path="/ai-architect" element={<AIArchitect />} />
+          <Route path="/cad-validator" element={<CadValidator />} />
+          <Route path="/project-collaboration-ai" element={<ProjectCollaborationAi />} />
+          <Route path="/simulation-generator" element={<SimulationGenerator />} />
+          <Route path="/green-building-design" element={<GreenBuildingDesign />} />
+          <Route path="/knowledge-extraction" element={<KnowledgeExtraction />} />
+          <Route path="/auto-tutor" element={<AutoTutor />} />
         </Routes>
       </main>
       <InstallPrompt />

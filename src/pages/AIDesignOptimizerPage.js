@@ -605,7 +605,7 @@ const AIDesignOptimizerPage = () => {
     const initialCosts = calculateInitialCosts();
 
     try {
-      const response = await fetch('https://flashcards-2iat.onrender.com/api/optimize-design', {
+      const response = await fetch('https://flashcards-2iat.onrender.com/designoptimizer/optimize-design', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

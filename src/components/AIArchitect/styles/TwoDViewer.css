@@ -1,0 +1,66 @@
+.two-d-viewer {
+    border: 1px solid #ccc;
+    margin-top: 20px;
+  }
+  
+  .view-options {
+    margin-bottom: 10px;
+  }
+  
+  .view-options button {
+    margin-right: 5px;
+    padding: 5px 10px;
+  }
+  
+  .room-label {
+    font-size: 14px;
+    fill: #000;
+  }
+  
+  .dimension-label {
+    font-size: 12px;
+    fill: #000;
+  }
+  
+  .door {
+    fill: #654321;
+  }
+  
+  .window {
+    fill: rgba(135, 206, 235, 0.5);
+    stroke: #0000ff;
+    stroke-width: 1;
+  }
+  
+  .stairs {
+    fill: #ffc107;
+    stroke: #000;
+    stroke-width: 2;
+  }
+  .wall-hatch {
+    stroke: #000;
+    stroke-width: 0.5;
+    stroke-dasharray: 4,4;
+  }
+  
+  .dimension-line {
+    stroke: #000;
+    stroke-width: 1;
+    stroke-dasharray: 5,5;
+  }
+  
+  .window-symbol {
+    stroke: #000;
+    stroke-width: 1;
+  }
+  
+  .door-symbol {
+    stroke: #000;
+    stroke-width: 2;
+  }
+  
+  .section-cut {
+    stroke: #000;
+    stroke-width: 3;
+  }
+  

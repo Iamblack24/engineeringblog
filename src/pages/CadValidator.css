@@ -1,0 +1,113 @@
+.cad-validator {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 20px;
+    text-align: center;
+  }
+  
+  .cad-validator h1 {
+    font-size: 2.5rem;
+    margin-bottom: 10px;
+    color: #333;
+  }
+  
+  .cad-validator p {
+    font-size: 1rem;
+    color: #666;
+    margin-bottom: 20px;
+  }
+  
+  .upload-area {
+    border: 2px dashed #007bff;
+    border-radius: 10px;
+    padding: 30px;
+    background-color: #f9f9f9;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin-bottom: 20px;
+  }
+  
+  .upload-area.drag-active {
+    border-color: #0056b3;
+    background-color: #e6f0ff;
+  }
+  
+  .upload-area p {
+    margin: 0;
+    font-size: 1rem;
+    color: #007bff;
+  }
+  
+  .upload-area span {
+    color: #0056b3;
+    font-weight: bold;
+  }
+  
+  .constraints-input {
+    margin-bottom: 20px;
+  }
+  
+  .constraints-input h3 {
+    font-size: 1.2rem;
+    margin-bottom: 10px;
+  }
+  
+  .constraints-input input {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    font-size: 1rem;
+  }
+  
+  button {
+    padding: 12px 24px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: background-color 0.3s ease;
+  }
+  
+  button:disabled {
+    background-color: #cccccc;
+    cursor: not-allowed;
+  }
+  
+  button:hover:not(:disabled) {
+    background-color: #0056b3;
+  }
+  
+  .result {
+    margin-top: 20px;
+    padding: 20px;
+    background-color: #f8f9fa;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    text-align: left;
+  }
+  
+  .result h2 {
+    font-size: 1.5rem;
+    margin-bottom: 10px;
+    color: #333;
+  }
+  
+  .result .error {
+    color: #dc3545;
+    font-weight: bold;
+  }
+  
+  .result pre {
+    background-color: #fff;
+    padding: 15px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 0.9rem;
+  }

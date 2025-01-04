@@ -1,0 +1,153 @@
+.material-selector,
+.view-controls,
+.room-controls {
+  margin-bottom: 20px;
+}
+
+.material-group {
+  margin-bottom: 15px;
+}
+
+.material-group label {
+  display: block;
+  margin-bottom: 5px;
+  font-weight: 500;
+}
+
+.material-group select {
+  width: 100%;
+  padding: 8px;
+  border-radius: 4px;
+  border: 1px solid #ddd;
+}
+
+.view-buttons {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+  margin-bottom: 15px;
+}
+
+.view-button {
+  padding: 8px;
+  border: none;
+  border-radius: 4px;
+  background: #f0f0f0;
+  cursor: pointer;
+}
+
+.view-button:hover {
+  background: #e0e0e0;
+}
+
+.camera-controls {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+}
+
+.room-description-input {
+  margin-bottom: 20px;
+}
+
+.description-textarea {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  resize: vertical;
+  font-family: inherit;
+  margin-bottom: 10px;
+}
+
+.description-textarea:focus {
+  outline: none;
+  border-color: #007bff;
+  box-shadow: 0 0 0 2px rgba(0,123,255,0.25);
+}
+
+.generate-button {
+  width: 100%;
+  padding: 10px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: 500;
+}
+
+.generate-button:hover {
+  background-color: #0056b3;
+}
+
+.generate-button:disabled {
+  background-color: #cccccc;
+  cursor: not-allowed;
+}
+
+.room-controls {
+  margin-bottom: 20px;
+}
+
+.dimensions-control {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 15px;
+  margin-bottom: 20px;
+}
+
+.dimensions-control label {
+  color: #333;
+  font-weight: 500;
+}
+
+.dimensions-control input {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  color: #333;
+}
+
+.features-control {
+  display: flex;
+  gap: 10px;
+}
+
+.features-control button {
+  flex: 1;
+  padding: 10px;
+  background: #007bff;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.features-control button:hover {
+  background: #0056b3;
+}
+
+/* Material selector styles */
+.material-selector {
+  margin-top: 20px;
+}
+
+.material-group {
+  margin-bottom: 15px;
+}
+
+.material-group label {
+  color: #333;
+  display: block;
+  margin-bottom: 5px;
+}
+
+.material-group select {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  color: #333;
+}
