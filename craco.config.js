@@ -4,6 +4,19 @@ const path = require('path');
 module.exports = {
     webpack: {
       configure: {
+        resolve: {
+          fallback: {
+            fs: false,
+            http: require.resolve('stream-http'),
+            https: require.resolve('https-browserify'),
+            url: require.resolve('url/'),
+            zlib: require.resolve('browserify-zlib'),
+            stream: require.resolve('stream-browserify'),
+            util: require.resolve('util/'),
+            buffer: require.resolve('buffer/'),
+            assert: require.resolve('assert/'),
+          },
+        },
         module: {
           rules: [
             {
@@ -21,21 +34,15 @@ module.exports = {
           ]
         },
         ignoreWarnings: [
-          {
-            module: /html2pdf\.js/,
-          },
-          {
-            module: /@mediapipe\/tasks-vision/,
-          },
           function ignoreSourceMapsLoaderWarnings(warning) {
-            return (
-              warning.module &&
-              (warning.module.includes('html2pdf.js') ||
-                warning.module.includes('@mediapipe/tasks-vision')) &&
-              warning.details &&
-              warning.details.includes('source-map-loader')
-            );
-          },
+            if (warning.module && typeof warning.module === 'object' && warning.module.resource) {
+              return (
+                warning.module.resource.includes('html2pdf.js') ||
+                warning.module.resource.includes('@mediapipe/tasks-vision')
+              );
+            }
+            return false;
+          }
         ],
       }
     },

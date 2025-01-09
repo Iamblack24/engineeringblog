@@ -1,16 +1,30 @@
 /* src/pages/ArticlesPage.css */
 
 .articles-page {
-  padding: 20px;
-  background-color: var(--background-color);
-  color: var(--text-color);
+  padding: 2rem;
+  min-height: 100vh;
+  background: #121212;
+  color: #ffffff;
 }
 
-.articles-list {
+.articles-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 2rem;
+  margin-top: 2rem;
+}
+
+@media (max-width: 768px) {
+  .articles-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.loader {
   display: flex;
-  flex-wrap: wrap;
-  gap: 20px;
-  justify-content: space-between; /* Ensure cards are spaced evenly */
+  justify-content: center;
+  align-items: center;
+  height: 200px;
 }
 
 .article-card {
