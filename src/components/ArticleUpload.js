@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { storage, db } from '../firebase';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
-import { collection, addDoc } from 'firebase/firestore';
+import { collection, addDoc, getDocs, query, orderBy, limit } from 'firebase/firestore';
 import { GoogleGenerativeAI } from '@google/generative-ai';
 import ReactMarkdown from 'react-markdown';
 import { Document, Page, pdfjs } from 'react-pdf';
@@ -32,6 +32,7 @@ const UploadStep = ({ title, status, message }) => (
 const ArticleUpload = ({ currentUser }) => {
   const [file, setFile] = useState(null);
   const [title, setTitle] = useState('');
+  const [photo, setPhoto] = useState(''); 
   const [loading, setLoading] = useState(false);
   const [feedback, setFeedback] = useState('');
   const [status, setStatus] = useState('');
@@ -41,6 +42,24 @@ const ArticleUpload = ({ currentUser }) => {
     analysis: { status: 'idle', message: '' },
     upload: { status: 'idle', message: '' }
   });
+
+  const getNextArticleId = async () => {
+    try {
+      const articlesRef = collection(db, 'articles');
+      const q = query(articlesRef, orderBy('id', 'desc'), limit(1));
+      const querySnapshot = await getDocs(q);
+      
+      if (querySnapshot.empty) {
+        return '1';
+      }
+      
+      const lastArticle = querySnapshot.docs[0].data();
+      return String(Number(lastArticle.id) + 1);
+    } catch (error) {
+      console.error('Error getting next article ID:', error);
+      return String(Date.now()); 
+    }
+  };
 
   const updateStep = (step, status, message) => {
     setUploadSteps(prev => ({
@@ -121,17 +140,16 @@ ${content}`;
 
   const handleFileUpload = async (e) => {
     e.preventDefault();
+    
     if (!file || !title) {
-      setFeedback('Please provide both title and file');
+      setFeedback('Please provide both title and PDF file');
       return;
     }
 
     setLoading(true);
     try {
-      // Extract PDF content
       const pdfContent = await extractTextFromPdf(file);
       
-      // AI Review
       updateStep('analysis', 'pending', 'AI is reviewing your article...');
       const review = await reviewArticle(pdfContent);
       const isApproved = review.includes('ACCEPT');
@@ -140,33 +158,48 @@ ${content}`;
         updateStep('analysis', 'success', 'Article approved by AI review!');
         updateStep('upload', 'pending', 'Uploading to server...');
         
-        // Upload to Firebase
-        const storageRef = ref(storage, `articles/${file.name}`);
-        await uploadBytes(storageRef, file);
+        const nextId = await getNextArticleId();
+        
+        const filename = `${nextId}-${file.name.replace(/[^a-zA-Z0-9.]/g, '_')}`;
+        const storageRef = ref(storage, `articles/${filename}`);
+        
+        const metadata = {
+          contentType: file.type,
+          customMetadata: {
+            'Access-Control-Allow-Origin': '*',
+            'Access-Control-Allow-Methods': 'GET',
+          }
+        };
+        
+        await uploadBytes(storageRef, file, metadata);
         const downloadURL = await getDownloadURL(storageRef);
 
         await addDoc(collection(db, 'articles'), {
+          id: nextId,
           title,
-          content: pdfContent,
-          pdfUrl: downloadURL,
           author: currentUser.email,
-          date: new Date(),
-          status: 'approved',
+          date: new Date().toISOString().split('T')[0], 
+          content: downloadURL,
           likes: 0,
-          dislikes: 0
+          dislikes: 0,
+          photo: photo || null, 
         });
 
         updateStep('upload', 'success', 'Article published successfully!');
         setStatus('success');
         setFeedback('Article approved and published!');
         
-        // Don't close modal immediately on success
-        setTimeout(() => setShowUploadForm(false), 3000);
+        setTimeout(() => {
+          setShowUploadForm(false);
+          setTitle('');
+          setFile(null);
+          setPhoto('');
+        }, 3000);
       } else {
         updateStep('analysis', 'error', review);
         updateStep('upload', 'idle', '');
         setStatus('rejected');
-        setFeedback(`Article rejected: ${review}`);
+        setFeedback(review);
       }
     } catch (error) {
       console.error('Upload Error:', error);
@@ -218,12 +251,21 @@ ${content}`;
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
                   disabled={loading}
+                  required
+                />
+                <input
+                  type="text"
+                  placeholder="Cover Image URL (optional)"
+                  value={photo}
+                  onChange={(e) => setPhoto(e.target.value)}
+                  disabled={loading}
                 />
                 <input
                   type="file"
                   accept=".pdf"
                   onChange={(e) => setFile(e.target.files[0])}
                   disabled={loading}
+                  required
                 />
                 <motion.button
                   whileHover={{ scale: 1.02 }}
