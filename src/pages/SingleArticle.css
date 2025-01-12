@@ -196,6 +196,21 @@
   text-decoration: underline;
 }
 
+.social-share-buttons {
+  display: flex;
+  gap: 12px;
+  margin: 15px 0;
+}
+
+.share-button {
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.share-button:hover {
+  transform: scale(1.1);
+}
+
 @media (max-width: 600px) {
   .reply-item {
     margin-left: 20px;

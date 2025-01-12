@@ -5,13 +5,25 @@ const bodyParser = require('body-parser');
 const admin = require('./firebaseAdmin');
 const { doc, setDoc, Timestamp } = require('firebase/firestore');
 const crypto = require('crypto');
+const nodemailer = require('nodemailer');
+const cors = require('cors');
+const multer = require('multer');
+require('dotenv').config();
 
 // Only declare db once
 const db = admin.firestore();
 
 const app = express();
 
-// Generate nonce middleware - MOVE THIS TO THE TOP
+// Configure CORS
+app.use(cors({
+  origin: 'http://localhost:3000', // React app's URL
+  methods: ['POST', 'GET', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  credentials: true
+}));
+
+// Generate nonce middleware
 app.use((req, res, next) => {
   res.locals.nonce = crypto.randomBytes(16).toString('base64');
   next();
@@ -75,8 +87,19 @@ app.use(
   })
 );
 
-//middleware to parse JSON bodies
+// Configure multer for memory storage
+const upload = multer({
+  storage: multer.memoryStorage(),
+  limits: {
+    fileSize: 10 * 1024 * 1024 // 10MB limit
+  }
+});
+
+// Body parser middleware
 app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(express.json({ limit: '50mb' }));
+app.use(express.urlencoded({ extended: true, limit: '50mb' }));
 
 // Serve static files from the React app
 app.use(express.static(path.join(__dirname, 'build'), {
@@ -142,17 +165,128 @@ app.post('/api/send-notification', async (req, res) => {
   }
 });
 
+// Create reusable transporter
+const transporter = nodemailer.createTransport({
+  service: 'gmail',
+  auth: {
+    user: process.env.EMAIL_USER,
+    pass: process.env.EMAIL_APP_PASSWORD
+  }
+});
+
+// Email sending endpoint with file upload
+app.post('/api/send-article', upload.single('file'), async (req, res) => {
+  console.log('Received article submission request');
+  try {
+    const {
+      authorName,
+      authorEmail,
+      documentTitle,
+      documentContent,
+      coverPhotoUrl,
+      aiAnalysis
+    } = req.body;
+
+    const file = req.file;
+
+    console.log('Request body:', {
+      authorName,
+      authorEmail,
+      documentTitle,
+      contentLength: documentContent ? documentContent.length : 0,
+      hasPhoto: !!coverPhotoUrl,
+      hasAnalysis: !!aiAnalysis,
+      file: file ? {
+        originalname: file.originalname,
+        mimetype: file.mimetype,
+        size: file.size
+      } : null
+    });
+
+    // Validate required fields
+    if (!authorName || !authorEmail || !documentTitle || !documentContent || !file) {
+      console.log('Missing required fields:', {
+        hasAuthorName: !!authorName,
+        hasAuthorEmail: !!authorEmail,
+        hasTitle: !!documentTitle,
+        hasContent: !!documentContent,
+        hasFile: !!file
+      });
+      return res.status(400).json({
+        error: 'Missing required fields'
+      });
+    }
+
+    // Create email content
+    const mailOptions = {
+      from: process.env.EMAIL_USER,
+      to: process.env.ADMIN_EMAIL,
+      cc: authorEmail,
+      subject: `New Article Submission: ${documentTitle}`,
+      text: `
+New article submission received from Engineering Hub:
+
+Author: ${authorName}
+Email: ${authorEmail}
+Title: ${documentTitle}
+
+AI Analysis Results:
+${aiAnalysis || 'No AI analysis provided'}
+
+Article Content:
+${documentContent.substring(0, 1000)}... [Content truncated]
+
+${coverPhotoUrl ? `Cover Photo: ${coverPhotoUrl}` : 'No cover photo provided'}
+      `,
+      html: `
+        <h2>New Article Submission from Engineering Hub</h2>
+        <p><strong>Author:</strong> ${authorName}</p>
+        <p><strong>Email:</strong> ${authorEmail}</p>
+        <p><strong>Title:</strong> ${documentTitle}</p>
+        
+        <h3>AI Analysis Results:</h3>
+        <pre>${aiAnalysis || 'No AI analysis provided'}</pre>
+        
+        <h3>Article Preview:</h3>
+        <p>${documentContent.substring(0, 1000)}... [Content truncated]</p>
+        
+        ${coverPhotoUrl ? `<p><strong>Cover Photo:</strong> <a href="${coverPhotoUrl}">${coverPhotoUrl}</a></p>` : ''}
+      `,
+      attachments: [{
+        filename: file.originalname,
+        content: file.buffer
+      }]
+    };
+
+    console.log('Attempting to send email...');
+    await transporter.sendMail(mailOptions);
+    console.log('Email sent successfully');
+
+    res.status(200).json({
+      message: 'Article submitted successfully'
+    });
+  } catch (error) {
+    console.error('Error in /api/send-article:', error);
+    res.status(500).json({
+      error: 'Failed to send article submission',
+      details: error.message
+    });
+  }
+});
+
 // The "catchall" handler: for any request that doesn't
 // match one above, send back React's index.html file.
 app.get('*', (req, res) => {
-  const indexPath = path.join(__dirname, 'build', 'index.html');
-  const html = require('fs').readFileSync(indexPath, 'utf8');
-  const renderedHtml = html.replace(/<%- nonce %>/g, res.locals.nonce);
-  res.send(renderedHtml);
+  res.sendFile(path.join(__dirname, 'build', 'index.html'));
 });
 
-// Start the server
 const PORT = process.env.PORT || 3001;
+
 app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
+  console.log(`Server running on port ${PORT}`);
+  console.log('Environment variables loaded:', {
+    hasEmailUser: !!process.env.EMAIL_USER,
+    hasEmailPass: !!process.env.EMAIL_APP_PASSWORD,
+    hasAdminEmail: !!process.env.ADMIN_EMAIL
+  });
 });

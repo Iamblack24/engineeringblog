@@ -152,7 +152,7 @@
   }
   
   .sub-results {
-    color: var(--text-color);
+    color: black;
     font-size: 0.9rem;
     padding-left: 1rem;
   }

@@ -89,12 +89,14 @@ button[type="submit"] {
   font-size: 16px;
   cursor: pointer;
   transition: background-color 0.3s ease, transform 0.2s ease;
+  position: inherit;
 }
 
 button[type="button"]:hover,
 button[type="submit"]:hover {
   background-color: #218838;
   transform: scale(1.03);
+  position: center;
 }
 
 button[type="submit"] {
@@ -108,6 +110,7 @@ button[type="submit"]:hover {
 .results {
   margin-top: 15px;
   text-align: center;
+  position: inherit;
   padding: 15px;
   border-top: 2px solid #dee2e6;
   background-color: #f8f9fa;
@@ -118,15 +121,15 @@ button[type="submit"]:hover {
 .results h2 {
   margin-bottom: 10px;
   font-size: 20px;
-  color: #343a40;
+  color: black;
 }
 
 .results p {
   font-size: 16px;
   margin-bottom: 5px;
-  color: #495057;
+  color: black;
   white-space: pre-wrap;
-  text-align: left;
+  text-align: center;
 }
 
 /* Media query for mobile responsiveness */

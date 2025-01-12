@@ -33,8 +33,17 @@ service cloud.firestore {
       // Allow anyone to read articles
       allow read: if true;
 
-      // Allow authenticated users to create, update, or delete articles
-      allow write: if request.auth != null;
+      // Allow authenticated users to create articles with validation
+      allow create: if request.auth != null 
+        && isValidArticle(request.resource.data);
+
+      // Allow authenticated users to update their own articles
+      allow update: if request.auth != null 
+        && resource.data.author == request.auth.email;
+
+      // Allow authenticated users to delete their own articles
+      allow delete: if request.auth != null 
+        && resource.data.author == request.auth.email;
 
       // ##############################################################
       // # Likes Subcollection within Articles
@@ -83,21 +92,27 @@ service cloud.firestore {
         // ##############################################################
         // # Replies Subcollection within Comments
         // ##############################################################
-        match /replies/{replyId=**} {
+        match /replies/{replyId} {
           // Allow anyone to read replies
           allow read: if true;
 
           // Allow authenticated users to create replies within nesting limit
           allow create: if request.auth != null
-            && isValidReply(request.resource.data)
-            && nestingDepthIsValid();
+            && isValidCommentReply(request.resource.data)
 
           // Allow users to update or delete their own replies within nesting limit
           allow update, delete: if request.auth != null
             && request.auth.uid == resource.data.userId
-            && nestingDepthIsValid();
         }
       }
+    }
+    
+    match /statistics/installations {
+      allow read: if true;
+      allow write: if request.auth != null;
+    }
+    match /pushSubscriptions/subscriptions {
+      allow read, write: if request.auth != null;
     }
 
     // ####################################################################
@@ -139,19 +154,15 @@ service cloud.firestore {
           // ##############################################################
           // # Replies Subcollection within Posts
           // ##############################################################
-          match /replies/{replyId=**} {
+          match /replies/{replyId} {
             // Allow anyone to read replies
             allow read: if true;
 
-            // Allow authenticated users to create replies within nesting limit
-            allow create: if request.auth != null
-              && isValidReply(request.resource.data)
-              && nestingDepthIsValid();
+            // Allow authenticated users to create replies
+            allow create: if request.auth != null && isValidPostReply(request.resource.data);
 
-            // Allow users to update or delete their own replies within nesting limit
-            allow update, delete: if request.auth != null
-              && request.auth.uid == resource.data.userId
-              && nestingDepthIsValid();
+            // Allow users to update or delete their own replies
+            allow update, delete: if request.auth != null && request.auth.uid == resource.data.userId;
           }
         }
       }
@@ -168,19 +179,10 @@ service cloud.firestore {
       // ##############################################################
       // # Replies Subcollection within Posts
       // ##############################################################
-      match /replies/{replyId=**} {
-        // Allow anyone to read replies
+      match /replies/{replyId} {
         allow read: if true;
-
-        // Allow authenticated users to create replies within nesting limit
-        allow create: if request.auth != null
-          && isValidReply(request.resource.data)
-          && nestingDepthIsValid();
-
-        // Allow users to update or delete their own replies within nesting limit
-        allow update, delete: if request.auth != null
-          && request.auth.uid == resource.data.userId
-          && nestingDepthIsValid();
+        allow create: if request.auth != null && isValidPostReply(request.resource.data);
+        allow update, delete: if request.auth != null && request.auth.uid == resource.data.userId;
       }
     }
 
@@ -188,7 +190,6 @@ service cloud.firestore {
     // # Usage Collection (for AI daily limits)
     // ####################################################################
     match /usage/{usageId} {
-      // Allow users to read and write their own usage data
       allow read, write: if request.auth != null 
         && usageId.matches(request.auth.uid + '_.*')
         && isValidUsage(request.resource.data);
@@ -198,7 +199,6 @@ service cloud.firestore {
     // # Feedback Collection (for AI responses)
     // ####################################################################
     match /feedback/{feedbackId} {
-      // Allow users to create and read their own feedback
       allow create: if request.auth != null 
         && feedbackId.matches(request.auth.uid + '_.*')
         && isValidFeedback(request.resource.data);
@@ -216,6 +216,39 @@ service cloud.firestore {
     // ####################################################################
     // # Validation Functions
     // ####################################################################
+
+    // New validation function for articles
+    function isValidArticle(article) {
+      let requiredFields = [
+        'id',
+        'title',
+        'author',
+        'date',
+        'content',
+        'likes',
+        'dislikes'
+      ];
+      
+      return article.keys().hasAll(requiredFields)
+        && article.id is string
+        && article.id.size() > 0
+        && article.title is string
+        && article.title.size() > 0
+        && article.title.size() <= 200
+        && article.author is string
+        && article.author == request.auth.email
+        && article.date is string
+        && article.content is string
+        && article.content.size() > 0
+        && article.likes is number
+        && article.likes >= 0
+        && article.dislikes is number
+        && article.dislikes >= 0
+        && (
+          !('photo' in article.keys()) 
+          || (article.photo is string && article.photo.size() > 0)
+        );
+    }
 
     function isValidThread(thread, categoryId) {
       return thread.title is string
@@ -241,6 +274,41 @@ service cloud.firestore {
     }
 
     function isValidReply(reply) {
+      return reply.content is string
+        && reply.content.size() > 0
+        && reply.content.size() <= 1000
+        && reply.user is string
+        && reply.user.size() > 0
+        && reply.user.size() <= 100
+        && reply.userId is string
+        && reply.userId == request.auth.uid;
+    }
+
+    function isValidPostReply(reply) {
+      let requiredFields = [
+        'content',
+        'user',
+        'userId',
+        'createdAt',
+        'level',
+        'parentReplyId'
+      ];
+
+      return reply.keys().hasAll(requiredFields)
+        && reply.content is string
+        && reply.content.size() > 0
+        && reply.content.size() <= 1000
+        && reply.user is string
+        && reply.user.size() > 0
+        && reply.user.size() <= 100
+        && reply.userId is string
+        && reply.userId == request.auth.uid
+        && reply.createdAt is timestamp
+        && reply.level is number
+        && (reply.parentReplyId == null || reply.parentReplyId is string);
+    }
+
+    function isValidCommentReply(reply) {
       return reply.content is string
         && reply.content.size() > 0
         && reply.content.size() <= 1000

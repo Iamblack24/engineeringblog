@@ -101,6 +101,10 @@
     margin-bottom: 1.5rem;
     text-align: center;
   }
+
+  .results-section span {
+    color: black;
+  }
   
   .results-grid {
     display: grid;
@@ -115,12 +119,12 @@
     padding: 1rem;
     background: rgba(255, 255, 255, 0.05);
     border-radius: 6px;
+    color: black;
   }
   
   .result-label {
-    color: var(--text-color);
+    color: black;
     font-size: 0.9rem;
-    opacity: 0.8;
   }
   
   .result-value {

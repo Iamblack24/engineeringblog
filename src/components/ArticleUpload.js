@@ -1,328 +1,377 @@
-import React, { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { storage, db } from '../firebase';
-import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
-import { collection, addDoc, getDocs, query, orderBy, limit } from 'firebase/firestore';
-import { GoogleGenerativeAI } from '@google/generative-ai';
+import React, { useState, useContext, useEffect } from 'react';
+//import { collection, addDoc, getDocs, query, orderBy } from 'firebase/firestore';
+//import { db } from '../firebase';
+import { AuthContext } from '../contexts/AuthContext';
+import { GoogleGenerativeAI } from "@google/generative-ai";
 import ReactMarkdown from 'react-markdown';
-import { Document, Page, pdfjs } from 'react-pdf';
-import { FaCheckCircle, FaTimesCircle, FaSpinner } from 'react-icons/fa';
+import * as pdfjsLib from 'pdfjs-dist';
 import './ArticleUpload.css';
 
-pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.js`;
+// Set up PDF.js worker
+pdfjsLib.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/pdf.worker.min.js`;
 
-const UploadStep = ({ title, status, message }) => (
-  <motion.div 
-    className={`upload-step ${status}`}
-    initial={{ opacity: 0, y: 20 }}
-    animate={{ opacity: 1, y: 0 }}
-  >
-    <div className="step-icon">
-      {status === 'pending' && <FaSpinner className="spinner" />}
-      {status === 'success' && <FaCheckCircle />}
-      {status === 'error' && <FaTimesCircle />}
-    </div>
-    <div className="step-content">
-      <h3>{title}</h3>
-      {message && <p>{message}</p>}
-    </div>
-  </motion.div>
-);
-
-const ArticleUpload = ({ currentUser }) => {
-  const [file, setFile] = useState(null);
+const ArticleUpload = () => {
+  const [showModal, setShowModal] = useState(false);
   const [title, setTitle] = useState('');
-  const [photo, setPhoto] = useState(''); 
-  const [loading, setLoading] = useState(false);
+  const [file, setFile] = useState(null);
+  const [photo, setPhoto] = useState('');
   const [feedback, setFeedback] = useState('');
-  const [status, setStatus] = useState('');
-  const [showUploadForm, setShowUploadForm] = useState(false);
-  const [uploadSteps, setUploadSteps] = useState({
-    extraction: { status: 'idle', message: '' },
-    analysis: { status: 'idle', message: '' },
-    upload: { status: 'idle', message: '' }
-  });
+  const [status, setStatus] = useState('idle');
+  const [authorName, setAuthorName] = useState('');
+  const [authorEmail, setAuthorEmail] = useState('');
+  const [steps, setSteps] = useState([
+    { id: 'analysis', status: 'idle', message: '' },
+    { id: 'upload', status: 'idle', message: '' }
+  ]);
+  
+  const { currentUser } = useContext(AuthContext);
+  const genAI = new GoogleGenerativeAI(process.env.REACT_APP_GEMINI_API_KEY);
 
-  const getNextArticleId = async () => {
+  // Pre-fill user information when available
+  useEffect(() => {
+    if (currentUser) {
+      setAuthorEmail(currentUser.email || '');
+      setAuthorName(currentUser.displayName || currentUser.email.split('@')[0] || '');
+    }
+  }, [currentUser]);
+
+  const updateStep = (stepId, newStatus, message) => {
+    setSteps(prevSteps =>
+      prevSteps.map(step =>
+        step.id === stepId ? { ...step, status: newStatus, message } : step
+      )
+    );
+  };
+
+  const extractTextFromPDF = async (file) => {
     try {
-      const articlesRef = collection(db, 'articles');
-      const q = query(articlesRef, orderBy('id', 'desc'), limit(1));
-      const querySnapshot = await getDocs(q);
+      console.log('Starting PDF extraction for file:', file.name);
       
-      if (querySnapshot.empty) {
-        return '1';
+      const arrayBuffer = await file.arrayBuffer();
+      console.log('File loaded as ArrayBuffer');
+      
+      const loadingTask = pdfjsLib.getDocument({ data: arrayBuffer });
+      console.log('PDF loading task created');
+      
+      const pdf = await loadingTask.promise;
+      console.log('PDF loaded successfully. Number of pages:', pdf.numPages);
+      
+      let text = '';
+      
+      for (let i = 1; i <= pdf.numPages; i++) {
+        console.log(`Processing page ${i}/${pdf.numPages}`);
+        const page = await pdf.getPage(i);
+        const content = await page.getTextContent();
+        
+        const pageText = content.items
+          .map(item => {
+            const needsExtraSpace = item.hasEOL || item.transform[4] > 10; 
+            return item.str + (needsExtraSpace ? ' ' : '');
+          })
+          .join('')
+          .replace(/\s+/g, ' ') 
+          .trim();
+        
+        text += pageText + '\n\n'; 
+        console.log(`Page ${i} processed successfully`);
       }
       
-      const lastArticle = querySnapshot.docs[0].data();
-      return String(Number(lastArticle.id) + 1);
+      const finalText = text.trim();
+      console.log('PDF extraction completed. Text length:', finalText.length);
+      
+      if (!finalText || finalText.length < 10) { 
+        throw new Error('Extracted text appears to be too short or empty');
+      }
+      
+      return finalText;
     } catch (error) {
-      console.error('Error getting next article ID:', error);
-      return String(Date.now()); 
+      console.error('PDF extraction error:', error);
+      throw new Error(`Failed to extract text from PDF: ${error.message}. Please ensure the file is not corrupted and try again.`);
     }
   };
 
-  const updateStep = (step, status, message) => {
-    setUploadSteps(prev => ({
-      ...prev,
-      [step]: { status, message }
-    }));
-  };
-
-  const reviewArticle = async (content) => {
-    const genAI = new GoogleGenerativeAI(process.env.REACT_APP_GEMINI_API_KEY);
-    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
-
-    const prompt = `Review this engineering article and determine if it meets our criteria.
-
-## Evaluation Criteria
-1. Technical accuracy
-2. Engineering principles
-3. Clarity and structure
-4. Relevance to engineering
-
-## Required Response Format
-Please provide your analysis in the following format:
-
-### Decision
-[ACCEPT/REJECT]
-
-### Reason
-[Brief explanation for the decision]
-
-### Improvements Needed
-[If rejected, provide specific recommendations for improvement]
-
-Article content:
-${content}`;
-
-    try {
-      const result = await model.generateContent(prompt);
-      const response = result.response.text();
-      return response;
-    } catch (error) {
-      console.error('AI Review Error:', error);
-      throw error;
-    }
-  };
-
-  const extractTextFromPdf = async (file) => {
-    updateStep('extraction', 'pending', 'Extracting content from PDF...');
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.onload = async (event) => {
-        try {
-          const typedArray = new Uint8Array(event.target.result);
-          const pdf = await pdfjs.getDocument(typedArray).promise;
-          let fullText = '';
-          
-          for (let i = 1; i <= pdf.numPages; i++) {
-            updateStep('extraction', 'pending', `Processing page ${i} of ${pdf.numPages}...`);
-            const page = await pdf.getPage(i);
-            const textContent = await page.getTextContent();
-            const pageText = textContent.items.map(item => item.str).join(' ');
-            fullText += pageText + ' ';
-          }
-          
-          updateStep('extraction', 'success', 'Content extracted successfully!');
-          resolve(fullText.trim());
-        } catch (error) {
-          updateStep('extraction', 'error', 'Error extracting PDF content');
-          reject(error);
-        }
-      };
-      reader.onerror = () => {
-        updateStep('extraction', 'error', 'Error reading PDF file');
-        reject(new Error('Error reading file'));
-      };
-      reader.readAsArrayBuffer(file);
-    });
-  };
-
-  const handleFileUpload = async (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    
-    if (!file || !title) {
-      setFeedback('Please provide both title and PDF file');
+    if (!file || !title || !authorName || !authorEmail) {
+      setFeedback('Please fill in all required fields (title, file, name, and email).');
       return;
     }
 
-    setLoading(true);
+    if (!authorEmail.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/)) {
+      setFeedback('Please enter a valid email address.');
+      return;
+    }
+
+    setStatus('analyzing');
+    updateStep('analysis', 'pending', 'Analyzing article...');
+    setFeedback('');
+
     try {
-      const pdfContent = await extractTextFromPdf(file);
+      let fileContent;
+      updateStep('analysis', 'pending', 'Processing file...');
+
+      try {
+        console.log('Processing file:', file.name, 'Type:', file.type);
+        
+        if (file.type === 'application/pdf') {
+          console.log('Starting PDF processing');
+          fileContent = await extractTextFromPDF(file);
+          console.log('PDF processing completed');
+        } else {
+          console.log('Processing as text file');
+          fileContent = await file.text();
+          console.log('Text file processing completed');
+        }
+
+        console.log('Extracted content length:', fileContent.length);
+        console.log('First 100 characters:', fileContent.substring(0, 100));
+
+        if (!fileContent || fileContent.trim().length === 0) {
+          throw new Error('No readable text found in the file.');
+        }
+
+        const maxChars = 30000;
+        if (fileContent.length > maxChars) {
+          console.log('Content truncated from', fileContent.length, 'to', maxChars, 'characters');
+          fileContent = fileContent.substring(0, maxChars) + '\n\n[Content truncated for analysis]';
+        }
+      } catch (error) {
+        console.error('File processing error:', error);
+        updateStep('analysis', 'error', 'Failed to process file');
+        setStatus('error');
+        setFeedback(`Error processing file: ${error.message}`);
+        return;
+      }
+
+      updateStep('analysis', 'pending', 'AI analyzing content...');
+      const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
       
-      updateStep('analysis', 'pending', 'AI is reviewing your article...');
-      const review = await reviewArticle(pdfContent);
+      const prompt = `
+        You are a technical article reviewer for a professional engineering site called Engineering Hub.
+        Review the following article and determine if it meets our standards:
+        
+        Title: ${title}
+        Content: ${fileContent}
+        
+        Evaluate based on:
+        1. Technical accuracy- verify correctness of engineering concepts and formulae. Cross check references.
+        2. Code quality (if code is present)
+        3. Relevance to engineering- Filter out overly general or unrelated topics
+        4. Originality- Check for plagiarism
+        5. Educational value
+        6. Engagement potential- analyze how well it appeals to target audience
+        7. Readability and clarity- Repetition may be allowed as long as it's not overwhelming.
+        
+        Respond with:
+        - ACCEPT or REJECT
+        - Brief explanation (max 3 sentences)
+        - One key improvement suggestion
+      `;
+
+      const result = await model.generateContent(prompt);
+      const review = result.response.text();
       const isApproved = review.includes('ACCEPT');
 
       if (isApproved) {
-        updateStep('analysis', 'success', 'Article approved by AI review!');
-        updateStep('upload', 'pending', 'Uploading to server...');
-        
-        const nextId = await getNextArticleId();
-        
-        const filename = `${nextId}-${file.name.replace(/[^a-zA-Z0-9.]/g, '_')}`;
-        const storageRef = ref(storage, `articles/${filename}`);
-        
-        const metadata = {
-          contentType: file.type,
-          customMetadata: {
-            'Access-Control-Allow-Origin': '*',
-            'Access-Control-Allow-Methods': 'GET',
+        updateStep('analysis', 'success', 'Article approved by AI review! Your submission will be reviewed by our team.');
+        updateStep('upload', 'pending', 'Sending notification...');
+
+        try {
+          // Create FormData to send file
+          const formData = new FormData();
+          formData.append('file', file);
+          formData.append('authorName', authorName);
+          formData.append('authorEmail', authorEmail);
+          formData.append('documentTitle', title);
+          formData.append('documentContent', fileContent);
+          if (photo) formData.append('coverPhotoUrl', photo);
+          formData.append('aiAnalysis', review);
+
+          console.log('Sending form data:', {
+            fileName: file.name,
+            fileType: file.type,
+            fileSize: file.size,
+            authorName,
+            authorEmail,
+            documentTitle: title,
+            hasContent: !!fileContent,
+            hasPhoto: !!photo,
+            hasAnalysis: !!review
+          });
+
+          const emailResponse = await fetch('http://localhost:3001/api/send-article', {
+            method: 'POST',
+            body: formData
+          });
+
+          if (!emailResponse.ok) {
+            const errorData = await emailResponse.json();
+            throw new Error(errorData.error || 'Failed to send email notification');
           }
-        };
-        
-        await uploadBytes(storageRef, file, metadata);
-        const downloadURL = await getDownloadURL(storageRef);
 
-        await addDoc(collection(db, 'articles'), {
-          id: nextId,
-          title,
-          author: currentUser.email,
-          date: new Date().toISOString().split('T')[0], 
-          content: downloadURL,
-          likes: 0,
-          dislikes: 0,
-          photo: photo || null, 
-        });
+          updateStep('upload', 'success', 'Article submitted successfully!');
+          setStatus('success');
+          setFeedback(`# Congratulations! 
 
-        updateStep('upload', 'success', 'Article published successfully!');
-        setStatus('success');
-        setFeedback('Article approved and published!');
-        
-        setTimeout(() => {
-          setShowUploadForm(false);
-          setTitle('');
-          setFile(null);
-          setPhoto('');
-        }, 3000);
+Your article has successfully passed our initial AI analysis and has been submitted for review.
+
+## What's Next?
+1. Our team of industry professionals will review your article within the next 24 hours
+2. You will receive an email confirmation at ${authorEmail}
+3. The final review decision will be sent to your email
+
+Thank you for contributing to Engineering Hub! We'll be in touch soon.`);
+          
+          setTimeout(() => {
+            setShowModal(false);
+            setTitle('');
+            setFile(null);
+            setPhoto('');
+            setFeedback('');
+            setSteps([
+              { id: 'analysis', status: 'idle', message: '' },
+              { id: 'upload', status: 'idle', message: '' }
+            ]);
+          }, 15000);
+        } catch (error) {
+          console.error('Notification Error:', error);
+          setFeedback('Error sending notification: ' + error.message);
+          updateStep('upload', 'error', 'Failed to send notification');
+        }
       } else {
-        updateStep('analysis', 'error', review);
+        updateStep('analysis', 'error', 'Article needs improvement');
         updateStep('upload', 'idle', '');
-        setStatus('rejected');
-        setFeedback(review);
+        setStatus('error');
+        setFeedback(`# Article Review Results
+
+${review}
+
+Please revise your article based on the feedback above and try submitting again.`);
       }
     } catch (error) {
-      console.error('Upload Error:', error);
-      setFeedback('Error uploading article: ' + error.message);
-      updateStep('upload', 'error', 'Upload failed');
+      console.error('Analysis Error:', error);
+      updateStep('analysis', 'error', 'Analysis failed');
+      setStatus('error');
+      setFeedback('Error analyzing article: ' + error.message);
     }
-    setLoading(false);
   };
+
+  const handleModalClose = (e) => {
+    if (e.target === e.currentTarget) {
+      setShowModal(false);
+      setFeedback('');
+      setSteps([
+        { id: 'analysis', status: 'idle', message: '' },
+        { id: 'upload', status: 'idle', message: '' }
+      ]);
+    }
+  };
+
+  if (!currentUser) {
+    return (
+      <div className="article-upload-container">
+        <button 
+          className="toggle-upload-btn" 
+          onClick={() => setFeedback('Please sign in to upload articles.')}
+          title="Upload Article"
+        />
+      </div>
+    );
+  }
 
   return (
     <>
-      <motion.button
-        className="floating-upload-button"
-        whileHover={{ scale: 1.05 }}
-        whileTap={{ scale: 0.95 }}
-        onClick={() => {
-          setShowUploadForm(true);
-          setUploadSteps({
-            extraction: { status: 'idle', message: '' },
-            analysis: { status: 'idle', message: '' },
-            upload: { status: 'idle', message: '' }
-          });
-        }}
+      <div className="article-upload-container">
+        <button 
+          className={`toggle-upload-btn ${showModal ? 'active' : ''}`}
+          onClick={() => setShowModal(!showModal)}
+          title="Upload Article"
+        />
+      </div>
+
+      <div 
+        className={`upload-modal-overlay ${showModal ? 'active' : ''}`}
+        onClick={handleModalClose}
       >
-        Upload Article
-      </motion.button>
+        <div className="upload-form-container">
+          <form onSubmit={handleSubmit} className="upload-form">
+            <div className="form-group">
+              <label>Title:</label>
+              <input
+                type="text"
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+                required
+              />
+            </div>
 
-      <AnimatePresence>
-        {showUploadForm && (
-          <motion.div
-            className="upload-modal-overlay"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            onClick={() => !loading && setShowUploadForm(false)}
-          >
-            <motion.div
-              className="upload-modal"
-              initial={{ y: 50, opacity: 0 }}
-              animate={{ y: 0, opacity: 1 }}
-              exit={{ y: 50, opacity: 0 }}
-              onClick={e => e.stopPropagation()}
+            <div className="form-group">
+              <label>Your Name:</label>
+              <input
+                type="text"
+                value={authorName}
+                onChange={(e) => setAuthorName(e.target.value)}
+                required
+              />
+            </div>
+
+            <div className="form-group">
+              <label>Your Email:</label>
+              <input
+                type="email"
+                value={authorEmail}
+                onChange={(e) => setAuthorEmail(e.target.value)}
+                required
+              />
+            </div>
+
+            <div className="form-group">
+              <label>Article File:</label>
+              <input
+                type="file"
+                onChange={(e) => setFile(e.target.files[0])}
+                accept=".pdf,.txt,.md,.doc,.docx"
+                required
+              />
+            </div>
+
+            <div className="form-group">
+              <label>Cover Photo URL (optional):</label>
+              <input
+                type="url"
+                value={photo}
+                onChange={(e) => setPhoto(e.target.value)}
+                placeholder="https://example.com/image.jpg"
+              />
+            </div>
+
+            <button 
+              type="submit" 
+              disabled={status === 'analyzing' || status === 'uploading'}
+              className="submit-btn"
             >
-              <h2>Upload Engineering Article</h2>
-              <form onSubmit={handleFileUpload}>
-                <input
-                  type="text"
-                  placeholder="Article Title"
-                  value={title}
-                  onChange={(e) => setTitle(e.target.value)}
-                  disabled={loading}
-                  required
-                />
-                <input
-                  type="text"
-                  placeholder="Cover Image URL (optional)"
-                  value={photo}
-                  onChange={(e) => setPhoto(e.target.value)}
-                  disabled={loading}
-                />
-                <input
-                  type="file"
-                  accept=".pdf"
-                  onChange={(e) => setFile(e.target.files[0])}
-                  disabled={loading}
-                  required
-                />
-                <motion.button
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
-                  disabled={loading}
-                  type="submit"
-                >
-                  {loading ? 'Processing...' : 'Upload Article'}
-                </motion.button>
-              </form>
+              {status === 'analyzing' ? 'Analyzing...' : 
+               status === 'uploading' ? 'Sending...' : 
+               'Submit Article'}
+            </button>
 
-              {(loading || status) && (
-                <div className="upload-steps">
-                  <UploadStep
-                    title="Content Extraction"
-                    status={uploadSteps.extraction.status}
-                    message={uploadSteps.extraction.message}
-                  />
-                  <UploadStep
-                    title="AI Analysis"
-                    status={uploadSteps.analysis.status}
-                    message={uploadSteps.analysis.message}
-                  />
-                  <UploadStep
-                    title="Publishing"
-                    status={uploadSteps.upload.status}
-                    message={uploadSteps.upload.message}
-                  />
+            {feedback && (
+              <div className={`feedback ${status}`}>
+                <ReactMarkdown>{feedback}</ReactMarkdown>
+              </div>
+            )}
+
+            <div className="steps-container">
+              {steps.map(step => (
+                <div key={step.id} className={`step ${step.status}`}>
+                  <span className="step-label">{step.id}:</span>
+                  <span className="step-message">{step.message}</span>
                 </div>
-              )}
-
-              {feedback && (
-                <motion.div
-                  className={`feedback ${status}`}
-                  initial={{ opacity: 0, y: -20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                >
-                  <ReactMarkdown 
-                    className="markdown"
-                    components={{
-                      code: ({node, inline, className, children, ...props}) => {
-                        return (
-                          <code className={className} {...props}>
-                            {children}
-                          </code>
-                        )
-                      }
-                    }}
-                  >
-                    {feedback}
-                  </ReactMarkdown>
-                </motion.div>
-              )}
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+              ))}
+            </div>
+          </form>
+        </div>
+      </div>
     </>
   );
 };

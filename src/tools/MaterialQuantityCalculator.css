@@ -123,6 +123,9 @@
     grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
     gap: 1.5rem;
   }
+  .results-detail span {
+    color: black;
+  }
   
   .result-item {
     background: rgba(255, 255, 255, 0.05);
@@ -148,7 +151,7 @@
   }
   
   .result-detail span:first-child {
-    color: var(--text-color);
+    color: black;
     opacity: 0.8;
   }
   

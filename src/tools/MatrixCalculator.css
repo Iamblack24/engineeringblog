@@ -36,9 +36,14 @@ input {
   background-color: #0056b3;
 }
 
-table {
+.results table {
   margin: 10px auto;
   border-collapse: collapse;
+  color: black;
+}
+
+.results tbody {
+  color: black;
 }
 
 td {
@@ -50,7 +55,16 @@ td {
   color: black; /* Set result text color to black for better visibility */
   font-size: 16px;
 }
+.results  p {
+  color: black;
+}
 
 pre {
   color: black; /* Ensure JSON results are also black */
+}
+.results tr {
+  color: black;
+}
+.results td {
+  color: black;
 }

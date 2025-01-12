@@ -161,10 +161,16 @@
   }
   
   .result-item li {
-    color: var(--text-color);
+    color: black;
     margin: 0.5rem 0;
     padding-left: 1.5rem;
     position: relative;
+  }
+  .result-item.notes li {
+    color: black;
+  }
+  .result-item.assumptions li {
+    color: black;
   }
   
   .result-item li:before {

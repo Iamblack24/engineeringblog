@@ -47,19 +47,19 @@ const tools = [
     link: '/simulation-generator',
   },
   {
-    title: 'Beam Calculator',
+    title: 'Beam Analysis',
     description: 'Calculate the bending moment, shear force, and deflection of beams under various loading conditions.',
-    link: '/tools/beam-calculator', // Replace with the actual link to the tool
+    link: '/tools/beam-calculator', 
   },
   {
-    title: 'Concrete Mix Design Calculator',
+    title: 'Concrete Mix Design',
     description: 'Determine the proportions of cement, sand, aggregate, and water for a given concrete mix.',
-    link: '/tools/concrete-mix-design', // Replace with the actual link to the tool
+    link: '/tools/concrete-mix-design', 
   },
   {
-    title: 'Slope Stability Calculator',
+    title: 'Slope Stability Analysis',
     description: 'Analyze the stability of slopes and embankments.',
-    link: '/tools/slope-stability', // Replace with the actual link to the tool
+    link: '/tools/slope-stability', 
   },
   {
     title: 'Hydraulic Calculator',

@@ -61,8 +61,14 @@ export const onMessageListener = () =>
     });
   });
 
-export const auth = getAuth(app);
-export const db = getFirestore(app);
-export const storage = getStorage(app);
+const auth = getAuth(app);
+const db = getFirestore(app);
+const storage = getStorage(app);
+storage._customHeaders = {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Methods': 'GET, PUT, POST, DELETE, OPTIONS',
+  'Access-Control-Allow-Headers': 'Content-Type'
+};
 
+export { db, storage, auth, messaging };
 export default app;

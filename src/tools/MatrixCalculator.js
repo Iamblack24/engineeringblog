@@ -18,7 +18,8 @@ const MatrixCalculator = () => {
       );
       return newMatrix;
     });
-  };
+    
+  };  
 
   const handleMatrixChange = (matrix, setMatrix, row, col, value) => {
     const newMatrix = [...matrix];
@@ -79,6 +80,7 @@ const MatrixCalculator = () => {
         ))}
       </tbody>
     </table>
+    
   );
 
   return (
@@ -92,7 +94,7 @@ const MatrixCalculator = () => {
             type="number"
             value={sizeA.rows}
             onChange={(e) => {
-              const newSize = { ...sizeA, rows: parseInt(e.target.value) || 1 };
+              const newSize = { ...sizeA, rows: parseInt(e.target.value) || "" };
               setSizeA(newSize);
               adjustMatrixSize(setMatrixA, newSize);
             }}
@@ -102,7 +104,7 @@ const MatrixCalculator = () => {
             type="number"
             value={sizeA.cols}
             onChange={(e) => {
-              const newSize = { ...sizeA, cols: parseInt(e.target.value) || 1 };
+              const newSize = { ...sizeA, cols: parseInt(e.target.value) || "" };
               setSizeA(newSize);
               adjustMatrixSize(setMatrixA, newSize);
             }}
@@ -114,7 +116,7 @@ const MatrixCalculator = () => {
             type="number"
             value={sizeB.rows}
             onChange={(e) => {
-              const newSize = { ...sizeB, rows: parseInt(e.target.value) || 1 };
+              const newSize = { ...sizeB, rows: parseInt(e.target.value) || "" };
               setSizeB(newSize);
               adjustMatrixSize(setMatrixB, newSize);
             }}
@@ -124,7 +126,7 @@ const MatrixCalculator = () => {
             type="number"
             value={sizeB.cols}
             onChange={(e) => {
-              const newSize = { ...sizeB, cols: parseInt(e.target.value) || 1 };
+              const newSize = { ...sizeB, cols: parseInt(e.target.value) || "" };
               setSizeB(newSize);
               adjustMatrixSize(setMatrixB, newSize);
             }}

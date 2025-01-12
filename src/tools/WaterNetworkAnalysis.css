@@ -62,7 +62,7 @@
   
   .input-group label {
     display: block;
-    color: var(--text-color);
+    color: black;
     margin-bottom: 0.5rem;
     font-size: 0.9rem;
   }
@@ -202,6 +202,7 @@
     margin: 0.8rem 0;
     padding-left: 1.5rem;
     position: relative;
+    color:black;
   }
   
   .warnings li:before {

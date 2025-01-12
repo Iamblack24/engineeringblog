@@ -21,6 +21,10 @@ import './SingleArticle.css';
 import { Document, Page, pdfjs } from 'react-pdf/dist/esm/entry.webpack';
 import 'react-pdf/dist/esm/Page/AnnotationLayer.css';
 import 'react-pdf/dist/esm/Page/TextLayer.css'; // Import TextLayer CSS
+import { 
+  FacebookShareButton, TwitterShareButton, WhatsappShareButton,
+  FacebookIcon, TwitterIcon, WhatsappIcon
+} from 'react-share';
 
 // Set worker source for pdfjs
 pdfjs.GlobalWorkerOptions.workerSrc = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.js`;
@@ -68,6 +72,7 @@ const SingleArticle = () => {
   const [error, setError] = useState('');
   const [replyingTo, setReplyingTo] = useState(null);
   const [replyText, setReplyText] = useState('');
+  const [pdfPreviewText, setPdfPreviewText] = useState('');
 
   //function to extract username from email
   const getUsernameFromEmail = (email) => {
@@ -156,8 +161,33 @@ const SingleArticle = () => {
     };
   }, [comments, id]);
 
-  const onDocumentLoadSuccess = ({ numPages }) => {
+  const onDocumentLoadSuccess = async ({ numPages }) => {
     setNumPages(numPages);
+    
+    if (isPDF) {
+      try {
+        // Load PDF document
+        const pdf = await pdfjs.getDocument(article.content).promise;
+        
+        // Get first page
+        const page = await pdf.getPage(1);
+        
+        // Extract text content
+        const textContent = await page.getTextContent();
+        
+        // Combine text items
+        const text = textContent.items.map(item => item.str).join(' ');
+        
+        // Take first 120 words as preview
+        const words = text.split(' ').slice(0, 120);
+        const preview = words.join(' ') + '...';
+        
+        setPdfPreviewText(preview);
+      } catch (error) {
+        console.error('Error extracting PDF text:', error);
+        setPdfPreviewText('Preview not available');
+      }
+    }
   };
 
   const handleLike = async () => {
@@ -216,6 +246,22 @@ const SingleArticle = () => {
     } catch (error) {
       console.error('Error disliking article:', error);
     }
+  };
+
+  const getArticlePreview = () => {
+    if (!article) return '';
+    
+    const siteName = "Engineering Hub";
+    const callToAction = `\n\n🔍 Discover more insights in our complete article on ${siteName}!`;
+    
+    if (isPDF) {
+      return `📄 ${article.title}\n\n${pdfPreviewText}${callToAction}`;
+    }
+    
+    const content = article.content;
+    const words = content.split(' ');
+    const previewLength = Math.floor(words.length * 0.1);
+    return `📝 ${article.title}\n\n${words.slice(0, previewLength).join(' ')}...${callToAction}`;
   };
 
   if (loading) {
@@ -303,7 +349,57 @@ const SingleArticle = () => {
       <p className="article-meta">
         By {article.author} on {new Date(article.date).toLocaleDateString()}
       </p>
+      
+      <div className="social-share-buttons">
+        <TwitterShareButton
+          url={window.location.href}
+          title={getArticlePreview()}
+          via="Eng_ineeringHub"
+          className="share-button"
+          hashtags={["engineering", "education"]} // Optional: Add relevant hashtags
+          beforeOnClick={() => {
+            if (/Android|iPhone|iPad|iPod/i.test(navigator.userAgent)) {
+              const tweetText = encodeURIComponent(getArticlePreview() + "\n" + window.location.href);
+              window.location.href = `twitter://post?text=${tweetText}`;
+              return false;
+            }
+            return true;
+        }}
+        >
+          <TwitterIcon size={32} round />
+        </TwitterShareButton>
 
+        <FacebookShareButton
+          url={window.location.href}
+          quote={getArticlePreview()}
+          className="share-button"
+          beforeOnClick={() => {
+            if (/Android|iPhone|iPad|iPod/i.test(navigator.userAgent)) {
+              window.location.href = `fb://share?text=${encodeURIComponent(getArticlePreview())}`;
+              return false;
+            }
+            return true;
+          }}
+        >
+          <FacebookIcon size={32} round />
+        </FacebookShareButton>
+
+        <WhatsappShareButton
+          url={window.location.href}
+          title={getArticlePreview()}
+          className="share-button"
+          beforeOnClick={() => {
+            if (/Android|iPhone|iPad|iPod/i.test(navigator.userAgent)) {
+              window.location.href = `whatsapp://send?text=${encodeURIComponent(getArticlePreview())}`;
+              return false;
+            }
+            return true;
+          }}
+        >
+          <WhatsappIcon size={32} round />
+        </WhatsappShareButton>
+      </div>
+      
       {isPDF ? (
         <div className="pdf-container">
           <Document

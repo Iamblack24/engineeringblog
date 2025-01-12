@@ -95,6 +95,9 @@
     margin-bottom: 1.5rem;
     text-align: center;
   }
+  .table-container td {
+    color: black;
+  }
   
   .results-container {
     display: grid;

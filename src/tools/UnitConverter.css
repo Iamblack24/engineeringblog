@@ -38,7 +38,7 @@
     border-radius: 6px;
     border: 1px solid var(--accent-color);
     background: var(--secondary-color);
-    color: var(--text-color);
+    color: black;
     font-size: 1rem;
     width: 100%;
     transition: all 0.3s ease;
@@ -79,7 +79,7 @@
     background: rgba(100, 255, 218, 0.1);
     border: 1px solid var(--accent-color);
     border-radius: 6px;
-    color: var(--text-color);
+    color: black;
     text-align: center;
     font-size: 1.1rem;
   }
