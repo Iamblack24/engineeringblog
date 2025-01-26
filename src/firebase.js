@@ -14,8 +14,25 @@ const firebaseConfig = {
   measurementId: "G-SHW0R2QQSP"
 };
 
-const app = initializeApp(firebaseConfig);
-const messaging = getMessaging(app);
+// Initialize Firebase only on the client side
+let app;
+let auth;
+let db;
+let storage;
+let messaging;
+
+if (typeof window !== 'undefined') {
+  // Initialize Firebase
+  app = initializeApp(firebaseConfig);
+  auth = getAuth(app);
+  db = getFirestore(app);
+  storage = getStorage(app);
+  
+  // Initialize messaging only if supported
+  if ('serviceWorker' in navigator) {
+    messaging = getMessaging(app);
+  }
+}
 
 const sendTokenToServer = async (token) => {
   try {
@@ -61,9 +78,6 @@ export const onMessageListener = () =>
     });
   });
 
-const auth = getAuth(app);
-const db = getFirestore(app);
-const storage = getStorage(app);
 storage._customHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Methods': 'GET, PUT, POST, DELETE, OPTIONS',

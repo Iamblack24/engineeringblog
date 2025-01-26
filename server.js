@@ -73,7 +73,9 @@ app.use(
         "https://engineeringhub.engineer",
         "wss://*.firebaseio.com",
         "https://*.cloudfunctions.net",
-        "https://identitytoolkit.googleapis.com"
+        "https://identitytoolkit.googleapis.com",
+        "https://securetoken.googleapis.com",  // Add this for Firebase Auth
+        "https://www.googleapis.com"           // Add this for Firebase Auth
       ],
       fontSrc: [
         "'self'",
@@ -82,7 +84,11 @@ app.use(
       ],
       objectSrc: ["'none'"],
       frameSrc: [
-        "https://pagead2.googlesyndication.com", // For Google Ads iframes
+        "'self'",
+        "https://engineeringhub.engineer",
+        "https://*.firebaseapp.com",
+        "https://firebase.googleapis.com",
+        "https://*.google.com"
       ],
       manifestSrc: ["'self'"],
       mediaSrc: ["'self'"],

@@ -21,7 +21,7 @@ firebase.initializeApp(firebaseConfig);
 const messaging = firebase.messaging();
 
 // Caching Logic
-const CACHE_NAME = 'enghub-cache-v32';
+const CACHE_NAME = 'enghub-cache-v33';
 const urlsToCache = [
   '/',
   '/index.html',
@@ -29,7 +29,13 @@ const urlsToCache = [
   '/manifest.json',
   '/static/css/main.[HASH].css',
   '/static/js/main.[HASH].js',
-  // Add other assets you want to cache
+];
+
+// Don't cache authentication requests
+const authUrls = [
+  'https://identitytoolkit.googleapis.com',
+  'https://securetoken.googleapis.com',
+  'https://www.googleapis.com'
 ];
 
 // Install Event
@@ -69,12 +75,20 @@ self.addEventListener('activate', (event) => {
 
 // Fetch Event
 self.addEventListener('fetch', (event) => {
-  const request = event.request;
-  if (request.method !== 'GET') return;
-
+  // Skip caching for authentication requests
+  if (authUrls.some(url => event.request.url.startsWith(url))) {
+    return;
+  }
+  
   event.respondWith(
-    caches.match(request)
-      .then((response) => response || fetch(request))
+    caches.match(event.request)
+      .then((response) => {
+        // Cache hit - return response
+        if (response) {
+          return response;
+        }
+        return fetch(event.request);
+      })
       .catch(() => caches.match('/index.html'))
   );
 });
