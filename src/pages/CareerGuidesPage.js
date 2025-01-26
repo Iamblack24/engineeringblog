@@ -53,7 +53,56 @@ const careerGuides = [
     description: 'Learn about emerging technologies in construction and how to build a career in this field.',
     link: '/career-guides/construction-technology',
   },
-  
+  {
+    title: 'Construction Project Management',
+    description: 'Learn about the role of construction project managers and essential skills needed.',
+    link: '/career-guides/construction-management',
+  },
+  {
+    title: 'Quantity Surveying and Cost Engineering',
+    description: 'Explore career opportunities in construction cost management and quantity surveying.',
+    link: '/career-guides/quantity-surveying',
+  },
+  {
+    title: 'Environmental Impact Assessment Specialist',
+    description: 'Discover how to build a career in environmental impact assessment and sustainability.',
+    link: '/career-guides/environmental-assessment',
+  },
+  {
+    title: 'Transportation Infrastructure Engineer',
+    description: 'Learn about careers in highway, railway, and airport infrastructure design.',
+    link: '/career-guides/transportation-infrastructure',
+  },
+  {
+    title: 'Water Resources Engineer',
+    description: 'Explore opportunities in water management, hydraulic design, and drainage systems.',
+    link: '/career-guides/water-resources',
+  },
+  {
+    title: 'Building Energy Modeler',
+    description: 'Guide to becoming a specialist in building energy performance simulation and optimization.',
+    link: '/career-guides/energy-modeling',
+  },
+  {
+    title: 'Construction Safety Engineer',
+    description: 'Learn about careers in construction safety management and compliance.',
+    link: '/career-guides/safety-engineering',
+  },
+  {
+    title: 'Facade Engineering Specialist',
+    description: 'Discover the specialized field of building envelope and facade engineering.',
+    link: '/career-guides/facade-engineering',
+  },
+  {
+    title: 'Infrastructure Asset Manager',
+    description: 'Guide to careers in infrastructure maintenance and lifecycle management.',
+    link: '/career-guides/asset-management',
+  },
+  {
+    title: 'Smart Cities Technology Engineer',
+    description: 'Explore opportunities in smart city infrastructure and IoT integration.',
+    link: '/career-guides/smart-cities',
+  },
   // Add more career guides here
 ];
 

@@ -8,6 +8,10 @@ const crypto = require('crypto');
 const nodemailer = require('nodemailer');
 const cors = require('cors');
 const multer = require('multer');
+const React = require('react');
+const ReactDOMServer = require('react-dom/server');
+const { StaticRouter } = require('react-router-dom/server');
+const fs = require('fs');
 require('dotenv').config();
 
 // Only declare db once
@@ -15,9 +19,12 @@ const db = admin.firestore();
 
 const app = express();
 
-// Configure CORS
+const isDev = process.env.NODE_ENV !== 'production';
+const PORT = process.env.PORT || 3001; // Use different port for SSR server
+
+// Configure CORS for development
 app.use(cors({
-  origin: 'http://localhost:3000', // React app's URL
+  origin: isDev ? 'http://localhost:3000' : true, // Allow React dev server in development
   methods: ['POST', 'GET', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],
   credentials: true
@@ -42,7 +49,7 @@ app.use(
         (req, res) => `'nonce-${res.locals.nonce}'`, // Dynamic nonce
         "https://www.googletagmanager.com",
         "https://pagead2.googlesyndication.com",
-        "https://cdnjs.cloudflare.com",
+        "https://cdnjs.cloudflare.com", // For Font Awesome
       ],
       styleSrc: [
         "'self'",
@@ -62,6 +69,11 @@ app.use(
         "https://firebase.googleapis.com",
         "https://*.google.com",
         "https://*.googleapis.com",
+        "https://*.firebaseapp.com",
+        "https://engineeringhub.engineer",
+        "wss://*.firebaseio.com",
+        "https://*.cloudfunctions.net",
+        "https://identitytoolkit.googleapis.com"
       ],
       fontSrc: [
         "'self'",
@@ -274,13 +286,52 @@ ${coverPhotoUrl ? `Cover Photo: ${coverPhotoUrl}` : 'No cover photo provided'}
   }
 });
 
+// Add SSR middleware before the catch-all handler
+app.get('*', (req, res, next) => {
+  // Skip SSR in development mode (let Create React App handle it)
+  if (isDev) {
+    return next();
+  }
+
+  // Skip SSR for API routes and static files
+  if (req.url.startsWith('/api') || req.url.includes('.')) {
+    return next();
+  }
+
+  const App = require('./src/App').default;
+  const context = {};
+  
+  const app = ReactDOMServer.renderToString(
+    React.createElement(StaticRouter, { location: req.url, context },
+      React.createElement(App)
+    )
+  );
+
+  const indexFile = path.resolve('./build/index.html');
+  fs.readFile(indexFile, 'utf8', (err, data) => {
+    if (err) {
+      console.error('Error reading index.html:', err);
+      return next(err);
+    }
+
+    const html = data
+      .replace('<div id="root"></div>', `<div id="root">${app}</div>`)
+      .replace('</head>', `
+        <script>
+          window.__INITIAL_STATE__ = ${JSON.stringify({})};
+        </script>
+        </head>
+      `);
+
+    return res.send(html);
+  });
+});
+
 // The "catchall" handler: for any request that doesn't
 // match one above, send back React's index.html file.
 app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, 'build', 'index.html'));
 });
-
-const PORT = process.env.PORT || 3001;
 
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);

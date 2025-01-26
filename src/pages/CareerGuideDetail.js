@@ -1,8 +1,12 @@
 import React from 'react';
 import { useParams } from 'react-router-dom';
 import './CareerGuideDetail.css';
+import { additionalCareerGuides } from './careerGuidesData';
+import { additionalCareerGuides2 } from './careerGuidesData2';
 
 const careerGuideDetails = {
+  ...additionalCareerGuides,
+  ...additionalCareerGuides2,
   'career-paths': {
     title: 'Career Paths in Civil Engineering',
     content: `

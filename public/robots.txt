@@ -1,9 +1,53 @@
 # https://www.robotstxt.org/robotstxt.html
 User-agent: *
 Allow: /
+Allow: /static/
+Allow: /articles/
+Allow: /case-studies/
+Allow: /tools/
+Allow: /design-materials/
+Allow: /career-guides/
+Allow: /revision-materials/
+Allow: /educational-resources/
+Allow: /about/
+Allow: /contact/
+Allow: /privacy-policy/
+Allow: /terms-of-service/
+Disallow: /api/
+Disallow: /admin/
+Disallow: /*?*
+Disallow: /*?
+Disallow: /*.json$
+Disallow: /search?
+Disallow: /firebase-messaging-sw.js
 
-# Sitemap location
+# Googlebot specific rules
+User-agent: Googlebot
+Allow: /*.js
+Allow: /*.css
+Allow: /*.png
+Allow: /*.jpg
+Allow: /*.gif
+Allow: /*.svg
+Allow: /*.ico
+Crawl-delay: 1
+
+# Googlebot-Image specific rules
+User-agent: Googlebot-Image
+Allow: /*.jpg
+Allow: /*.jpeg
+Allow: /*.gif
+Allow: /*.png
+Allow: /*.svg
+Allow: /*.webp
+
+# Adsensebot specific rules
+User-agent: Mediapartners-Google
+Allow: /
+Disallow:
+
+# Sitemap locations
 Sitemap: https://engineeringhub.engineer/sitemap.xml
 
-# Crawl-delay to be nice to servers (optional)
-Crawl-delay: 10
+# Host directive to specify preferred domain
+Host: engineeringhub.engineer
