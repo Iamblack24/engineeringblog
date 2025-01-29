@@ -1,3 +1,4 @@
+/* 
 import React, { useState } from 'react';
 import axios from 'axios';
 import { motion } from 'framer-motion';
@@ -149,6 +150,37 @@ const CadValidator = () => {
         </motion.div>
       )}
     </motion.div>
+  );
+};
+
+export default CadValidator;
+*/
+
+import React, { useState } from 'react';
+import './CadValidator.css';
+
+const CadValidator = () => {
+  const [isLoading, setIsLoading] = useState(true);
+
+  const handleIframeLoad = () => {
+    setIsLoading(false);
+  };
+
+  return (
+    <div>
+      {isLoading && (
+        <div className="iframe-loading">
+          Loading content...
+        </div>
+      )}
+      <div className="iframe-container">
+        <iframe 
+          src="https://cadvalid.netlify.app/" 
+          onLoad={handleIframeLoad}
+          title="Cad Validator"
+        />
+      </div>
+    </div>
   );
 };
 
