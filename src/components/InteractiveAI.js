@@ -17,14 +17,12 @@ import ReactMarkdown from 'react-markdown';
 import './InteractiveAI.css';
 
 const CATEGORIES = [
-  'Civil Engineering',
-  'Mechanical Engineering',
-  'Electrical Engineering',
-  'Plumbing and Drainage',
-  'Fire Protection Systems',
-  'Building Automation',
+  'Structural Analysis',
+  'Construction Management',
+  'Building Services',
   'Architecture',
   'Environmental Engineering',
+  'Cost Estimation',
 ];
 
 const messageVariants = {
@@ -42,139 +40,143 @@ const InteractiveAI = () => {
   const [chatHistory, setChatHistory] = useState([]);
   const messagesEndRef = useRef(null);
 
-  const renderMediaContent = (mediaItem) => {
-    // Skip descriptive text items
-    if (mediaItem.startsWith('Images:') || 
-        mediaItem.startsWith('Source:') || 
-        mediaItem === 'YouTube Links:') {
-      return null;
-    }
+  const renderMessage = (message, index) => {
+    const renderMediaContent = (mediaItem) => {
+      // Skip descriptive text items
+      if (mediaItem.startsWith('Images:') || 
+          mediaItem.startsWith('Source:') || 
+          mediaItem === 'YouTube Links:') {
+        return null;
+      }
 
-    // Extract image URL from markdown format
-    const imageMatch = mediaItem.match(/!\[.*?\]\((.*?)\)/);
-    if (imageMatch) {
-      return (
-        <img 
-          src={imageMatch[1]}
-          alt="Resource visualization"
-          style={{ maxWidth: '100%', height: 'auto', borderRadius: '8px' }}
-          loading="lazy"
-        />
-      );
-    }
+      // Extract image URL from markdown format
+      const imageMatch = mediaItem.match(/!\[.*?\]\((.*?)\)/);
+      if (imageMatch) {
+        return (
+          <img 
+            src={imageMatch[1]}
+            alt="Resource visualization"
+            style={{ maxWidth: '100%', height: 'auto', borderRadius: '8px' }}
+            loading="lazy"
+          />
+        );
+      }
 
-    // Handle YouTube links
-    if (mediaItem.toLowerCase().includes('youtube.com') || 
-        mediaItem.toLowerCase().includes('youtu.be')) {
-      const urlMatch = mediaItem.match(/\[(.*?)\]\((.*?)\)/);
-      if (urlMatch) {
+      // Handle YouTube links
+      if (mediaItem.toLowerCase().includes('youtube.com') || 
+          mediaItem.toLowerCase().includes('youtu.be')) {
+        const urlMatch = mediaItem.match(/\[(.*?)\]\((.*?)\)/);
+        if (urlMatch) {
+          return (
+            <a 
+              href={urlMatch[2]}
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="video-link"
+            >
+              📺 {urlMatch[1]}
+            </a>
+          );
+        }
+      }
+
+      // Handle regular links
+      const linkMatch = mediaItem.match(/\[(.*?)\]\((.*?)\)/);
+      if (linkMatch) {
         return (
           <a 
-            href={urlMatch[2]}
+            href={linkMatch[2]}
             target="_blank" 
             rel="noopener noreferrer"
-            className="video-link"
+            className="resource-link"
           >
-            📺 {urlMatch[1]}
+            📄 {linkMatch[1]}
           </a>
         );
       }
-    }
 
-    // Handle regular links
-    const linkMatch = mediaItem.match(/\[(.*?)\]\((.*?)\)/);
-    if (linkMatch) {
-      return (
-        <a 
-          href={linkMatch[2]}
-          target="_blank" 
-          rel="noopener noreferrer"
-          className="resource-link"
-        >
-          📄 {linkMatch[1]}
-        </a>
-      );
-    }
+      // Return null for unmatched items
+      return null;
+    };
 
-    // Return null for unmatched items
-    return null;
-  };
-
-  const renderMessage = (message, index) => {
     return (
       <motion.div 
-        className={`message ${message.isUser ? 'user-message' : 'assistant-message'}`}
+        className="message-group"
         variants={messageVariants}
         initial="initial"
         animate="animate"
         exit="exit"
         transition={{ duration: 0.3, delay: index * 0.1 }}
       >
-        {message.isUser ? (
-          <>
+        {/* User Message */}
+        <div className="user-message">
+          <div className="message-content">
             <div className="message-header">
               <span className="category-tag">{message.category}</span>
               <span className="message-time">{new Date(message.timestamp).toLocaleTimeString()}</span>
             </div>
-            <div className="message-content">{message.content}</div>
-          </>
-        ) : (
+            <div className="message-text">{message.question}</div>
+          </div>
+        </div>
+        
+        {/* Assistant Message */}
+        <div className="assistant-message">
           <div className="message-content">
             <ReactMarkdown className="message-markdown">
-              {message.content}
+              {message.answer}
             </ReactMarkdown>
 
+            {/* Graph Data */}
             {message.graphData && (
               <div className="graph-container">
-                <Line 
-                  data={message.graphData} 
-                  options={{
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                      legend: {
-                        position: 'top',
-                        labels: {
-                          color: '#ffffff'
-                        }
-                      }
-                    },
-                    scales: {
-                      x: {
-                        grid: {
-                          color: 'rgba(255, 255, 255, 0.1)'
-                        },
-                        ticks: {
-                          color: '#ffffff'
-                        }
-                      },
-                      y: {
-                        grid: {
-                          color: 'rgba(255, 255, 255, 0.1)'
-                        },
-                        ticks: {
-                          color: '#ffffff'
-                        }
-                      }
+                <Line data={message.graphData} options={{
+                  responsive: true,
+                  maintainAspectRatio: false,
+                  plugins: {
+                    legend: {
+                      position: 'top',
                     }
-                  }} 
-                />
+                  }
+                }} />
               </div>
             )}
 
-            {message.media && (
+            {/* Practical Applications */}
+            {message.practicalApplications && (
+              <div className="practical-applications">
+                <h3>📋 Practical Applications</h3>
+                <ReactMarkdown>{message.practicalApplications}</ReactMarkdown>
+              </div>
+            )}
+
+            {/* Quiz Section */}
+            {message.quiz && (
+              <div className="quiz-section">
+                <h3>📝 Practice Quiz</h3>
+                <ReactMarkdown>{message.quiz}</ReactMarkdown>
+              </div>
+            )}
+
+            {/* Media Section */}
+            {message.media && Array.isArray(message.media) && (
               <div className="media-section">
+                <h3>📚 Additional Resources</h3>
                 <div className="media-links">
-                  {message.media.map((item, i) => (
-                    <div key={i} className="media-item">
-                      {renderMediaContent(item)}
-                    </div>
-                  ))}
+                  {message.media
+                    .filter(item => !item.startsWith('Source:'))
+                    .map((item, i) => {
+                      const content = renderMediaContent(item);
+                      return content ? (
+                        <div key={i} className="media-item">
+                          {content}
+                        </div>
+                      ) : null;
+                    })}
                 </div>
               </div>
             )}
           </div>
-        )}
+        </div>
       </motion.div>
     );
   };
@@ -296,60 +298,71 @@ const InteractiveAI = () => {
 
   return (
     <div className="chat-container">
-      <div className="chat-messages" ref={messagesEndRef}>
-        <AnimatePresence>
-          {chatHistory.map((msg, index) => (
-            <motion.div key={index}>
-              {renderMessage({
-                content: msg.isUser ? msg.question : msg.answer,
-                isUser: msg.isUser,
-                category: msg.category,
-                timestamp: msg.timestamp,
-                graphData: msg.graphData,
-                media: msg.media
-              }, index)}
-            </motion.div>
-          ))}
-        </AnimatePresence>
-      </div>
-      
-      <div className="chat-input-container">
-        <form onSubmit={handleSubmit} className="chat-input">
-          <select
-            value={category}
-            onChange={(e) => setCategory(e.target.value)}
-            className="category-select"
-          >
-            <option value="" disabled>Select Topic</option>
-            {CATEGORIES.map(cat => (
-              <option key={cat} value={cat}>{cat}</option>
+      <div className="chat-main">
+        <div className="chat-messages" ref={messagesEndRef}>
+          <AnimatePresence>
+            {chatHistory.map((item, index) => (
+              <motion.div key={index}>
+                {renderMessage(item, index)}
+              </motion.div>
             ))}
-          </select>
-          <textarea
-            value={question}
-            onChange={(e) => setQuestion(e.target.value)}
-            placeholder="Type your question here..."
-            rows={1}
-            onKeyDown={(e) => {
-              if (e.key === 'Enter' && !e.shiftKey) {
-                e.preventDefault();
-                handleSubmit(e);
-              }
-            }}
-          />
-          <button 
-            type="submit" 
-            disabled={loading || !question.trim() || !category}
-            title="Send message"
-          >
-            {loading ? (
-              <span>...</span>
-            ) : (
-              <span>Send</span>
+          </AnimatePresence>
+        </div>
+
+        <div className="chat-input-container">
+          <form onSubmit={handleSubmit}>
+            <div className="input-row">
+              <motion.select
+                whileHover={{ scale: 1.02 }}
+                value={category}
+                onChange={(e) => setCategory(e.target.value)}
+                className={!category ? 'placeholder' : ''}
+              >
+                <option value="" disabled>Select Topic</option>
+                {CATEGORIES.map(cat => (
+                  <option key={cat} value={cat}>{cat}</option>
+                ))}
+              </motion.select>
+
+              <motion.input
+                whileFocus={{ scale: 1.01 }}
+                type="text"
+                value={question}
+                onChange={(e) => setQuestion(e.target.value)}
+                placeholder="Ask an engineering question..."
+                disabled={loading}
+              />
+
+              <motion.button 
+                type="submit" 
+                disabled={loading}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                className="send-button"
+              >
+                {loading ? (
+                  <div className="loading-dots">
+                    <span>.</span><span>.</span><span>.</span>
+                  </div>
+                ) : (
+                  <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z" fill="currentColor"/>
+                  </svg>
+                )}
+              </motion.button>
+            </div>
+            {error && (
+              <motion.div 
+                className="error-message"
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0 }}
+              >
+                {error}
+              </motion.div>
             )}
-          </button>
-        </form>
-        {error && <div className="error-message">{error}</div>}
+          </form>
+        </div>
       </div>
     </div>
   );

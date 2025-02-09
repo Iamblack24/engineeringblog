@@ -113,21 +113,34 @@
     font-size: 0.9rem;
   }
 */
-
-/* New Iframe Styles */
-.iframe-container {
-  position: relative;
+/* Container for the iframe including responsive padding */
+.iframe-wrapper {
   width: 100%;
-  padding-top: 56.25%; /* 16:9 Aspect Ratio */
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  border-radius: 10px;
-  overflow: hidden;
+  max-width: 100%;
+  margin: 0 auto;
+  padding: 0 15px;
+  box-sizing: border-box;
 }
 
+/* Updated Iframe container removes fixed aspect ratio and uses dynamic height */
+.iframe-container {
+  width: 100%;
+  height: auto; /* Controlled via inline style on the container */
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  border-radius: 12px;
+  overflow: hidden;
+  background-color: #f4f4f4;
+  transition: box-shadow 0.3s ease;
+  margin-bottom: 1rem;
+}
+
+.iframe-container:hover {
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+}
+
+/* Iframe now fills the container */
 .iframe-container iframe {
-  position: absolute;
-  top: 0;
-  left: 0;
+  display: block;
   width: 100%;
   height: 100%;
   border: none;
@@ -135,15 +148,30 @@
 }
 
 .iframe-container iframe:hover {
-  transform: scale(1.02);
+  transform: scale(1.01);
 }
 
 .iframe-loading {
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 100%;
+  padding: 20px;
   background-color: #f0f0f0;
   color: #666;
   font-size: 1rem;
+  text-align: center;
+}
+
+/* Responsive adjustments */
+/* For larger screens, you could optionally set a minimum height */
+@media screen and (min-width: 768px) {
+  .iframe-container {
+    min-height: 600px;
+  }
+}
+
+@media screen and (min-width: 1024px) {
+  .iframe-wrapper {
+    max-width: 1200px;
+  }
 }

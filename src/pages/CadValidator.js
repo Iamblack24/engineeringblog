@@ -156,28 +156,42 @@ const CadValidator = () => {
 export default CadValidator;
 */
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './CadValidator.css';
 
 const CadValidator = () => {
   const [isLoading, setIsLoading] = useState(true);
+  // Use a default height if auto-adjustment isn’t possible.
+  const [iframeHeight, setIframeHeight] = useState('600px');
 
-  const handleIframeLoad = () => {
+  const handleIframeLoad = (event) => {
     setIsLoading(false);
+    // Try to adjust iframe height based on content if on the same origin
+    try {
+      const iframeDocument = event.target.contentDocument || event.target.contentWindow.document;
+      if (iframeDocument) {
+        const height = iframeDocument.body.scrollHeight;
+        setIframeHeight(`${height}px`);
+      }
+    } catch (error) {
+      console.warn('Could not adjust iframe height automatically (cross-origin):', error);
+    }
   };
 
   return (
-    <div>
+    <div className="iframe-wrapper">
       {isLoading && (
         <div className="iframe-loading">
-          Loading content...
+          Loading Cad Validator content... <br />
+          Please wait while the external page loads.
         </div>
       )}
-      <div className="iframe-container">
+      <div className="iframe-container" style={{ height: iframeHeight }}>
         <iframe 
           src="https://cadvalid.netlify.app/" 
           onLoad={handleIframeLoad}
           title="Cad Validator"
+          allowFullScreen
         />
       </div>
     </div>

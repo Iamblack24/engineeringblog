@@ -13,6 +13,7 @@ Allow: /about/
 Allow: /contact/
 Allow: /privacy-policy/
 Allow: /terms-of-service/
+Allow: /ads-strategy/
 Disallow: /api/
 Disallow: /admin/
 Disallow: /*?*
