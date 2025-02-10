@@ -193,7 +193,7 @@ const InteractiveAI = () => {
       setLoading(true);
       setError('');
 
-      const response = await axios.post('http://localhost:5000/api/ask', {
+      const response = await axios.post('https://enginehub.onrender.com/api/ask', {
         question,
         category,
       }).catch(err => {
