@@ -526,23 +526,23 @@ input[type="text"]:focus {
 }
 
 .video-link {
-  background: #fee2e2 !important;
-  color: #dc2626 !important;
+  background: #fee2e2 ;
+  color: #dc2626 ;
 }
 
 .video-link:hover {
-  background: #fecaca !important;
-  color: #b91c1c !important;
+  background: #fecaca ;
+  color: #b91c1c ;
 }
 
 .resource-link {
-  background: #e0f2fe !important;
-  color: #0284c7 !important;
+  background: #e0f2fe ;
+  color: #0284c7 ;
 }
 
 .resource-link:hover {
-  background: #bae6fd !important;
-  color: #0369a1 !important;
+  background: #bae6fd ;
+  color: #0369a1 ;
 }
 
 /* Dark mode support for media section */
@@ -568,23 +568,23 @@ input[type="text"]:focus {
   }
 
   .video-link {
-    background: #450a0a !important;
-    color: #fca5a5 !important;
+    background: #450a0a ;
+    color: #fca5a5 ;
   }
 
   .video-link:hover {
-    background: #7f1d1d !important;
-    color: #fecaca !important;
+    background: #7f1d1d ;
+    color: #fecaca ;
   }
 
   .resource-link {
-    background: #0c4a6e !important;
-    color: #7dd3fc !important;
+    background: #0c4a6e ;
+    color: #7dd3fc ;
   }
 
   .resource-link:hover {
-    background: #075985 !important;
-    color: #bae6fd !important;
+    background: #075985 ;
+    color: #bae6fd ;
   }
 }
 
