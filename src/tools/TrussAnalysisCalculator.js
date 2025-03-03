@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import './TrussAnalysisCalculator.css';
+import TrussVisualization from './TrussVisualization';
 
 const TrussAnalysisCalculator = () => {
   const [nodes, setNodes] = useState([
@@ -413,6 +414,8 @@ const TrussAnalysisCalculator = () => {
           </div>
         </div>
       )}
+
+      <TrussVisualization nodes={nodes} members={members} results={results} />
     </div>
   );
 };

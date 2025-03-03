@@ -41,81 +41,142 @@ const InteractiveAI = () => {
   const messagesEndRef = useRef(null);
 
   const renderMessage = (message, index) => {
+    const renderMediaContent = (mediaItem) => {
+      // Skip descriptive text items
+      if (mediaItem.startsWith('Images:') || 
+          mediaItem.startsWith('Source:') || 
+          mediaItem === 'YouTube Links:') {
+        return null;
+      }
+
+      // Extract image URL from markdown format
+      const imageMatch = mediaItem.match(/!\[.*?\]\((.*?)\)/);
+      if (imageMatch) {
+        return (
+          <img 
+            src={imageMatch[1]}
+            alt="Resource visualization"
+            style={{ maxWidth: '100%', height: 'auto', borderRadius: '8px' }}
+            loading="lazy"
+          />
+        );
+      }
+
+      // Handle YouTube links
+      if (mediaItem.toLowerCase().includes('youtube.com') || 
+          mediaItem.toLowerCase().includes('youtu.be')) {
+        const urlMatch = mediaItem.match(/\[(.*?)\]\((.*?)\)/);
+        if (urlMatch) {
+          return (
+            <a 
+              href={urlMatch[2]}
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="video-link"
+            >
+              📺 {urlMatch[1]}
+            </a>
+          );
+        }
+      }
+
+      // Handle regular links
+      const linkMatch = mediaItem.match(/\[(.*?)\]\((.*?)\)/);
+      if (linkMatch) {
+        return (
+          <a 
+            href={linkMatch[2]}
+            target="_blank" 
+            rel="noopener noreferrer"
+            className="resource-link"
+          >
+            📄 {linkMatch[1]}
+          </a>
+        );
+      }
+
+      // Return null for unmatched items
+      return null;
+    };
+
     return (
-      <motion.div
-        key={index}
+      <motion.div 
+        className="message-group"
         variants={messageVariants}
         initial="initial"
         animate="animate"
         exit="exit"
-        className="message-group"
+        transition={{ duration: 0.3, delay: index * 0.1 }}
       >
-        <div className="message-text">
-          <ReactMarkdown>{message.answer || ''}</ReactMarkdown>
+        {/* User Message */}
+        <div className="user-message">
+          <div className="message-content">
+            <div className="message-header">
+              <span className="category-tag">{message.category}</span>
+              <span className="message-time">{new Date(message.timestamp).toLocaleTimeString()}</span>
+            </div>
+            <div className="message-text">{message.question}</div>
+          </div>
         </div>
-        {message.practicalApplications && (
-          <div className="practical-applications">
-            <h3>Practical Applications</h3>
-            <ReactMarkdown>{message.practicalApplications}</ReactMarkdown>
-          </div>
-        )}
-        {message.quiz && (
-          <div className="quiz">
-            <h3>Quiz</h3>
-            <ReactMarkdown>{message.quiz}</ReactMarkdown>
-          </div>
-        )}
-        {message.research && (
-          <div className="research">
-            <h3>Research</h3>
-            <ReactMarkdown>{message.research}</ReactMarkdown>
-          </div>
-        )}
-        {message.academicSources && Array.isArray(message.academicSources) && (
-          <div className="academic-sources">
-            <h3>Academic Sources</h3>
-            {message.academicSources.map((source, i) => (
-              <div key={i} className="academic-source">
-                <a href={source.link} target="_blank" rel="noopener noreferrer">
-                  {source.title}
-                </a>
-                <p>{source.snippet}</p>
+        
+        {/* Assistant Message */}
+        <div className="assistant-message">
+          <div className="message-content">
+            <ReactMarkdown className="message-markdown">
+              {message.answer}
+            </ReactMarkdown>
+
+            {/* Graph Data */}
+            {message.graphData && (
+              <div className="graph-container">
+                <Line data={message.graphData} options={{
+                  responsive: true,
+                  maintainAspectRatio: false,
+                  plugins: {
+                    legend: {
+                      position: 'top',
+                    }
+                  }
+                }} />
               </div>
-            ))}
+            )}
+
+            {/* Practical Applications */}
+            {message.practicalApplications && (
+              <div className="practical-applications">
+                <h3>📋 Practical Applications</h3>
+                <ReactMarkdown>{message.practicalApplications}</ReactMarkdown>
+              </div>
+            )}
+
+            {/* Quiz Section */}
+            {message.quiz && (
+              <div className="quiz-section">
+                <h3>📝 Practice Quiz</h3>
+                <ReactMarkdown>{message.quiz}</ReactMarkdown>
+              </div>
+            )}
+
+            {/* Media Section */}
+            {message.media && Array.isArray(message.media) && (
+              <div className="media-section">
+                <h3>📚 Additional Resources</h3>
+                <div className="media-links">
+                  {message.media
+                    .filter(item => !item.startsWith('Source:'))
+                    .map((item, i) => {
+                      const content = renderMediaContent(item);
+                      return content ? (
+                        <div key={i} className="media-item">
+                          {content}
+                        </div>
+                      ) : null;
+                    })}
+                </div>
+              </div>
+            )}
           </div>
-        )}
-        {message.media && Array.isArray(message.media) && message.media.length > 0 && (
-          <div className="media">
-            <h3>Media</h3>
-            {message.media.map((item, i) => {
-              // item may be an object or string; handle accordingly
-              if (typeof item === 'object' && item.link) {
-                return (
-                  <div key={i} className="media-item">
-                    <a href={item.link} target="_blank" rel="noopener noreferrer">
-                      {item.title}
-                    </a>
-                    <p>{item.snippet}</p>
-                  </div>
-                );
-              } else if (typeof item === 'string') {
-                return (
-                  <div key={i} className="media-item">
-                    <a href={item} target="_blank" rel="noopener noreferrer">
-                      {item}
-                    </a>
-                  </div>
-                );
-              }
-              return null;
-            })}
-          </div>
-        )}
-        {message.graphData && (
-          <div className="graph">
-            {/* Render your graph here if applicable */}
-          </div>
-        )}
+        </div>
       </motion.div>
     );
   };
@@ -144,7 +205,7 @@ const InteractiveAI = () => {
     }
   }, [currentUser]);
 
-  const saveToHistory = async (question, answer, category, graphData, practicalApplications, quiz, media, research, academicSources) => {
+  const saveToHistory = async (question, answer, category, graphData) => {
     if (!currentUser) return;
     
     try {
@@ -156,11 +217,6 @@ const InteractiveAI = () => {
         answer,
         category,
         graphData,
-        practicalApplications,
-        quiz,
-        media,
-        research,
-        academicSources,
         timestamp,
         userId: currentUser.uid
       };
@@ -193,7 +249,7 @@ const InteractiveAI = () => {
       setLoading(true);
       setError('');
 
-      const response = await axios.post('https://enginehub.onrender.com/api/ask', {
+      const response = await axios.post('http://localhost:5000/api/ask', {
         question,
         category,
       }).catch(err => {
@@ -217,11 +273,9 @@ const InteractiveAI = () => {
       });
 
       console.log('Full API Response:', JSON.stringify(response.data, null, 2));
-      const { answer, graphData, practicalApplications, quiz, media, research, academicSources } = response.data;
+      const { answer, graphData } = response.data;
       
-      const mediaLinks = (media || []).filter(item => typeof item === 'string' && item.startsWith('http'));
-      
-      await saveToHistory(question, answer, category, graphData, practicalApplications, quiz, mediaLinks, research, academicSources);
+      await saveToHistory(question, answer, category, graphData);
       
       setQuestion('');
     } catch (err) {

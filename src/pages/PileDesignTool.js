@@ -26,51 +26,74 @@ ChartJS.register(
 const PileDesignTool = () => {
   // State Definitions
   const [input, setInput] = useState({
+    // Project Information
+    projectName: '',
+    location: '',
+    
     // Structural Loads
-    deadLoad: '',
-    liveLoad: '',
-    windLoad: '',
-    seismicLoad: '',
-
+    axialCompression: '',  // kN (renamed from deadLoad for clarity)
+    lateralLoad: '',       // kN (renamed from liveLoad)
+    momentLoad: '',        // kN-m (added for moment consideration)
+    
     // Geotechnical Data
-    cohesion: '',
-    frictionAngle: '',
-    shearStrength: '',
-    waterTableLevel: '',
+    groundwaterLevel: '',  // m below ground surface
     soilLayers: [
-      // Example: { depth: 5, cohesion: 25, frictionAngle: 30, unitWeight: 18 }
+      { 
+        depth: 0,          // top depth of layer (m)
+        thickness: '',     // thickness of layer (m)
+        soilType: 'clay',  // clay, sand, silt, or rock
+        description: '',   // text description
+        unitWeight: '',    // kN/m³
+        cohesion: '',      // kPa (for cohesive soils)
+        frictionAngle: '', // degrees (for granular soils)
+        SPT_N: '',         // Standard Penetration Test N-value
+        undrained_shear_strength: '' // kPa (for clay)
+      }
     ],
 
     // Pile Properties
-    pileType: 'driven', // Options: driven, bored, screw, micropiles
-    pileDiameter: '',
-    pileLength: '',
-    pileSpacing: '',
+    pileType: 'driven-concrete', // Options: driven-concrete, driven-steel, bored, CFA, etc.
+    pileCrossSectionType: 'circular', // circular, square, H-section
+    pileDiameter: '',      // m (or width for square piles)
+    pileLength: '',        // m
+    embedmentLength: '',   // m (actual length in contact with soil)
+    pileSpacing: '',       // m
     numberOfPiles: 1,
-
+    pileArrangement: '1x1', // e.g., "2x2", "3x3" etc.
+    
+    // Material Properties
+    concreteFck: '',       // MPa (for concrete piles)
+    steelFy: '',           // MPa (for steel piles)
+    
     // Design Codes
-    designCode: 'Eurocode', // Options: Eurocode, AASHTO, IS Codes
-
+    designCode: 'Eurocode7', // Options: Eurocode7, AASHTO, IS-2911, etc.
+    
+    // Analysis Method
+    skinFrictionMethod: 'beta-method', // Options: alpha-method, beta-method, lambda-method
+    endBearingMethod: 'meyerhof',      // Options: meyerhof, vesic, coyle-castello
+    
     // Safety Factors
-    factorOfSafety: '3',
+    partialFactorSkin: 1.3,
+    partialFactorBase: 1.5,
+    partialFactorMaterial: 1.15,
   });
 
   const [results, setResults] = useState({
-    Q_skin: null,
-    Q_end: null,
-    Q_ult: null,
-    Q_design: null,
-    settlement: null,
-    groupEfficiency: null,
-    axialLoad: null,
-    shearForce: null,
-    bendingMoment: null,
+    Q_skin: null,          // kN (skin friction capacity)
+    Q_end: null,           // kN (end bearing capacity)
+    Q_ult: null,           // kN (ultimate capacity)
+    Q_allow: null,         // kN (allowable capacity after applying factors)
+    settlement: null,      // mm
+    groupEfficiency: null, // ratio
+    lateralCapacity: null, // kN
+    structuralIntegrity: null, // Pass/Fail
+    loadDistribution: [],  // Array of values for load distribution along pile
+    momentAndShear: [],    // Array for moment and shear distribution
+    depthPoints: [],       // Array of depth points for charts
   });
 
-  const [chartsData, setChartsData] = useState({
-    loadDistribution: null,
-    settlementCurve: null,
-  });
+  const [activeTab, setActiveTab] = useState('input');
+  const [calculationMessages, setCalculationMessages] = useState([]);
 
   // Handle Input Changes
   const handleChange = (e) => {
@@ -95,511 +118,843 @@ const PileDesignTool = () => {
 
   // Add Soil Layer
   const addSoilLayer = () => {
+    // Use the bottom depth of the last layer as the top depth of the new layer
+    const lastLayerBottom = input.soilLayers.length > 0 
+      ? parseFloat(input.soilLayers[input.soilLayers.length - 1].depth) + 
+        parseFloat(input.soilLayers[input.soilLayers.length - 1].thickness || 0)
+      : 0;
+
+    const newLayer = {
+      depth: lastLayerBottom,
+      thickness: '',
+      soilType: 'clay',
+      description: '',
+      unitWeight: '',
+      cohesion: '',
+      frictionAngle: '',
+      SPT_N: '',
+      undrained_shear_strength: ''
+    };
+    
     setInput({
       ...input,
-      soilLayers: [
-        ...input.soilLayers,
-        { depth: '', cohesion: '', frictionAngle: '', unitWeight: '' },
-      ],
+      soilLayers: [...input.soilLayers, newLayer]
     });
   };
 
   // Remove Soil Layer
   const removeSoilLayer = (index) => {
-    const updatedSoilLayers = input.soilLayers.filter((_, idx) => idx !== index);
-    setInput({ ...input, soilLayers: updatedSoilLayers });
+    if (input.soilLayers.length > 1) {
+      const updatedLayers = input.soilLayers.filter((_, idx) => idx !== index);
+      setInput({ ...input, soilLayers: updatedLayers });
+    } else {
+      alert("At least one soil layer is required.");
+    }
   };
 
-  // Calculate Ultimate Pile Capacity
-  const calculateUltimateCapacity = (params) => {
-    const { pileType, soilProperties, pileDimensions, safetyFactors } = params;
+  // Calculate Skin Friction Capacity
+  const calculateSkinFriction = () => {
+    let Q_skin = 0;
+    const { pileType, pileDiameter, pileLength, soilLayers, skinFrictionMethod } = input;
+    
+    // Convert diameter from m to mm for calculations
+    const diameter = parseFloat(pileDiameter);
+    const perimeter = Math.PI * diameter; // for circular piles
+    
+    // Calculate skin friction for each soil layer that the pile passes through
+    soilLayers.forEach((layer, index) => {
+      // Calculate the thickness of soil in contact with the pile
+      const layerTop = parseFloat(layer.depth);
+      const layerThickness = parseFloat(layer.thickness);
+      const layerBottom = layerTop + layerThickness;
+      
+      // Skip if layer is above the pile or pile doesn't reach this layer
+      if (layerBottom <= 0 || layerTop >= parseFloat(pileLength)) return;
+      
+      // Calculate effective layer thickness in contact with pile
+      const effectiveTop = Math.max(layerTop, 0);
+      const effectiveBottom = Math.min(layerBottom, parseFloat(pileLength));
+      const effectiveThickness = effectiveBottom - effectiveTop;
+      
+      let unitSkinFriction = 0; // kPa
+      
+      // Different methods for calculating unit skin friction
+      if (skinFrictionMethod === 'alpha-method' && layer.soilType === 'clay') {
+        // Alpha method for cohesive soils
+        const alpha = 0.55; // Simplified, should depend on undrained shear strength
+        unitSkinFriction = alpha * parseFloat(layer.undrained_shear_strength);
+      } else if (skinFrictionMethod === 'beta-method') {
+        // Beta method for all soil types
+        const K = 0.8; // Earth pressure coefficient (simplified)
+        const frictionAngle = parseFloat(layer.frictionAngle) || 30;
+        const sigma_v = parseFloat(layer.unitWeight) * ((effectiveTop + effectiveBottom) / 2); // Average vertical stress
+        
+        // Beta method formula: fs = K * sigma_v * tan(φ)
+        unitSkinFriction = K * sigma_v * Math.tan(frictionAngle * Math.PI / 180);
+      } else if (skinFrictionMethod === 'lambda-method') {
+        // Lambda method for mixed soils
+        const lambda = 0.3; // Simplified lambda value
+        const sigma_v = parseFloat(layer.unitWeight) * ((effectiveTop + effectiveBottom) / 2);
+        const cohesion = parseFloat(layer.cohesion) || 0;
+        unitSkinFriction = lambda * (sigma_v + 2 * cohesion);
+      }
+      
+      // Skin friction contribution from this layer
+      const layerSkinFriction = unitSkinFriction * perimeter * effectiveThickness;
+      Q_skin += layerSkinFriction;
+    });
+    
+    return Q_skin;
+  };
 
-    let alpha;
-    switch (pileType) {
-      case 'driven':
-        alpha = 1.0;
+  // Calculate End Bearing Capacity
+  const calculateEndBearing = () => {
+    const { pileType, pileDiameter, pileLength, soilLayers, endBearingMethod } = input;
+    
+    // Find the soil layer at the pile tip
+    let tipLayer = null;
+    let accumulatedDepth = 0;
+    
+    for (const layer of soilLayers) {
+      accumulatedDepth += parseFloat(layer.thickness);
+      if (accumulatedDepth >= parseFloat(pileLength)) {
+        tipLayer = layer;
         break;
-      case 'bored':
-        alpha = 0.8;
-        break;
-      // Add other cases
-      default:
-        alpha = 1.0;
+      }
     }
+    
+    if (!tipLayer) return 0;
+    
+    const diameter = parseFloat(pileDiameter);
+    const area = Math.PI * Math.pow(diameter / 2, 2); // End area of pile (m²)
+    
+    let unitEndBearing = 0; // kPa
+    
+    // Different methods for end bearing calculation
+    if (endBearingMethod === 'meyerhof') {
+      if (tipLayer.soilType === 'clay') {
+        // For cohesive soils (clays)
+        const Nc = 9; // Bearing capacity factor
+        unitEndBearing = Nc * parseFloat(tipLayer.undrained_shear_strength);
+      } else {
+        // For cohesionless soils (sands)
+        const Nq = Math.pow(Math.E, Math.PI * Math.tan(parseFloat(tipLayer.frictionAngle) * Math.PI / 180)) * 
+                  Math.pow(Math.tan(45 + parseFloat(tipLayer.frictionAngle) / 2 * Math.PI / 180), 2);
+        const sigma_v = parseFloat(tipLayer.unitWeight) * parseFloat(pileLength);
+        unitEndBearing = sigma_v * Nq;
+      }
+    } else if (endBearingMethod === 'vesic') {
+      // Vesic method
+      // (Simplified implementation)
+      if (tipLayer.soilType === 'clay') {
+        unitEndBearing = 9 * parseFloat(tipLayer.undrained_shear_strength);
+      } else {
+        const Nq = Math.exp(Math.PI * Math.tan(parseFloat(tipLayer.frictionAngle) * Math.PI / 180)) * 
+                  Math.pow(Math.tan(45 + parseFloat(tipLayer.frictionAngle) / 2 * Math.PI / 180), 2);
+        const sigma_v = parseFloat(tipLayer.unitWeight) * parseFloat(pileLength);
+        unitEndBearing = sigma_v * Nq;
+      }
+    }
+    
+    const Q_end = unitEndBearing * area;
+    return Q_end;
+  };
 
-    const Q_skin = alpha * soilProperties.shearStrength * Math.PI * pileDimensions.length;
-    const Q_end = soilProperties.shearStrength * Math.PI * Math.pow(pileDimensions.diameter / 2, 2);
-    const Q_ult = Q_skin + Q_end;
-    const Q_design = Q_ult / safetyFactors.factorOfSafety;
-
-    return {
-      Q_skin,
-      Q_end,
-      Q_ult,
-      Q_design,
-    };
+  // Calculate Group Efficiency
+  const calculateGroupEfficiency = () => {
+    const { numberOfPiles, pileSpacing, pileDiameter, pileArrangement } = input;
+    
+    if (parseInt(numberOfPiles) <= 1) return 1.0;
+    
+    // Parse the pile arrangement (e.g., "2x3")
+    const [rows, cols] = pileArrangement.split('x').map(Number);
+    
+    // Using the Converse-Labarre equation for group efficiency
+    const theta = Math.atan(parseFloat(pileDiameter) / parseFloat(pileSpacing)) * (180 / Math.PI);
+    const efficiency = 1 - ((theta * (rows + cols - 2)) / (90 * rows * cols));
+    
+    return Math.max(0.7, Math.min(1.0, efficiency)); // Typically between 0.7 and 1.0
   };
 
   // Calculate Settlement
   const calculateSettlement = () => {
-    const { pileLength, pileDiameter, soilLayers } = input;
-    const D = parseFloat(pileDiameter);
-    const L = parseFloat(pileLength);
-
-    // Example: Using first soil layer's elastic modulus E
-    const soil = soilLayers[0];
-    const E = soil ? parseFloat(soil.unitWeight) * 100 : 20000; // Placeholder for Elastic Modulus
-
-    const appliedLoad = parseFloat(input.deadLoad) + parseFloat(input.liveLoad);
-    const settlement = (appliedLoad * L) / (E * Math.PI * Math.pow(D, 2) / 4);
-
-    return settlement;
+    const { pileDiameter, pileLength, axialCompression, soilLayers } = input;
+    
+    // Elastic shortening of pile
+    const diameter = parseFloat(pileDiameter);
+    const area = Math.PI * Math.pow(diameter / 2, 2);
+    const E_pile = 30000000; // Simplified Young's modulus for concrete pile (kPa)
+    const load = parseFloat(axialCompression);
+    const length = parseFloat(pileLength);
+    
+    const elasticSettlement = (load * length) / (area * E_pile) * 1000; // Convert to mm
+    
+    // Soil settlement (simplified)
+    // This is a very simplified approach - in practice, more complex methods are used
+    const avgSPT_N = soilLayers.reduce((sum, layer) => sum + parseFloat(layer.SPT_N || 10), 0) / soilLayers.length;
+    const soilSettlement = load / (avgSPT_N * area * 10) * 1000; // Simplified relation, convert to mm
+    
+    return elasticSettlement + soilSettlement;
   };
 
-  // Calculate Group Pile Efficiency
-  const calculateGroupEfficiency = () => {
-    const { pileSpacing, pileDiameter, numberOfPiles } = input;
-    const S = parseFloat(pileSpacing);
-    const D = parseFloat(pileDiameter);
-    const N = parseInt(numberOfPiles, 10);
-
-    // Example formula for group efficiency
-    const efficiency = 1 - (S / (3 * D)) * N;
-    const groupEfficiency = efficiency > 0 ? efficiency : 0;
-
-    return groupEfficiency;
-  };
-
-  // Handle Form Submission
-  const handleSubmit = (e) => {
-    e.preventDefault();
-
-    // Capacity Analysis
-    const capacity = calculateUltimateCapacity({
-      pileType: input.pileType,
-      soilProperties: {
-        shearStrength: parseFloat(input.shearStrength),
-        cohesion: parseFloat(input.cohesion),
-        frictionAngle: parseFloat(input.frictionAngle),
-      },
-      pileDimensions: {
-        diameter: parseFloat(input.pileDiameter),
-        length: parseFloat(input.pileLength),
-      },
-      safetyFactors: {
-        factorOfSafety: parseFloat(input.factorOfSafety),
-      },
+  // Calculate Lateral Capacity
+  const calculateLateralCapacity = () => {
+    const { pileDiameter, pileLength, soilLayers } = input;
+    
+    const diameter = parseFloat(pileDiameter);
+    const length = parseFloat(pileLength);
+    
+    // Find average soil properties
+    let avgCohesion = 0;
+    let avgFrictionAngle = 0;
+    let count = 0;
+    
+    soilLayers.forEach(layer => {
+      if (parseFloat(layer.depth) + parseFloat(layer.thickness) <= length) {
+        avgCohesion += parseFloat(layer.cohesion || 0);
+        avgFrictionAngle += parseFloat(layer.frictionAngle || 0);
+        count++;
+      }
     });
+    
+    avgCohesion /= count || 1;
+    avgFrictionAngle /= count || 1;
+    
+    // Simplified Broms method for lateral capacity
+    let lateralCapacity = 0;
+    
+    if (avgCohesion > 0) {
+      // Cohesive soils (clay)
+      lateralCapacity = 9 * avgCohesion * diameter * length;
+    } else {
+      // Cohesionless soils (sand)
+      const Kp = Math.pow(Math.tan(45 + avgFrictionAngle / 2 * Math.PI / 180), 2); // Passive earth pressure coefficient
+      lateralCapacity = 0.5 * Kp * diameter * Math.pow(length, 2);
+    }
+    
+    return lateralCapacity;
+  };
 
-    // Settlement Analysis
-    const settlement = calculateSettlement();
-
-    // Group Pile Efficiency
+  // Main calculation function
+  const calculatePileDesign = () => {
+    // Validate inputs first
+    if (!validateInputs()) return;
+    
+    // Clear previous messages
+    setCalculationMessages([]);
+    
+    // Calculate capacities
+    const Q_skin = calculateSkinFriction();
+    const Q_end = calculateEndBearing();
+    const Q_ult = Q_skin + Q_end;
+    
+    // Apply safety factors
+    const Q_allow = Q_skin / parseFloat(input.partialFactorSkin) + Q_end / parseFloat(input.partialFactorBase);
+    
+    // Calculate group efficiency
     const groupEfficiency = calculateGroupEfficiency();
-
-    // Structural Design (Placeholder for actual calculations)
-    const axialLoad = capacity.Q_design * groupEfficiency;
-    const shearForce = axialLoad * 0.3; // Example
-    const bendingMoment = axialLoad * 0.2; // Example
-
+    const Q_group = Q_allow * parseInt(input.numberOfPiles) * groupEfficiency;
+    
+    // Calculate settlement
+    const settlement = calculateSettlement();
+    
+    // Calculate lateral capacity
+    const lateralCapacity = calculateLateralCapacity();
+    
+    // Generate load distribution along pile for chart
+    const depthPoints = [];
+    const loadDistribution = [];
+    
+    const pileLength = parseFloat(input.pileLength);
+    const steps = 20;
+    
+    for (let i = 0; i <= steps; i++) {
+      const depth = (i / steps) * pileLength;
+      depthPoints.push(depth);
+      
+      // Calculate cumulative skin friction to this depth (simplified)
+      let cumulativeSkinFriction = (Q_skin * depth) / pileLength;
+      
+      // Add end bearing only at the bottom
+      if (i === steps) {
+        cumulativeSkinFriction += Q_end;
+      }
+      
+      loadDistribution.push(cumulativeSkinFriction);
+    }
+    
+    // Generate moment and shear data for lateral load case
+    const momentAndShear = [];
+    const lateralLoad = parseFloat(input.lateralLoad) || 0;
+    
+    for (let i = 0; i <= steps; i++) {
+      const depth = (i / steps) * pileLength;
+      const moment = lateralLoad * (pileLength - depth);
+      const shear = lateralLoad;
+      
+      momentAndShear.push({ depth, moment, shear });
+    }
+    
+    // Check if design load is satisfied
+    const designLoad = parseFloat(input.axialCompression);
+    
+    if (Q_allow < designLoad) {
+      setCalculationMessages(prev => [...prev, {
+        type: 'warning',
+        message: `WARNING: Pile capacity (${Q_allow.toFixed(2)} kN) is less than design load (${designLoad.toFixed(2)} kN).`
+      }]);
+    }
+    
+    // Check settlement criteria
+    if (settlement > 25) { // Assuming 25mm as maximum allowable settlement
+      setCalculationMessages(prev => [...prev, {
+        type: 'warning',
+        message: `WARNING: Calculated settlement (${settlement.toFixed(2)} mm) exceeds typical limit of 25 mm.`
+      }]);
+    }
+    
+    // Set results
     setResults({
-      Q_skin: capacity.Q_skin.toFixed(2),
-      Q_end: capacity.Q_end.toFixed(2),
-      Q_ult: capacity.Q_ult.toFixed(2),
-      Q_design: capacity.Q_design.toFixed(2),
-      settlement: settlement.toFixed(2),
-      groupEfficiency: (groupEfficiency * 100).toFixed(2),
-      axialLoad: axialLoad.toFixed(2),
-      shearForce: shearForce.toFixed(2),
-      bendingMoment: bendingMoment.toFixed(2),
+      Q_skin: Q_skin,
+      Q_end: Q_end,
+      Q_ult: Q_ult,
+      Q_allow: Q_allow,
+      Q_group: Q_group,
+      settlement: settlement,
+      groupEfficiency: groupEfficiency,
+      lateralCapacity: lateralCapacity,
+      loadDistribution: loadDistribution,
+      momentAndShear: momentAndShear,
+      depthPoints: depthPoints,
     });
-
-    // Prepare Charts Data
-    prepareCharts(capacity, settlement);
+    
+    // Switch to results tab
+    setActiveTab('results');
   };
 
-  // Prepare Charts Data
-  const prepareCharts = (capacity, settlement) => {
-    // Load Distribution Chart
-    const loadDistributionData = {
-      labels: ['Skin Friction (Q_skin)', 'End Bearing (Q_end)', 'Ultimate Capacity (Q_ult)', 'Design Capacity (Q_design)'],
-      datasets: [
-        {
-          label: 'Load Distribution (kN)',
-          data: [capacity.Q_skin, capacity.Q_end, capacity.Q_ult, capacity.Q_design],
-          backgroundColor: [
-            'rgba(75, 192, 192, 0.6)',
-            'rgba(153, 102, 255, 0.6)',
-            'rgba(255, 206, 86, 0.6)',
-            'rgba(255, 99, 132, 0.6)',
-          ],
-          borderColor: [
-            'rgba(75, 192, 192, 1)',
-            'rgba(153, 102, 255, 1)',
-            'rgba(255, 206, 86, 1)',
-            'rgba(255, 99, 132, 1)',
-          ],
-          borderWidth: 1,
-        },
-      ],
-    };
+  // Validate inputs
+  const validateInputs = () => {
+    const requiredFields = [
+      'pileDiameter', 
+      'pileLength', 
+      'axialCompression'
+    ];
+    
+    for (const field of requiredFields) {
+      if (!input[field]) {
+        alert(`Please enter a value for ${field.replace(/([A-Z])/g, ' $1').toLowerCase()}`);
+        return false;
+      }
+    }
+    
+    if (input.soilLayers.length === 0) {
+      alert('Please add at least one soil layer');
+      return false;
+    }
+    
+    for (const layer of input.soilLayers) {
+      if (!layer.thickness || !layer.unitWeight) {
+        alert('Each soil layer must have a thickness and unit weight');
+        return false;
+      }
+      
+      if (layer.soilType === 'clay' && !layer.undrained_shear_strength) {
+        alert('Clay layers must have undrained shear strength');
+        return false;
+      }
+      
+      if (layer.soilType === 'sand' && !layer.frictionAngle) {
+        alert('Sand layers must have friction angle');
+        return false;
+      }
+    }
+    
+    return true;
+  };
 
-    // Settlement Curve Chart (Simple Representation)
-    const settlementCurveData = {
-      labels: ['Initial Settlement', 'Final Settlement'],
-      datasets: [
-        {
-          label: 'Settlement (mm)',
-          data: [0, parseFloat(results.settlement || settlement.toFixed(2))],
-          fill: false,
-          backgroundColor: 'rgba(54, 162, 235, 0.6)',
-          borderColor: 'rgba(54, 162, 235, 1)',
-        },
-      ],
-    };
+  // Chart configurations
+  const loadDistributionChartData = {
+    labels: results.depthPoints?.map(d => d.toFixed(1)),
+    datasets: [
+      {
+        label: 'Load Distribution (kN)',
+        data: results.loadDistribution,
+        borderColor: 'rgba(75, 192, 192, 1)',
+        backgroundColor: 'rgba(75, 192, 192, 0.2)',
+        tension: 0.1
+      }
+    ]
+  };
 
-    setChartsData({
-      loadDistribution: loadDistributionData,
-      settlementCurve: settlementCurveData,
-    });
+  const loadDistributionChartOptions = {
+    scales: {
+      x: {
+        title: {
+          display: true,
+          text: 'Depth (m)'
+        }
+      },
+      y: {
+        title: {
+          display: true,
+          text: 'Capacity (kN)'
+        }
+      }
+    },
+    plugins: {
+      tooltip: {
+        callbacks: {
+          label: function(context) {
+            return `Capacity: ${context.raw.toFixed(2)} kN at depth ${context.label} m`;
+          }
+        }
+      }
+    }
   };
 
   return (
     <div className="pile-design-tool">
       <h1>Pile Design Tool</h1>
-      <form onSubmit={handleSubmit}>
-        {/* Structural Loads */}
-        <div className="form-group">
-          <h2>Structural Loads (kN)</h2>
-          <label htmlFor="deadLoad">Dead Load:</label>
-          <input
-            type="number"
-            id="deadLoad"
-            name="deadLoad"
-            value={input.deadLoad}
-            onChange={handleChange}
-            placeholder="Enter Dead Load"
-            required
-          />
-
-          <label htmlFor="liveLoad">Live Load:</label>
-          <input
-            type="number"
-            id="liveLoad"
-            name="liveLoad"
-            value={input.liveLoad}
-            onChange={handleChange}
-            placeholder="Enter Live Load"
-            required
-          />
-
-          <label htmlFor="windLoad">Wind Load:</label>
-          <input
-            type="number"
-            id="windLoad"
-            name="windLoad"
-            value={input.windLoad}
-            onChange={handleChange}
-            placeholder="Enter Wind Load"
-          />
-
-          <label htmlFor="seismicLoad">Seismic Load:</label>
-          <input
-            type="number"
-            id="seismicLoad"
-            name="seismicLoad"
-            value={input.seismicLoad}
-            onChange={handleChange}
-            placeholder="Enter Seismic Load"
-          />
-        </div>
-
-        {/* Geotechnical Data */}
-        <div className="form-group">
-          <h2>Geotechnical Data</h2>
-          <label htmlFor="soilType">Soil Type:</label>
-          <select
-            id="soilType"
-            name="soilType"
-            value={input.soilType}
-            onChange={handleChange}
-            required
-          >
-            <option value="">Select Soil Type</option>
-            <option value="cohesive">Cohesive</option>
-            <option value="cohesionless">Cohesionless</option>
-          </select>
-
-          {/* Cohesive Soils */}
-          {input.soilType === 'cohesive' && (
-            <>
-              <label htmlFor="cohesion">Cohesion (kPa):</label>
-              <input
-                type="number"
-                id="cohesion"
-                name="cohesion"
-                value={input.cohesion}
-                onChange={handleChange}
-                placeholder="Enter Cohesion"
+      
+      <div className="tab-navigation">
+        <button 
+          className={activeTab === 'input' ? 'active' : ''} 
+          onClick={() => setActiveTab('input')}>
+          Input Data
+        </button>
+        <button 
+          className={activeTab === 'results' ? 'active' : ''} 
+          onClick={() => setActiveTab('results')}>
+          Results
+        </button>
+      </div>
+      
+      {activeTab === 'input' && (
+        <div className="input-section">
+          <h2>Project Information</h2>
+          <div className="form-group">
+            <label>Project Name:</label>
+            <input 
+              type="text" 
+              name="projectName" 
+              value={input.projectName} 
+              onChange={handleChange} 
+            />
+          </div>
+          
+          <div className="form-group">
+            <label>Location:</label>
+            <input 
+              type="text" 
+              name="location" 
+              value={input.location} 
+              onChange={handleChange} 
+            />
+          </div>
+          
+          <h2>Loads</h2>
+          <div className="form-row">
+            <div className="form-group">
+              <label>Axial Compression (kN):</label>
+              <input 
+                type="number" 
+                name="axialCompression" 
+                value={input.axialCompression} 
+                onChange={handleChange} 
                 required
               />
-            </>
-          )}
-
-          {/* Cohesionless Soils */}
-          {input.soilType === 'cohesionless' && (
-            <>
-              <label htmlFor="shearStrength">Shear Strength (kPa):</label>
-              <input
-                type="number"
-                id="shearStrength"
-                name="shearStrength"
-                value={input.shearStrength}
-                onChange={handleChange}
-                placeholder="Enter Shear Strength"
-                required
-              />
-
-              <label htmlFor="frictionAngle">Friction Angle (degrees):</label>
-              <input
-                type="number"
-                id="frictionAngle"
-                name="frictionAngle"
-                value={input.frictionAngle}
-                onChange={handleChange}
-                placeholder="Enter Friction Angle"
-                required
-              />
-            </>
-          )}
-
-          <label htmlFor="waterTableLevel">Water Table Level (m):</label>
-          <input
-            type="number"
-            id="waterTableLevel"
-            name="waterTableLevel"
-            value={input.waterTableLevel}
-            onChange={handleChange}
-            placeholder="Enter Water Table Level"
-            required
-          />
-
-          {/* Soil Layers */}
-          <h3>Layered Soil Profiles</h3>
-          {input.soilLayers.map((layer, index) => (
-            <div key={index} className="soil-layer">
-              <h4>Layer {index + 1}</h4>
-              <label htmlFor={`depth_${index}`}>Depth (m):</label>
-              <input
-                type="number"
-                id={`depth_${index}`}
-                name="depth"
-                value={layer.depth}
-                onChange={(e) => handleSoilLayerChange(index, e)}
-                placeholder="Enter Depth"
-                required
-              />
-
-              <label htmlFor={`cohesion_${index}`}>Cohesion (kPa):</label>
-              <input
-                type="number"
-                id={`cohesion_${index}`}
-                name="cohesion"
-                value={layer.cohesion}
-                onChange={(e) => handleSoilLayerChange(index, e)}
-                placeholder="Enter Cohesion"
-              />
-
-              <label htmlFor={`frictionAngle_${index}`}>Friction Angle (degrees):</label>
-              <input
-                type="number"
-                id={`frictionAngle_${index}`}
-                name="frictionAngle"
-                value={layer.frictionAngle}
-                onChange={(e) => handleSoilLayerChange(index, e)}
-                placeholder="Enter Friction Angle"
-              />
-
-              <label htmlFor={`unitWeight_${index}`}>Unit Weight (kN/m³):</label>
-              <input
-                type="number"
-                id={`unitWeight_${index}`}
-                name="unitWeight"
-                value={layer.unitWeight}
-                onChange={(e) => handleSoilLayerChange(index, e)}
-                placeholder="Enter Unit Weight"
-              />
-
-              <button type="button" onClick={() => removeSoilLayer(index)}>
-                Remove Layer
-              </button>
             </div>
-          ))}
-          <button type="button" onClick={addSoilLayer}>
-            Add Soil Layer
-          </button>
-        </div>
-
-        {/* Pile Properties */}
-        <div className="form-group">
+            <div className="form-group">
+              <label>Lateral Load (kN):</label>
+              <input 
+                type="number" 
+                name="lateralLoad" 
+                value={input.lateralLoad} 
+                onChange={handleChange} 
+              />
+            </div>
+            <div className="form-group">
+              <label>Moment Load (kN·m):</label>
+              <input 
+                type="number" 
+                name="momentLoad" 
+                value={input.momentLoad} 
+                onChange={handleChange} 
+              />
+            </div>
+          </div>
+          
           <h2>Pile Properties</h2>
-          <label htmlFor="pileType">Pile Type:</label>
-          <select
-            id="pileType"
-            name="pileType"
-            value={input.pileType}
-            onChange={handleChange}
-            required
-          >
-            <option value="">Select Pile Type</option>
-            <option value="driven">Driven</option>
-            <option value="bored">Bored</option>
-            <option value="screw">Screw</option>
-            <option value="micropiles">Micropiles</option>
-          </select>
+          <div className="form-row">
+            <div className="form-group">
+              <label>Pile Type:</label>
+              <select name="pileType" value={input.pileType} onChange={handleChange} required>
+                <option value="driven-concrete">Driven Concrete Pile</option>
+                <option value="driven-steel">Driven Steel Pile</option>
+                <option value="bored">Bored Cast-in-place Pile</option>
+                <option value="CFA">Continuous Flight Auger (CFA) Pile</option>
+                <option value="H-pile">H-Pile</option>
+              </select>
+            </div>
+            
+            <div className="form-group">
+              <label>Cross Section:</label>
+              <select name="pileCrossSectionType" value={input.pileCrossSectionType} onChange={handleChange} required>
+                <option value="circular">Circular</option>
+                <option value="square">Square</option>
+                <option value="H-section">H-Section</option>
+              </select>
+            </div>
+          </div>
+          
+          <div className="form-row">
+            <div className="form-group">
+              <label>Diameter/Width (m):</label>
+              <input 
+                type="number" 
+                name="pileDiameter" 
+                value={input.pileDiameter} 
+                onChange={handleChange} 
+                required
+              />
+            </div>
+            
+            <div className="form-group">
+              <label>Pile Length (m):</label>
+              <input 
+                type="number" 
+                name="pileLength" 
+                value={input.pileLength} 
+                onChange={handleChange} 
+                required
+              />
+            </div>
+          </div>
+          
+          <div className="form-row">
+            <div className="form-group">
+              <label>Number of Piles:</label>
+              <input 
+                type="number" 
+                name="numberOfPiles" 
+                value={input.numberOfPiles} 
+                onChange={handleChange} 
+                min="1"
+              />
+            </div>
+            
+            <div className="form-group">
+              <label>Pile Arrangement (e.g., "2x3"):</label>
+              <input 
+                type="text" 
+                name="pileArrangement" 
+                value={input.pileArrangement} 
+                onChange={handleChange} 
+                placeholder="e.g., 2x2"
+              />
+            </div>
+            
+            <div className="form-group">
+              <label>Pile Spacing (m):</label>
+              <input 
+                type="number" 
+                name="pileSpacing" 
+                value={input.pileSpacing} 
+                onChange={handleChange} 
+              />
+            </div>
+          </div>
+          
+          <h2>Design Methods</h2>
+          <div className="form-row">
+            <div className="form-group">
+              <label>Design Code:</label>
+              <select name="designCode" value={input.designCode} onChange={handleChange}>
+                <option value="Eurocode7">Eurocode 7</option>
+                <option value="AASHTO">AASHTO</option>
+                <option value="IS-2911">IS 2911</option>
+                <option value="other">Other</option>
+              </select>
+            </div>
+            
+            <div className="form-group">
+              <label>Skin Friction Method:</label>
+              <select name="skinFrictionMethod" value={input.skinFrictionMethod} onChange={handleChange}>
+                <option value="alpha-method">α-method (Clays)</option>
+                <option value="beta-method">β-method (All Soils)</option>
+                <option value="lambda-method">λ-method (Mixed Soils)</option>
+              </select>
+            </div>
+            
+            <div className="form-group">
+              <label>End Bearing Method:</label>
+              <select name="endBearingMethod" value={input.endBearingMethod} onChange={handleChange}>
+                <option value="meyerhof">Meyerhof</option>
+                <option value="vesic">Vesic</option>
+                <option value="coyle-castello">Coyle and Castello</option>
+              </select>
+            </div>
+          </div>
+          
+          <h2>Soil Layers</h2>
+          <p>Enter soil layers from top to bottom:</p>
+          
+          <div className="soil-layers">
+            {input.soilLayers.map((layer, index) => (
+              <div key={index} className="soil-layer">
+                <h4>Layer {index + 1}</h4>
+                
+                <div className="form-row">
+                  <div className="form-group">
+                    <label>Depth from Surface (m):</label>
+                    <input 
+                      type="number" 
+                      name="depth" 
+                      value={layer.depth} 
+                      onChange={(e) => handleSoilLayerChange(index, e)} 
+                      readOnly
+                    />
+                  </div>
+                  
+                  <div className="form-group">
+                    <label>Layer Thickness (m):</label>
+                    <input 
+                      type="number" 
+                      name="thickness" 
+                      value={layer.thickness} 
+                      onChange={(e) => handleSoilLayerChange(index, e)} 
+                      required
+                    />
+                  </div>
+                  
+                  <div className="form-group">
+                    <label>Soil Type:</label>
+                    <select 
+                      name="soilType" 
+                      value={layer.soilType} 
+                      onChange={(e) => handleSoilLayerChange(index, e)}
+                    >
+                      <option value="clay">Clay</option>
+                      <option value="sand">Sand</option>
+                      <option value="silt">Silt</option>
+                      <option value="rock">Rock</option>
+                    </select>
+                  </div>
+                </div>
+                
+                <div className="form-row">
+                  <div className="form-group">
+                    <label>Unit Weight (kN/m³):</label>
+                    <input 
+                      type="number" 
+                      name="unitWeight" 
+                      value={layer.unitWeight} 
+                      onChange={(e) => handleSoilLayerChange(index, e)} 
+                      required
+                    />
+                  </div>
+                  
+                  {(layer.soilType === 'clay' || layer.soilType === 'silt') && (
+                    <div className="form-group">
+                      <label>Undrained Shear Strength (kPa):</label>
+                      <input 
+                        type="number" 
+                        name="undrained_shear_strength" 
+                        value={layer.undrained_shear_strength} 
+                        onChange={(e) => handleSoilLayerChange(index, e)} 
+                      />
+                    </div>
+                  )}
+                  
+                  {(layer.soilType === 'sand' || layer.soilType === 'silt') && (
+                    <div className="form-group">
+                      <label>Friction Angle (°):</label>
+                      <input 
+                        type="number" 
+                        name="frictionAngle" 
+                        value={layer.frictionAngle} 
+                        onChange={(e) => handleSoilLayerChange(index, e)} 
+                      />
+                    </div>
+                  )}
 
-          <label htmlFor="pileDiameter">Pile Diameter (m):</label>
-          <input
-            type="number"
-            id="pileDiameter"
-            name="pileDiameter"
-            value={input.pileDiameter}
-            onChange={handleChange}
-            placeholder="Enter Pile Diameter"
-            required
-          />
+                  <div className="form-group">
+                    <label>SPT N-Value:</label>
+                    <input 
+                      type="number" 
+                      name="SPT_N" 
+                      value={layer.SPT_N} 
+                      onChange={(e) => handleSoilLayerChange(index, e)} 
+                    />
+                  </div>
+                </div>
+                
+                <div className="form-group">
+                  <label>Description:</label>
+                  <input 
+                    type="text" 
+                    name="description" 
+                    value={layer.description} 
+                    onChange={(e) => handleSoilLayerChange(index, e)} 
+                  />
+                </div>
 
-          <label htmlFor="pileLength">Pile Length (m):</label>
-          <input
-            type="number"
-            id="pileLength"
-            name="pileLength"
-            value={input.pileLength}
-            onChange={handleChange}
-            placeholder="Enter Pile Length"
-            required
-          />
+                {index > 0 && (
+                  <button 
+                    type="button" 
+                    className="remove-layer-btn"
+                    onClick={() => removeSoilLayer(index)}
+                  >
+                    Remove Layer
+                  </button>
+                )}
+              </div>
+            ))}
+            
+            <button 
+              type="button" 
+              className="add-layer-btn"
+              onClick={addSoilLayer}
+            >
+              Add Soil Layer
+            </button>
+          </div>
 
-          <label htmlFor="pileSpacing">Pile Spacing (m):</label>
-          <input
-            type="number"
-            id="pileSpacing"
-            name="pileSpacing"
-            value={input.pileSpacing}
-            onChange={handleChange}
-            placeholder="Enter Pile Spacing"
-          />
-
-          <label htmlFor="numberOfPiles">Number of Piles:</label>
-          <input
-            type="number"
-            id="numberOfPiles"
-            name="numberOfPiles"
-            value={input.numberOfPiles}
-            onChange={handleChange}
-            placeholder="Enter Number of Piles"
-            min="1"
-            required
-          />
-        </div>
-
-        {/* Design Codes */}
-        <div className="form-group">
-          <h2>Design Codes</h2>
-          <label htmlFor="designCode">Select Design Code:</label>
-          <select
-            id="designCode"
-            name="designCode"
-            value={input.designCode}
-            onChange={handleChange}
-            required
-          >
-            <option value="">Select Design Code</option>
-            <option value="Eurocode">Eurocode</option>
-            <option value="AASHTO">AASHTO</option>
-            <option value="ISCodes">IS Codes</option>
-          </select>
-        </div>
-
-        {/* Safety Factors */}
-        <div className="form-group">
           <h2>Safety Factors</h2>
-          <label htmlFor="factorOfSafety">Factor of Safety:</label>
-          <input
-            type="number"
-            id="factorOfSafety"
-            name="factorOfSafety"
-            value={input.factorOfSafety}
-            onChange={handleChange}
-            placeholder="Enter Factor of Safety"
-            required
-            min="1"
-            step="0.1"
-          />
-        </div>
+          <div className="form-row">
+            <div className="form-group">
+              <label>Partial Factor for Skin Friction:</label>
+              <input 
+                type="number" 
+                name="partialFactorSkin" 
+                value={input.partialFactorSkin} 
+                onChange={handleChange} 
+                step="0.05"
+              />
+            </div>
+            <div className="form-group">
+              <label>Partial Factor for End Bearing:</label>
+              <input 
+                type="number" 
+                name="partialFactorBase" 
+                value={input.partialFactorBase} 
+                onChange={handleChange} 
+                step="0.05"
+              />
+            </div>
+            <div className="form-group">
+              <label>Partial Factor for Material:</label>
+              <input 
+                type="number" 
+                name="partialFactorMaterial" 
+                value={input.partialFactorMaterial} 
+                onChange={handleChange} 
+                step="0.05"
+              />
+            </div>
+          </div>
 
-        {/* Submit Button */}
-        <button type="submit">Calculate</button>
-      </form>
-
-      {/* Results Display */}
-      {results.Q_design && (
-        <div className="results">
-          <h2>Capacity Analysis</h2>
-          <p><strong>Skin Friction (Q_skin):</strong> {results.Q_skin} kN</p>
-          <p><strong>End Bearing (Q_end):</strong> {results.Q_end} kN</p>
-          <p><strong>Ultimate Capacity (Q_ult):</strong> {results.Q_ult} kN</p>
-          <p><strong>Design Capacity (Q_design):</strong> {results.Q_design} kN</p>
-
-          <h2>Settlement Analysis</h2>
-          <p><strong>Settlement:</strong> {results.settlement} mm</p>
-
-          <h2>Group Pile Efficiency</h2>
-          <p><strong>Efficiency:</strong> {results.groupEfficiency}%</p>
-
-          <h2>Structural Design</h2>
-          <p><strong>Axial Load:</strong> {results.axialLoad} kN</p>
-          <p><strong>Shear Force:</strong> {results.shearForce} kN</p>
-          <p><strong>Bending Moment:</strong> {results.bendingMoment} kN·m</p>
-        </div>
-      )}
-
-      {/* Charts */}
-      {chartsData.loadDistribution && (
-        <div className="chart-container">
-          <h2>Load Distribution</h2>
-          <Bar
-            data={chartsData.loadDistribution}
-            options={{
-              responsive: true,
-              plugins: {
-                legend: { position: 'top' },
-                title: { display: true, text: 'Load Distribution' },
-              },
-              scales: {
-                y: { beginAtZero: true },
-              },
-            }}
-          />
+          <div className="form-actions">
+            <button 
+              type="button" 
+              className="calculate-btn"
+              onClick={calculatePileDesign}
+            >
+              Calculate Pile Design
+            </button>
+          </div>
         </div>
       )}
+      
+      {activeTab === 'results' && (
+        <div className="results-section">
+          {/* Display any warning messages */}
+          {calculationMessages.length > 0 && (
+            <div className="calculation-messages">
+              {calculationMessages.map((msg, index) => (
+                <div 
+                  key={index} 
+                  className={`message ${msg.type}`}
+                >
+                  {msg.message}
+                </div>
+              ))}
+            </div>
+          )}
+          
+          <h2>Calculation Results</h2>
+          
+          <div className="results-grid">
+            <div className="result-group">
+              <h3>Pile Capacity</h3>
+              <div className="result-item">
+                <span className="label">Skin Friction Capacity:</span>
+                <span className="value">{results.Q_skin?.toFixed(2)} kN</span>
+              </div>
+              <div className="result-item">
+                <span className="label">End Bearing Capacity:</span>
+                <span className="value">{results.Q_end?.toFixed(2)} kN</span>
+              </div>
+              <div className="result-item">
+                <span className="label">Ultimate Capacity:</span>
+                <span className="value">{results.Q_ult?.toFixed(2)} kN</span>
+              </div>
+              <div className="result-item highlight">
+                <span className="label">Allowable Capacity:</span>
+                <span className="value">{results.Q_allow?.toFixed(2)} kN</span>
+              </div>
+            </div>
+            
+            <div className="result-group">
+              <h3>Group Effects</h3>
+              <div className="result-item">
+                <span className="label">Group Efficiency:</span>
+                <span className="value">{(results.groupEfficiency * 100)?.toFixed(1)}%</span>
+              </div>
+              <div className="result-item">
+                <span className="label">Group Capacity:</span>
+                <span className="value">{results.Q_group?.toFixed(2)} kN</span>
+              </div>
+            </div>
+            
+            <div className="result-group">
+              <h3>Settlement & Lateral Analysis</h3>
+              <div className="result-item">
+                <span className="label">Estimated Settlement:</span>
+                <span className="value">{results.settlement?.toFixed(2)} mm</span>
+              </div>
+              <div className="result-item">
+                <span className="label">Lateral Capacity:</span>
+                <span className="value">{results.lateralCapacity?.toFixed(2)} kN</span>
+              </div>
+            </div>
+          </div>
+          
+          <h3>Load Distribution Along Pile Length</h3>
+          <div className="chart-container">
+            <Line 
+              data={loadDistributionChartData}
+              options={loadDistributionChartOptions}
+              height={300}
+            />
+          </div>
 
-      {chartsData.settlementCurve && (
-        <div className="chart-container">
-          <h2>Settlement Curve</h2>
-          <Line
-            data={chartsData.settlementCurve}
-            options={{
-              responsive: true,
-              plugins: {
-                legend: { position: 'top' },
-                title: { display: true, text: 'Settlement Curve' },
-              },
-              scales: {
-                y: { beginAtZero: true },
-              },
-            }}
-          />
+          <div className="report-actions">
+            <button 
+              type="button" 
+              className="modify-btn"
+              onClick={() => setActiveTab('input')}
+            >
+              Modify Input Parameters
+            </button>
+            <button 
+              type="button" 
+              className="export-btn"
+              onClick={() => window.print()}
+            >
+              Export as PDF
+            </button>
+          </div>
         </div>
       )}
     </div>
