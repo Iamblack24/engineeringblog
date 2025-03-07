@@ -40,6 +40,22 @@ const InteractiveAI = () => {
   const [chatHistory, setChatHistory] = useState([]);
   const messagesEndRef = useRef(null);
 
+  // Add auto resize functionality for textarea
+  const textareaRef = useRef(null);
+
+  const autoResizeTextarea = () => {
+    if (textareaRef.current) {
+      textareaRef.current.style.height = 'auto';
+      const newHeight = Math.min(textareaRef.current.scrollHeight, 120); // Cap at 120px
+      textareaRef.current.style.height = `${newHeight}px`;
+    }
+  };
+
+  // Add effect to resize textarea when question changes
+  useEffect(() => {
+    autoResizeTextarea();
+  }, [question]);
+
   const renderMessage = (message, index) => {
     const renderMediaContent = (mediaItem) => {
       // Skip descriptive text items
@@ -324,13 +340,20 @@ const InteractiveAI = () => {
                 ))}
               </motion.select>
 
-              <motion.input
+              <motion.textarea
+                ref={textareaRef}
                 whileFocus={{ scale: 1.01 }}
-                type="text"
                 value={question}
                 onChange={(e) => setQuestion(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' && !e.shiftKey) {
+                    e.preventDefault();
+                    handleSubmit(e);
+                  }
+                }}
                 placeholder="Ask an engineering question..."
                 disabled={loading}
+                rows={1}
               />
 
               <motion.button 

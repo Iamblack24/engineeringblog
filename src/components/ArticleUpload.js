@@ -232,7 +232,7 @@ Thank you for contributing to Engineering Hub! We'll be in touch soon.`);
               { id: 'analysis', status: 'idle', message: '' },
               { id: 'upload', status: 'idle', message: '' }
             ]);
-          }, 15000);
+          }, 30000);
         } catch (error) {
           console.error('Notification Error:', error);
           setFeedback('Error sending notification: ' + error.message);
