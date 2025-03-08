@@ -199,10 +199,15 @@ const ArticleUpload = () => {
             hasAnalysis: !!review
           });
 
-          const emailResponse = await fetch('http://localhost:3001/api/send-article', {
-            method: 'POST',
-            body: formData
-          });
+          const emailResponse = await fetch(
+            process.env.NODE_ENV === 'production' 
+              ? '/api/send-article'  // In production, use relative URL (same domain)
+              : 'http://localhost:3001/api/send-article', // In development, use localhost with port
+            {
+              method: 'POST',
+              body: formData
+            }
+          );
 
           if (!emailResponse.ok) {
             const errorData = await emailResponse.json();
