@@ -369,7 +369,13 @@ const InteractiveAI = () => {
   }, [currentUser]);
 
   // Update the saveToHistory function signature and implementation
-const saveToHistory = async (question, answer, category, graphData, imageUrl) => {
+const saveToHistory = async (
+  question, 
+  answer, 
+  category, 
+  imageUrl,
+  responseData = {}
+) => {
   if (!currentUser) return;
   
   try {
@@ -377,7 +383,7 @@ const saveToHistory = async (question, answer, category, graphData, imageUrl) =>
     const timestamp = new Date().toISOString();
     const historyRef = doc(db, 'users', currentUser.uid, 'history', timestamp);
     
-    // Create history item without undefined values
+    // Create base history item
     const historyItem = {
       question,
       answer,
@@ -386,13 +392,31 @@ const saveToHistory = async (question, answer, category, graphData, imageUrl) =>
       userId: currentUser.uid
     };
     
-    // Only add optional fields if they exist and are not undefined
-    if (graphData !== undefined) {
-      historyItem.graphData = graphData;
-    }
-    
+    // Add image URL if provided
     if (imageUrl) {
       historyItem.imageUrl = imageUrl;
+    }
+    
+    // Add all additional fields from the API response that exist
+    const possibleFields = [
+      'graphData', 
+      'practicalApplications',
+      'quiz', 
+      'media',
+      'researchSummary',
+      'learningPath',
+      'solvedExample',
+      'imageAnalysis',
+      'codeExecution',
+      'interactiveTutorial',
+      'professionalGuidance',
+      'formulas'
+    ];
+    
+    for (const field of possibleFields) {
+      if (responseData[field] !== undefined) {
+        historyItem[field] = responseData[field];
+      }
     }
 
     await setDoc(historyRef, historyItem);
@@ -468,11 +492,18 @@ const handleSubmit = async (e) => {
       });
 
     console.log('Full API Response:', JSON.stringify(response.data, null, 2));
-    const { answer, graphData } = response.data;
     
-    // Save to history including image if available
-    await saveToHistory(question, answer, category, graphData, 
-      imageFile ? imagePreview : undefined);
+    // Extract answer field (guaranteed to be present)
+    const { answer } = response.data;
+    
+    // Save ALL content to history by passing the entire response data object
+    await saveToHistory(
+      question, 
+      answer, 
+      category,
+      imageFile ? imagePreview : undefined,
+      response.data
+    );
     
     // Clear form
     setQuestion('');
