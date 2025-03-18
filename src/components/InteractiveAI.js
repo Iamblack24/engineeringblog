@@ -16,6 +16,10 @@ import { db } from '../firebase';
 import ReactMarkdown from 'react-markdown';
 import './InteractiveAI.css';
 import imageCompression from 'browser-image-compression';
+import 'katex/dist/katex.min.css';
+import rehypeKatex from 'rehype-katex';
+import remarkMath from 'remark-math';
+import { InlineMath, BlockMath } from 'react-katex';
 
 const CATEGORIES = [
   'Structural Analysis',
@@ -36,6 +40,71 @@ const messageVariants = {
   initial: { opacity: 0, y: 20 },
   animate: { opacity: 1, y: 0 },
   exit: { opacity: 0, x: -10 }
+};
+
+// Formula Explorer Component
+const FormulaExplorer = ({ formula, variables }) => {
+  const [expandedView, setExpandedView] = useState(false);
+  
+  return (
+    <div className="formula-explorer">
+      <div className="formula-display" onClick={() => setExpandedView(!expandedView)}>
+        <BlockMath math={formula} />
+        {expandedView ? <span className="collapse-icon">▼</span> : <span className="expand-icon">▶</span>}
+      </div>
+      
+      {expandedView && (
+        <div className="formula-details">
+          <h4>Variables:</h4>
+          <ul>
+            {variables.map(v => (
+              <li key={v.symbol}>
+                <span className="variable-symbol"><InlineMath math={v.symbol} /></span>: {v.description}
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+    </div>
+  );
+};
+
+// Copy Formula Button Component
+const CopyFormulaButton = ({ formula }) => {
+  const [copied, setCopied] = useState(false);
+  const [showDropdown, setShowDropdown] = useState(false);
+  
+  const copyFormats = [
+    { label: "LaTeX", getValue: () => formula },
+    { label: "Plain Text", getValue: () => formula.replace(/[\\{}$]/g, '') }
+  ];
+
+  const copyToClipboard = (format) => {
+    navigator.clipboard.writeText(format.getValue());
+    setCopied(true);
+    setShowDropdown(false);
+    setTimeout(() => setCopied(false), 2000);
+  };
+
+  return (
+    <div className="copy-formula-dropdown">
+      <button 
+        className="copy-formula-btn"
+        onClick={() => setShowDropdown(!showDropdown)}
+      >
+        {copied ? "Copied!" : "Copy Formula"}
+      </button>
+      {showDropdown && (
+        <div className="copy-formats">
+          {copyFormats.map(format => (
+            <button key={format.label} onClick={() => copyToClipboard(format)}>
+              {format.label}
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
+  );
 };
 
 const InteractiveAI = () => {
@@ -190,7 +259,33 @@ const InteractiveAI = () => {
         {/* Assistant Message */}
         <div className="assistant-message">
           <div className="message-content">
-            <ReactMarkdown className="message-markdown">
+            <ReactMarkdown 
+              className="message-markdown"
+              remarkPlugins={[remarkMath]}
+              rehypePlugins={[rehypeKatex]}
+              components={{
+                // Custom component for math blocks
+                math: ({node, ...props}) => {
+                  const formula = node.value;
+                  // Check if this formula has an explorer (with variables)
+                  if (message.formulas && message.formulas[formula]) {
+                    return (
+                      <div className="formula-with-tools">
+                        <BlockMath math={formula} />
+                        <FormulaExplorer 
+                          formula={formula} 
+                          variables={message.formulas[formula].variables} 
+                        />
+                        <CopyFormulaButton formula={formula} />
+                      </div>
+                    );
+                  }
+                  return <BlockMath math={formula} />;
+                },
+                // Inline math rendering
+                inlineMath: ({node}) => <InlineMath math={node.value} />
+              }}
+            >
               {message.answer}
             </ReactMarkdown>
 
@@ -394,6 +489,46 @@ const handleSubmit = async (e) => {
     setLoading(false);
   }
 };
+
+  // Add this function inside the InteractiveAI component
+const renderFormulasWithExplorer = (text) => {
+  if (!text) return text;
+  
+  // Pattern to match formulas with variable definitions in custom format
+  // Example: $$E = mc^2$$ {m: mass, c: speed of light, E: energy}
+  const formulaPattern = /\$\$(.*?)\$\$\s*\{(.*?)\}/g;
+  
+  return text.replace(formulaPattern, (match, formula, variablesText) => {
+    // Parse variable definitions
+    const vars = variablesText.split(',').map(v => {
+      const [symbol, description] = v.trim().split(':');
+      return { symbol: symbol.trim(), description: description.trim() };
+    });
+    
+    // Generate a unique key for the component
+    const key = formula.substring(0, 20) + Math.random().toString(36).substring(2, 7);
+    
+    // Return a stringified representation that we'll parse in the renderer
+    return `<FormulaExplorer key="${key}" formula="${formula}" variables={${JSON.stringify(vars)}} />`;
+  });
+};
+
+// Add a useEffect to process formulas after rendering
+useEffect(() => {
+  // Find all elements with formula markers
+  const formulaElements = document.querySelectorAll('[data-formula]');
+  
+  formulaElements.forEach(el => {
+    const formula = el.getAttribute('data-formula');
+    const variables = JSON.parse(el.getAttribute('data-variables') || '[]');
+    
+    // Create a FormulaExplorer instance
+    const formulaExplorer = <FormulaExplorer formula={formula} variables={variables} />;
+    
+    // Render it into the element
+    ReactDOM.render(formulaExplorer, el);
+  });
+}, [chatHistory]);
 
   useEffect(() => {
     if (currentUser) {

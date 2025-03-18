@@ -803,3 +803,114 @@
   border-radius: 8px;
   box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
+/* KaTeX Formula Styling */
+.katex-display {
+  overflow-x: auto;
+  overflow-y: hidden;
+  max-width: 100%;
+  padding: 0.5em 0;
+  margin: 1em 0;
+  background-color: rgba(30, 41, 59, 0.5);
+  border-radius: 8px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.formula-explorer {
+  margin: 1em 0;
+  border: 1px solid rgba(100, 255, 218, 0.15);
+  border-radius: 8px;
+  overflow: hidden;
+  background-color: rgba(30, 41, 59, 0.5);
+}
+
+.formula-display {
+  padding: 1em;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: background-color 0.2s ease;
+}
+
+.formula-display:hover {
+  background-color: rgba(30, 41, 59, 0.8);
+}
+
+.formula-details {
+  padding: 1em;
+  border-top: 1px solid rgba(100, 255, 218, 0.15);
+  background-color: rgba(15, 23, 42, 0.3);
+}
+
+.variable-symbol {
+  font-weight: bold;
+  color: #64ffda;
+  margin-right: 0.5em;
+}
+
+.expand-icon, .collapse-icon {
+  font-size: 1.2em;
+  color: #64ffda;
+  transition: transform 0.2s ease;
+}
+
+.collapse-icon {
+  transform: rotate(180deg);
+}
+
+.copy-formula-dropdown {
+  position: relative;
+  display: inline-block;
+}
+
+.copy-formula-btn {
+  padding: 0.5em 1em;
+  background-color: rgba(56, 189, 248, 0.2);
+  border: 1px solid rgba(56, 189, 248, 0.3);
+  border-radius: 4px;
+  color: #ffffff;
+  cursor: pointer;
+  font-size: 0.8em;
+  transition: all 0.2s ease;
+}
+
+.copy-formula-btn:hover {
+  background-color: rgba(56, 189, 248, 0.3);
+}
+
+.copy-formats {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  background-color: #1e293b;
+  border: 1px solid rgba(100, 255, 218, 0.15);
+  border-radius: 4px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+  z-index: 10;
+  min-width: 120px;
+  display: flex;
+  flex-direction: column;
+}
+
+.copy-formats button {
+  padding: 0.5em 1em;
+  background: none;
+  border: none;
+  text-align: left;
+  color: #ffffff;
+  cursor: pointer;
+}
+
+.copy-formats button:hover {
+  background-color: rgba(100, 255, 218, 0.1);
+}
+
+@media (max-width: 768px) {
+  .katex-display {
+    font-size: 0.9em;
+  }
+  
+  .formula-explorer {
+    font-size: 0.9em;
+  }
+}
