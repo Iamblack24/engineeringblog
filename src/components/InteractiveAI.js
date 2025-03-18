@@ -15,6 +15,7 @@ import {
 import { db } from '../firebase';
 import ReactMarkdown from 'react-markdown';
 import './InteractiveAI.css';
+import imageCompression from 'browser-image-compression';
 
 const CATEGORIES = [
   'Structural Analysis',
@@ -23,6 +24,12 @@ const CATEGORIES = [
   'Architecture',
   'Environmental Engineering',
   'Cost Estimation',
+  'Geotechnical Engineering',
+  'Transportation Engineering',
+  'Water Resources Engineering',
+  'Electrical Engineering',
+  'Mechanical Engineering',
+  'Computer Science for Engineers',
 ];
 
 const messageVariants = {
@@ -55,6 +62,40 @@ const InteractiveAI = () => {
   useEffect(() => {
     autoResizeTextarea();
   }, [question]);
+
+  const [imageFile, setImageFile] = useState(null);
+  const [imagePreview, setImagePreview] = useState(null);
+
+  // Add this function to convert image to base64
+  const convertImageToBase64 = (file) => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = () => resolve(reader.result);
+      reader.onerror = (error) => reject(error);
+    });
+  };
+
+  // Add this compression function
+  const compressImage = async (file) => {
+    const options = {
+      maxSizeMB: 1,            // Maximum size in MB
+      maxWidthOrHeight: 1200,  // Limit dimensions while keeping aspect ratio
+      useWebWorker: true       // Better UI performance
+    };
+    
+    try {
+      const compressedFile = await imageCompression(file, options);
+      console.log('Image compressed:', {
+        originalSize: `${(file.size / 1024 / 1024).toFixed(2)} MB`,
+        compressedSize: `${(compressedFile.size / 1024 / 1024).toFixed(2)} MB`,
+      });
+      return compressedFile;
+    } catch (error) {
+      console.error('Error compressing image:', error);
+      throw error;
+    }
+  };
 
   const renderMessage = (message, index) => {
     const renderMediaContent = (mediaItem) => {
@@ -132,6 +173,17 @@ const InteractiveAI = () => {
               <span className="message-time">{new Date(message.timestamp).toLocaleTimeString()}</span>
             </div>
             <div className="message-text">{message.question}</div>
+            
+            {/* Add this to display image if present */}
+            {message.imageUrl && (
+              <div className="message-image-container">
+                <img 
+                  src={message.imageUrl} 
+                  alt="User uploaded" 
+                  className="message-image" 
+                />
+              </div>
+            )}
           </div>
         </div>
         
@@ -221,29 +273,40 @@ const InteractiveAI = () => {
     }
   }, [currentUser]);
 
-  const saveToHistory = async (question, answer, category, graphData) => {
-    if (!currentUser) return;
+  // Update the saveToHistory function signature and implementation
+const saveToHistory = async (question, answer, category, graphData, imageUrl) => {
+  if (!currentUser) return;
+  
+  try {
+    // Save chat history
+    const timestamp = new Date().toISOString();
+    const historyRef = doc(db, 'users', currentUser.uid, 'history', timestamp);
     
-    try {
-      // Save chat history
-      const timestamp = new Date().toISOString();
-      const historyRef = doc(db, 'users', currentUser.uid, 'history', timestamp);
-      const historyItem = {
-        question,
-        answer,
-        category,
-        graphData,
-        timestamp,
-        userId: currentUser.uid
-      };
-
-      await setDoc(historyRef, historyItem);
-      setChatHistory(prev => [...prev, historyItem]);
-    } catch (err) {
-      console.error('Error saving to history:', err);
-      setError('Failed to save chat history');
+    // Create history item without undefined values
+    const historyItem = {
+      question,
+      answer,
+      category,
+      timestamp,
+      userId: currentUser.uid
+    };
+    
+    // Only add optional fields if they exist and are not undefined
+    if (graphData !== undefined) {
+      historyItem.graphData = graphData;
     }
-  };
+    
+    if (imageUrl) {
+      historyItem.imageUrl = imageUrl;
+    }
+
+    await setDoc(historyRef, historyItem);
+    setChatHistory(prev => [...prev, historyItem]);
+  } catch (err) {
+    console.error('Error saving to history:', err);
+    setError('Failed to save chat history');
+  }
+};
 
   const validateInput = (question) => {
     if (question.trim().length < 10) {
@@ -257,18 +320,39 @@ const InteractiveAI = () => {
     return true;
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    if (!validateInput(question)) return;
-    
-    try {
-      setLoading(true);
-      setError('');
+  // Replace the existing handleSubmit function
+const handleSubmit = async (e) => {
+  e.preventDefault();
+  if (!validateInput(question)) return;
+  
+  try {
+    setLoading(true);
+    setError('');
 
-      const response = await axios.post('https://enginehub.onrender.com/api/ask', {
-        question,
-        category,
-      }).catch(err => {
+    // Prepare request data
+    const requestData = {
+      question,
+      category,
+    };
+
+    // If we have an image, compress it before converting to base64
+    if (imageFile) {
+      try {
+        // Compress the image first
+        const compressedFile = await compressImage(imageFile);
+        
+        // Convert compressed image to base64
+        const imageData = await convertImageToBase64(compressedFile);
+        requestData.imageData = imageData;
+      } catch (compressError) {
+        setError('Failed to process image. Please try a smaller image.');
+        setLoading(false);
+        return;
+      }
+    }
+
+    const response = await axios.post('https://enginehub.onrender.com/api/ask', requestData)
+      .catch(err => {
         console.log('Detailed error:', {
           message: err.message,
           code: err.code,
@@ -288,19 +372,28 @@ const InteractiveAI = () => {
         throw new Error(`Request failed: ${err.message}`);
       });
 
-      console.log('Full API Response:', JSON.stringify(response.data, null, 2));
-      const { answer, graphData } = response.data;
-      
-      await saveToHistory(question, answer, category, graphData);
-      
-      setQuestion('');
-    } catch (err) {
-      console.error('Error:', err);
+    console.log('Full API Response:', JSON.stringify(response.data, null, 2));
+    const { answer, graphData } = response.data;
+    
+    // Save to history including image if available
+    await saveToHistory(question, answer, category, graphData, 
+      imageFile ? imagePreview : undefined);
+    
+    // Clear form
+    setQuestion('');
+    setImageFile(null);
+    setImagePreview(null);
+  } catch (err) {
+    console.error('Error:', err);
+    if (err.message?.includes('entity too large')) {
+      setError('Image is too large. Please use a smaller image or compress it before uploading.');
+    } else {
       setError(err.message || 'Failed to get response from AI');
-    } finally {
-      setLoading(false);
     }
-  };
+  } finally {
+    setLoading(false);
+  }
+};
 
   useEffect(() => {
     if (currentUser) {
@@ -356,6 +449,44 @@ const InteractiveAI = () => {
                 rows={1}
               />
 
+              {/* Add Image Upload Button */}
+              <motion.div
+                className="file-upload-container"
+                whileHover={{ scale: 1.05 }}
+              >
+                <input
+                  id="image-upload"
+                  type="file"
+                  accept="image/*"
+                  onChange={(e) => {
+                    const file = e.target.files[0];
+                    if (file) {
+                      // Check if file is too large (more than 10MB)
+                      if (file.size > 10 * 1024 * 1024) {
+                        setError('Image is too large. Please select an image under 10MB.');
+                        return;
+                      }
+                      
+                      setImageFile(file);
+                      // Create preview URL
+                      const previewUrl = URL.createObjectURL(file);
+                      setImagePreview(previewUrl);
+                    }
+                  }}
+                  style={{ display: 'none' }}
+                />
+                <motion.label
+                  htmlFor="image-upload"
+                  className="image-upload-button"
+                  whileTap={{ scale: 0.95 }}
+                >
+                  <svg viewBox="0 0 24 24" width="24" height="24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M19 5v14H5V5h14m0-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2z" fill="currentColor" />
+                    <path d="M14.14 11.86l-3 3.87L9 13.14 6 17h12l-3.86-5.14z" fill="currentColor" />
+                  </svg>
+                </motion.label>
+              </motion.div>
+
               <motion.button 
                 type="submit" 
                 disabled={loading}
@@ -385,6 +516,26 @@ const InteractiveAI = () => {
               </motion.div>
             )}
           </form>
+
+          {/* Image Preview */}
+          {imagePreview && (
+            <div className="image-preview-container">
+              <img 
+                src={imagePreview} 
+                alt="Upload preview" 
+                className="image-preview" 
+              />
+              <button 
+                className="remove-image-button" 
+                onClick={() => {
+                  setImageFile(null);
+                  setImagePreview(null);
+                }}
+              >
+                ✕
+              </button>
+            </div>
+          )}
         </div>
       </div>
     </div>

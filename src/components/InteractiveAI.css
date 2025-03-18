@@ -731,3 +731,75 @@
   color: #ffffff;
   background-color: #1e293b;
 }
+
+/* Add these styles to your InteractiveAI.css file */
+
+.file-upload-container {
+  position: relative;
+  margin: 0 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.image-upload-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  cursor: pointer;
+  color: #4a5568;
+  background-color: #e2e8f0;
+  transition: all 0.2s;
+}
+
+.image-upload-button:hover {
+  background-color: #cbd5e0;
+}
+
+.image-preview-container {
+  position: relative;
+  margin-top: 10px;
+  max-width: 200px;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.image-preview {
+  width: 100%;
+  height: auto;
+  object-fit: contain;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.remove-image-button {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  background: rgba(0,0,0,0.6);
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 12px;
+}
+
+.message-image-container {
+  margin-top: 8px;
+  max-width: 300px;
+}
+
+.message-image {
+  width: 100%;
+  height: auto;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}

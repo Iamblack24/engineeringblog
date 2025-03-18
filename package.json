@@ -19,6 +19,7 @@
     "assert": "^2.1.0",
     "async": "^3.2.6",
     "axios": "^1.7.7",
+    "browser-image-compression": "^2.0.2",
     "browserify-zlib": "^0.2.0",
     "buffer": "^6.0.3",
     "canvasjs": "^1.8.3",
