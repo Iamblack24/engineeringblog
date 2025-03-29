@@ -99,6 +99,7 @@ import GreenBuildingDesign from './pages/GreenBuildingDesign';
 import KnowledgeExtraction from './pages/KnowledgeExtraction';
 import AutoTutor from './pages/AutoTutor';
 import AdsStrategyPage from './pages/AdsStrategyPage';
+import BillOfQuantitiesGenerator from './tools/BillOfQuantitiesGenerator';
 
 function App() {
   const { currentUser } = useContext(AuthContext);
@@ -233,6 +234,7 @@ function App() {
           <Route path="/knowledge-extraction" element={<ProtectedRoute><KnowledgeExtraction /></ProtectedRoute>} />
           <Route path="/auto-tutor" element={<ProtectedRoute><AutoTutor /></ProtectedRoute>} />
           <Route path="/ads-strategy" element={<ProtectedRoute><AdsStrategyPage /></ProtectedRoute>} />
+          <Route path="/tools/bill-of-quantities-generator" element={<ProtectedRoute><BillOfQuantitiesGenerator /></ProtectedRoute>} />
         </Routes>
       </main>
       <InstallPrompt />

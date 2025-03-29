@@ -72,6 +72,11 @@ const tools = [
     link: '/tools/structural-load', // Replace with the actual link to the tool
   },
   {
+    title: 'Bill of Quantities (BoQ) Generator',
+    description: 'Generate a Bill of Quantities for construction projects based on input data.',
+    link: '/tools/bill-of-quantities-generator', // Replace with the actual link to the tool
+  },
+  {
     title: 'Soil Bearing Capacity Calculator',
     description: 'Determine the bearing capacity of soil for foundation design.',
     link: '/tools/soil-bearing-capacity', // Replace with the actual link to the tool
