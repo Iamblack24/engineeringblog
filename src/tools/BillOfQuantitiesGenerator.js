@@ -16,10 +16,16 @@ const getNumericValue = (value) => {
   return isNaN(number) ? 0 : number;
 };
 
+// Helper function to safely parse float values
+const safeParseFloat = (value) => {
+  const parsed = parseFloat(value);
+  return isNaN(parsed) ? 0 : parsed;
+};
+
 const BillOfQuantitiesGenerator = () => {
   // Currency conversion
-  const exchangeRate = 132.50; // 1 USD = 132.50 KES (you may want to fetch this dynamically)
-  const [currency, setCurrency] = useState('USD');
+  const exchangeRate = 0.00754; // 1 USD = 132.50 KES (fetch dynamically)
+  const [currency, setCurrency] = useState('KES');
   
   // Project Information
   const [projectInfo, setProjectInfo] = useState({
@@ -51,7 +57,7 @@ const BillOfQuantitiesGenerator = () => {
   // BOQ Items
   const [items, setItems] = useState([]);
   const [currentItem, setCurrentItem] = useState({
-    categoryId: 1,
+    categoryId: 1,  // This should be a number, not a string
     itemCode: '',
     description: '',
     unit: '',
@@ -142,10 +148,20 @@ const BillOfQuantitiesGenerator = () => {
   
   // Handle input changes for current item
   const handleItemChange = (e) => {
-    setCurrentItem({
-      ...currentItem,
-      [e.target.name]: e.target.value
-    });
+    const { name, value } = e.target;
+    
+    // Convert categoryId to number when it changes
+    if (name === 'categoryId') {
+      setCurrentItem({
+        ...currentItem,
+        [name]: parseInt(value, 10)  // Convert to number
+      });
+    } else {
+      setCurrentItem({
+        ...currentItem,
+        [name]: value
+      });
+    }
   };
   
   // Handle input changes for summary percentages
@@ -255,28 +271,28 @@ const BillOfQuantitiesGenerator = () => {
   
   // Convert amount to selected currency - updated for native currency
   const formatCurrency = (amount) => {
-    if (currency === 'USD') {
-      return `$${amount.toFixed(2)}`;
-    } else {
+    if (currency === 'KES') {
       return `KES ${amount.toFixed(2)}`;
+    } else {
+      return `$${amount.toFixed(2)}`;
     }
   };
   
-  // Get category total
+  // Updated getCategoryTotal function to handle potential type mismatches
   const getCategoryTotal = (categoryId) => {
     return items
-      .filter(item => item.categoryId === categoryId)
+      .filter(item => parseInt(item.categoryId, 10) === parseInt(categoryId, 10))
       .reduce((sum, item) => {
-        // Ensure we're adding a number, not a string
         const itemAmount = parseFloat(item.amount) || 0;
         return sum + itemAmount;
       }, 0);
   };
   
-  // Export to PDF
+  // Enhanced PDF export function
   const exportToPdf = () => {
     try {
-      const doc = new jsPDF();
+      // Use landscape orientation for more space
+      const doc = new jsPDF({ orientation: 'landscape' });
       
       // Add project information
       doc.setFontSize(18);
@@ -284,59 +300,97 @@ const BillOfQuantitiesGenerator = () => {
       
       doc.setFontSize(12);
       doc.text(`Project: ${projectInfo.projectName}`, 14, 30);
-      doc.text(`Client: ${projectInfo.clientName}`, 14, 37);
-      doc.text(`Location: ${projectInfo.projectLocation}`, 14, 44);
-      doc.text(`Date: ${projectInfo.projectDate}`, 14, 51);
-      doc.text(`Prepared by: ${projectInfo.preparedBy}`, 14, 58);
-      doc.text(`Currency: ${currency}`, 14, 65);
+      doc.text(`Client: ${projectInfo.clientName}`, 14, 40);
+      doc.text(`Location: ${projectInfo.projectLocation}`, 14, 50);
+      doc.text(`Date: ${projectInfo.projectDate}`, 14, 60);
+      doc.text(`Prepared by: ${projectInfo.preparedBy}`, 14, 70);
+      doc.text(`Currency: ${currency}`, 14, 80);
       
-      let yPos = 75;
+      let currentPage = 1;
+      let yPos = 90;
       
-      // Add categories and items
-      categories.forEach(category => {
-        const categoryItems = items.filter(item => item.categoryId === category.id);
-        if (categoryItems.length > 0) {
-          // Add category header
-          doc.setFontSize(14);
-          doc.setFont(undefined, 'bold');
-          doc.text(category.name, 14, yPos);
-          yPos += 8;
-          
-          // Add items table
-          doc.autoTable({
-            startY: yPos,
-            head: [['Item', 'Description', 'Unit', 'Quantity', 'Rate', 'Amount']],
-            body: categoryItems.map(item => [
-              item.itemCode || '',
-              item.description,
-              item.unit,
-              parseFloat(item.quantity).toFixed(2),
-              currency === 'USD' ? `$${parseFloat(item.rate).toFixed(2)}` : `KES ${parseFloat(item.rate).toFixed(2)}`,
-              currency === 'USD' ? `$${parseFloat(item.amount).toFixed(2)}` : `KES ${parseFloat(item.amount).toFixed(2)}`
-            ]),
-            foot: [
-              ['', '', '', '', 'Total:', formatCurrency(getCategoryTotal(category.id))]
-            ]
-          });
-          
-          yPos = doc.lastAutoTable.finalY + 10;
-          
-          // Check if we need a new page
-          if (yPos > 250) {
-            doc.addPage();
-            yPos = 20;
-          }
+      // Calculate total number of items for progress tracking
+      const totalItems = items.length;
+      let itemsProcessed = 0;
+      
+      // Process each category
+      for (let i = 0; i < categories.length; i++) {
+        const category = categories[i];
+        const categoryItems = items.filter(item => parseInt(item.categoryId, 10) === parseInt(category.id, 10));
+        
+        // Skip empty categories
+        if (categoryItems.length === 0) continue;
+        
+        // Check if we need a new page for this category
+        if (yPos > 180) {
+          doc.addPage();
+          currentPage++;
+          yPos = 20;
         }
-      });
+        
+        // Add category header
+        doc.setFontSize(14);
+        doc.setFont(undefined, 'bold');
+        doc.text(`${category.name} (Page ${currentPage})`, 14, yPos);
+        yPos += 10;
+        
+        // Prepare table data
+        const tableData = categoryItems.map(item => [
+          item.itemCode || '',
+          item.description.length > 50 ? item.description.substring(0, 50) + '...' : item.description,
+          item.unit,
+          parseFloat(item.quantity).toFixed(2),
+          currency === 'KES' ? `KES ${parseFloat(item.rate).toFixed(2)}` : `$${(parseFloat(item.rate) * exchangeRate).toFixed(2)}`,
+          currency === 'KES' ? `KES ${parseFloat(item.amount).toFixed(2)}` : `$${(parseFloat(item.amount) * exchangeRate).toFixed(2)}`
+        ]);
+        
+        // Add category total row
+        tableData.push(['', '', '', '', 'Category Total:', formatCurrency(getCategoryTotal(category.id))]);
+        
+        // Add items table with autoTable
+        doc.autoTable({
+          startY: yPos,
+          head: [['Item Code', 'Description', 'Unit', 'Quantity', 'Rate', 'Amount']],
+          body: tableData,
+          margin: { top: 10 },
+          styles: { overflow: 'linebreak' },
+          columnStyles: {
+            0: { cellWidth: 20 },
+            1: { cellWidth: 80 },
+            2: { cellWidth: 20 },
+            3: { cellWidth: 25 },
+            4: { cellWidth: 35 },
+            5: { cellWidth: 35 }
+          },
+          didDrawPage: () => {
+            // Add page number
+            doc.text(`Page ${doc.getCurrentPageInfo().pageNumber}`, doc.internal.pageSize.width - 30, doc.internal.pageSize.height - 10);
+          }
+        });
+        
+        itemsProcessed += categoryItems.length;
+        yPos = doc.lastAutoTable.finalY + 15;
+        
+        // Add page break if needed before next category
+        if (i < categories.length - 1 && yPos > 180) {
+          doc.addPage();
+          currentPage++;
+          yPos = 20;
+        }
+      }
+      
+      // Add new page for summary
+      doc.addPage();
+      currentPage++;
       
       // Add summary
       doc.setFontSize(14);
       doc.setFont(undefined, 'bold');
-      doc.text('Summary', 14, yPos);
-      yPos += 8;
+      doc.text(`Summary (Page ${currentPage})`, 14, 20);
       
+      // Add summary table
       doc.autoTable({
-        startY: yPos,
+        startY: 30,
         head: [['Description', 'Amount']],
         body: [
           ['Direct Costs', formatCurrency(summary.directCosts)],
@@ -347,13 +401,19 @@ const BillOfQuantitiesGenerator = () => {
         ],
         foot: [
           ['Grand Total', formatCurrency(summary.grandTotal)]
-        ]
+        ],
+        styles: { fontSize: 12 },
+        margin: { top: 10 }
       });
       
-      // Save the PDF
-      doc.save(`BOQ_${projectInfo.projectName || 'Project'}_${new Date().toISOString().split('T')[0]}.pdf`);
+      // Save the PDF with more descriptive name including date
+      const today = new Date().toISOString().split('T')[0];
+      doc.save(`BOQ_${projectInfo.projectName || 'Project'}_${currency}_${today}.pdf`);
+      
+      console.log(`Successfully exported PDF with ${itemsProcessed}/${totalItems} items`);
     } catch (error) {
       console.error("Error generating PDF:", error);
+      alert("There was an error generating the PDF. Using fallback export method.");
       exportToPdfFallback();
     }
   };
@@ -385,63 +445,72 @@ const BillOfQuantitiesGenerator = () => {
     doc.save(`BOQ_${projectInfo.projectName || 'Project'}_${new Date().toISOString().split('T')[0]}.pdf`);
   };
   
-  // Export to Excel
+  // Enhanced Excel export
   const exportToExcel = () => {
-    // Create worksheet for project info
-    const projectInfoWS = XLSX.utils.json_to_sheet([
-      { Name: 'Project Name', Value: projectInfo.projectName },
-      { Name: 'Client', Value: projectInfo.clientName },
-      { Name: 'Location', Value: projectInfo.projectLocation },
-      { Name: 'Date', Value: projectInfo.projectDate },
-      { Name: 'Project Number', Value: projectInfo.projectNumber },
-      { Name: 'Prepared By', Value: projectInfo.preparedBy }
-    ]);
-    
-    // Create worksheets for each category
-    const worksheets = {};
-    categories.forEach(category => {
-      const categoryItems = items.filter(item => item.categoryId === category.id);
-      if (categoryItems.length > 0) {
-        // Convert items to Excel format
-        const excelItems = categoryItems.map(item => ({
-          'Item Code': item.itemCode,
-          'Description': item.description,
-          'Unit': item.unit,
-          'Quantity': parseFloat(item.quantity),
-          'Rate': currency === 'USD' ? parseFloat(item.rate) : parseFloat(item.rate) * exchangeRate,
-          'Amount': currency === 'USD' ? item.amount : item.amount * exchangeRate,
-          'Notes': item.notes
-        }));
+    try {
+      // Create worksheet for project info with better formatting
+      const projectInfoWS = XLSX.utils.json_to_sheet([
+        { Name: 'Bill of Quantities', Value: '' },
+        { Name: 'Project Name', Value: projectInfo.projectName },
+        { Name: 'Client', Value: projectInfo.clientName },
+        { Name: 'Location', Value: projectInfo.projectLocation },
+        { Name: 'Date', Value: projectInfo.projectDate },
+        { Name: 'Project Number', Value: projectInfo.projectNumber },
+        { Name: 'Prepared By', Value: projectInfo.preparedBy },
+        { Name: 'Currency', Value: currency }
+      ]);
+      
+      // Create worksheets for each category
+      const worksheets = {};
+      categories.forEach(category => {
+        const categoryItems = items.filter(item => parseInt(item.categoryId, 10) === parseInt(category.id, 10));
         
-        // Create worksheet
-        const ws = XLSX.utils.json_to_sheet(excelItems);
-        worksheets[category.name] = ws;
-      }
-    });
-    
-    // Create summary worksheet
-    const summaryData = [
-      { 'Item': 'Direct Costs', 'Value': currency === 'USD' ? summary.directCosts : summary.directCosts * exchangeRate },
-      { 'Item': `Contingency (${summary.contingencyPercentage}%)`, 'Value': currency === 'USD' ? summary.contingency : summary.contingency * exchangeRate },
-      { 'Item': `Overheads (${summary.overheadsPercentage}%)`, 'Value': currency === 'USD' ? summary.overheads : summary.overheads * exchangeRate },
-      { 'Item': `Profit (${summary.profitPercentage}%)`, 'Value': currency === 'USD' ? summary.profit : summary.profit * exchangeRate },
-      { 'Item': `Taxes (${summary.taxRate}%)`, 'Value': currency === 'USD' ? summary.taxes : summary.taxes * exchangeRate },
-      { 'Item': 'Grand Total', 'Value': currency === 'USD' ? summary.grandTotal : summary.grandTotal * exchangeRate }
-    ];
-    const summaryWS = XLSX.utils.json_to_sheet(summaryData);
-    worksheets['Summary'] = summaryWS;
-    
-    // Create workbook
-    const wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, projectInfoWS, 'Project Information');
-    
-    // Add category worksheets
-    Object.keys(worksheets).forEach(sheetName => {
-      XLSX.utils.book_append_sheet(wb, worksheets[sheetName], sheetName);
-    });
-    
-    // Save Excel file
-    XLSX.writeFile(wb, `BOQ_${projectInfo.projectName || 'Project'}_${new Date().toISOString().split('T')[0]}.xlsx`);
+        if (categoryItems.length > 0) {
+          // Convert items to Excel format
+          const excelItems = categoryItems.map(item => ({
+            'Item Code': item.itemCode,
+            'Description': item.description,
+            'Unit': item.unit,
+            'Quantity': parseFloat(item.quantity),
+            'Rate': currency === 'KES' ? parseFloat(item.rate) : parseFloat(item.rate) * exchangeRate,
+            'Amount': currency === 'KES' ? parseFloat(item.amount) : parseFloat(item.amount) * exchangeRate,
+            'Notes': item.notes
+          }));
+          
+          // Create worksheet
+          const ws = XLSX.utils.json_to_sheet(excelItems);
+          worksheets[category.name] = ws;
+        }
+      });
+      
+      // Create summary worksheet
+      const summaryData = [
+        { 'Item': 'Direct Costs', 'Value': currency === 'KES' ? summary.directCosts : summary.directCosts * exchangeRate },
+        { 'Item': `Contingency (${summary.contingencyPercentage}%)`, 'Value': currency === 'KES' ? summary.contingency : summary.contingency * exchangeRate },
+        { 'Item': `Overheads (${summary.overheadsPercentage}%)`, 'Value': currency === 'KES' ? summary.overheads : summary.overheads * exchangeRate },
+        { 'Item': `Profit (${summary.profitPercentage}%)`, 'Value': currency === 'KES' ? summary.profit : summary.profit * exchangeRate },
+        { 'Item': `Taxes (${summary.taxRate}%)`, 'Value': currency === 'KES' ? summary.taxes : summary.taxes * exchangeRate },
+        { 'Item': 'Grand Total', 'Value': currency === 'KES' ? summary.grandTotal : summary.grandTotal * exchangeRate }
+      ];
+      const summaryWS = XLSX.utils.json_to_sheet(summaryData);
+      worksheets['Summary'] = summaryWS;
+      
+      // Create workbook
+      const wb = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, projectInfoWS, 'Project Information');
+      
+      // Add category worksheets
+      Object.keys(worksheets).forEach(sheetName => {
+        XLSX.utils.book_append_sheet(wb, worksheets[sheetName], sheetName);
+      });
+      
+      // Save Excel file with more descriptive name including currency
+      const today = new Date().toISOString().split('T')[0];
+      XLSX.writeFile(wb, `BOQ_${projectInfo.projectName || 'Project'}_${currency}_${today}.xlsx`);
+    } catch (error) {
+      console.error("Error generating Excel file:", error);
+      alert("There was an error exporting to Excel. Please try again.");
+    }
   };
   
   return (
@@ -453,41 +522,14 @@ const BillOfQuantitiesGenerator = () => {
         <label>Currency:</label>
         <div className="currency-buttons">
           <button 
-            className={currency === 'USD' ? 'active' : ''} 
-            onClick={() => {
-              if (currency !== 'USD') {
-                // Convert all existing items from KES to USD
-                const updatedItems = items.map(item => ({
-                  ...item,
-                  rate: parseFloat((item.rate / exchangeRate).toFixed(2)),
-                  amount: parseFloat((item.amount / exchangeRate).toFixed(2))
-                }));
-                setItems(updatedItems);
-                
-                // Convert current item being edited if any
-                if (currentItem.rate) {
-                  setCurrentItem({
-                    ...currentItem,
-                    rate: parseFloat((parseFloat(currentItem.rate) / exchangeRate).toFixed(2)),
-                    amount: parseFloat((parseFloat(currentItem.amount) / exchangeRate).toFixed(2))
-                  });
-                }
-                
-                setCurrency('USD');
-              }
-            }}
-          >
-            USD ($)
-          </button>
-          <button 
             className={currency === 'KES' ? 'active' : ''} 
             onClick={() => {
               if (currency !== 'KES') {
                 // Convert all existing items from USD to KES
                 const updatedItems = items.map(item => ({
                   ...item,
-                  rate: parseFloat((item.rate * exchangeRate).toFixed(2)),
-                  amount: parseFloat((item.amount * exchangeRate).toFixed(2))
+                  rate: safeParseFloat((safeParseFloat(item.rate) / exchangeRate).toFixed(2)),
+                  amount: safeParseFloat((safeParseFloat(item.amount) / exchangeRate).toFixed(2))
                 }));
                 setItems(updatedItems);
                 
@@ -495,8 +537,8 @@ const BillOfQuantitiesGenerator = () => {
                 if (currentItem.rate) {
                   setCurrentItem({
                     ...currentItem,
-                    rate: parseFloat((parseFloat(currentItem.rate) * exchangeRate).toFixed(2)),
-                    amount: parseFloat((parseFloat(currentItem.amount) * exchangeRate).toFixed(2))
+                    rate: safeParseFloat((safeParseFloat(currentItem.rate) / exchangeRate).toFixed(2)),
+                    amount: safeParseFloat((safeParseFloat(currentItem.amount) / exchangeRate).toFixed(2))
                   });
                 }
                 
@@ -506,9 +548,36 @@ const BillOfQuantitiesGenerator = () => {
           >
             KES (KSh)
           </button>
+          <button 
+            className={currency === 'USD' ? 'active' : ''} 
+            onClick={() => {
+              if (currency !== 'USD') {
+                // Convert all existing items from KES to USD
+                const updatedItems = items.map(item => ({
+                  ...item,
+                  rate: safeParseFloat((safeParseFloat(item.rate) * exchangeRate).toFixed(2)),
+                  amount: safeParseFloat((safeParseFloat(item.amount) * exchangeRate).toFixed(2))
+                }));
+                setItems(updatedItems);
+                
+                // Convert current item being edited if any
+                if (currentItem.rate) {
+                  setCurrentItem({
+                    ...currentItem,
+                    rate: safeParseFloat((safeParseFloat(currentItem.rate) * exchangeRate).toFixed(2)),
+                    amount: safeParseFloat((safeParseFloat(currentItem.amount) * exchangeRate).toFixed(2))
+                  });
+                }
+                
+                setCurrency('USD');
+              }
+            }}
+          >
+            USD ($)
+          </button>
         </div>
         <div className="exchange-rate-info">
-          Exchange Rate: 1 USD = {exchangeRate} KES
+          Exchange Rate: 1 KES = {exchangeRate} USD
         </div>
       </div>
       
@@ -676,8 +745,9 @@ const BillOfQuantitiesGenerator = () => {
               />
             </div>
             
+            {/* Rate input */}
             <div className="input-group">
-              <label>Rate ({currency === 'USD' ? '$' : 'KES'}):</label>
+              <label>Rate ({currency === 'KES' ? 'KES' : '$'}):</label>
               <input
                 type="number"
                 step="0.01"
@@ -687,13 +757,14 @@ const BillOfQuantitiesGenerator = () => {
                 placeholder="0.00"
               />
             </div>
-            
+
+            {/* Amount display */}
             <div className="input-group calculated">
-              <label>Amount ({currency === 'USD' ? '$' : 'KES'}):</label>
+              <label>Amount ({currency === 'KES' ? 'KES' : '$'}):</label>
               <div className="calculated-value">
-                {currency === 'USD' 
-                  ? `$${currentItem.amount.toFixed(2)}` 
-                  : `KES ${(currentItem.amount * exchangeRate).toFixed(2)}`}
+                {currency === 'KES' 
+                  ? `KES ${currentItem.amount.toFixed(2)}` 
+                  : `$${(currentItem.amount * exchangeRate).toFixed(2)}`}
               </div>
             </div>
             
@@ -774,13 +845,13 @@ const BillOfQuantitiesGenerator = () => {
                           <td>{item.description}</td>
                           <td>{item.unit}</td>
                           <td>{parseFloat(item.quantity).toFixed(2)}</td>
-                          <td>{currency === 'USD' 
-                            ? `$${parseFloat(item.rate).toFixed(2)}` 
-                            : `KES ${(parseFloat(item.rate) * exchangeRate).toFixed(2)}`}
+                          <td>{currency === 'KES' 
+                            ? `KES ${parseFloat(item.rate).toFixed(2)}` 
+                            : `$${(parseFloat(item.rate) * exchangeRate).toFixed(2)}`}
                           </td>
-                          <td>{currency === 'USD' 
-                            ? `$${item.amount.toFixed(2)}` 
-                            : `KES ${(item.amount * exchangeRate).toFixed(2)}`}
+                          <td>{currency === 'KES' 
+                            ? `KES ${item.amount.toFixed(2)}` 
+                            : `$${(item.amount * exchangeRate).toFixed(2)}`}
                           </td>
                           <td className="actions">
                             <button 
