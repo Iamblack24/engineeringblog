@@ -169,60 +169,63 @@ const InteractiveAI = () => {
 
   const renderMessage = (message, index) => {
     const renderMediaContent = (mediaItem) => {
-      // Skip descriptive text items
-      if (mediaItem.startsWith('Images:') || 
+      // Skip descriptive text items - Add type check before using string methods
+      if (typeof mediaItem === 'string' && (
+          mediaItem.startsWith('Images:') || 
           mediaItem.startsWith('Source:') || 
-          mediaItem === 'YouTube Links:') {
+          mediaItem === 'YouTube Links:')) {
         return null;
       }
 
-      // Extract image URL from markdown format
-      const imageMatch = mediaItem.match(/!\[.*?\]\((.*?)\)/);
-      if (imageMatch) {
-        return (
-          <img 
-            src={imageMatch[1]}
-            alt="Resource visualization"
-            style={{ maxWidth: '100%', height: 'auto', borderRadius: '8px' }}
-            loading="lazy"
-          />
-        );
-      }
+      // Extract image URL from markdown format - Add type check
+      if (typeof mediaItem === 'string') {
+        const imageMatch = mediaItem.match(/!\[.*?\]\((.*?)\)/);
+        if (imageMatch) {
+          return (
+            <img 
+              src={imageMatch[1]}
+              alt="Resource visualization"
+              style={{ maxWidth: '100%', height: 'auto', borderRadius: '8px' }}
+              loading="lazy"
+            />
+          );
+        }
 
-      // Handle YouTube links
-      if (mediaItem.toLowerCase().includes('youtube.com') || 
-          mediaItem.toLowerCase().includes('youtu.be')) {
-        const urlMatch = mediaItem.match(/\[(.*?)\]\((.*?)\)/);
-        if (urlMatch) {
+        // Handle YouTube links - Add type check
+        if (mediaItem.toLowerCase().includes('youtube.com') || 
+            mediaItem.toLowerCase().includes('youtu.be')) {
+          const urlMatch = mediaItem.match(/\[(.*?)\]\((.*?)\)/);
+          if (urlMatch) {
+            return (
+              <a 
+                href={urlMatch[2]}
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="video-link"
+              >
+                📺 {urlMatch[1]}
+              </a>
+            );
+          }
+        }
+
+        // Handle regular links
+        const linkMatch = mediaItem.match(/\[(.*?)\]\((.*?)\)/);
+        if (linkMatch) {
           return (
             <a 
-              href={urlMatch[2]}
+              href={linkMatch[2]}
               target="_blank" 
               rel="noopener noreferrer"
-              className="video-link"
+              className="resource-link"
             >
-              📺 {urlMatch[1]}
+              📄 {linkMatch[1]}
             </a>
           );
         }
       }
 
-      // Handle regular links
-      const linkMatch = mediaItem.match(/\[(.*?)\]\((.*?)\)/);
-      if (linkMatch) {
-        return (
-          <a 
-            href={linkMatch[2]}
-            target="_blank" 
-            rel="noopener noreferrer"
-            className="resource-link"
-          >
-            📄 {linkMatch[1]}
-          </a>
-        );
-      }
-
-      // Return null for unmatched items
+      // Return null for unmatched or non-string items
       return null;
     };
 
@@ -327,7 +330,7 @@ const InteractiveAI = () => {
                 <h3>📚 Additional Resources</h3>
                 <div className="media-links">
                   {message.media
-                    .filter(item => !item.startsWith('Source:'))
+                    .filter(item => typeof item === 'string' && !item.startsWith('Source:'))
                     .map((item, i) => {
                       const content = renderMediaContent(item);
                       return content ? (
