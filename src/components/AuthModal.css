@@ -5,7 +5,7 @@
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(0, 0, 0, 0.7); /* Semi-transparent background */
+  background-color: rgba(10, 20, 30, 0.8); /* Darker background */
   display: flex;
   justify-content: center;
   align-items: center;
@@ -16,25 +16,49 @@
   contain: content;
   transform: translateZ(0);
   -webkit-font-smoothing: antialiased;
-  background-color: rgba(0, 0, 0, 0.7);
-  backdrop-filter: blur(5px);
+  backdrop-filter: blur(8px);
 }
 
 /* Modal Content */
 .auth-modal-content {
-  background-color: #fff;
+  background: linear-gradient(135deg, #1e3a8a 0%, #1e3a8a 100%);
   padding: 30px 20px;
   width: 100%;
   max-width: 400px;
-  border-radius: 8px;
+  border-radius: 12px;
   position: relative;
   text-align: center;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
   max-height: 90vh; /* Prevent modal from exceeding viewport height */
   overflow-y: auto; /* Allow scrolling within the modal content */
   transform: translateZ(0);
   backface-visibility: hidden;
-  transition: transform 0.2s ease;
+  color: #f8fafc;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.auth-modal-content::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image: 
+    radial-gradient(circle at 25px 25px, rgba(255, 255, 255, 0.05) 2%, transparent 2%),
+    radial-gradient(circle at 75px 75px, rgba(255, 255, 255, 0.05) 2%, transparent 2%);
+  background-size: 100px 100px;
+  background-position: 0 0, 50px 50px;
+  pointer-events: none;
+  border-radius: 12px;
+  opacity: 0.3;
+  z-index: 0;
+}
+
+/* Ensure content appears above the pattern */
+.auth-modal-content > * {
+  position: relative;
+  z-index: 1;
 }
 
 /* Close Button */
@@ -42,10 +66,10 @@
   position: absolute;
   top: 15px;
   right: 15px;
-  background-color: #e0e0e0; /* Always visible light gray background */
-  border: 1px solid #ccc; /* Add border for better visibility */
+  background-color: rgba(255, 255, 255, 0.1); /* Always visible light gray background */
+  border: 1px solid rgba(255, 255, 255, 0.2); /* Add border for better visibility */
   font-size: 1.5rem;
-  color: #333;
+  color: #f8fafc;
   cursor: pointer;
   width: 36px;
   height: 36px;
@@ -59,45 +83,51 @@
 }
 
 .close-button:hover {
-  background-color: #d0d0d0;
-  color: #000;
+  background-color: rgba(255, 255, 255, 0.2);
   transform: scale(1.1);
   box-shadow: 0 3px 6px rgba(0, 0, 0, 0.15);
 }
 
 .close-button:focus {
-  outline: 2px solid #3498db;
+  outline: 2px solid #3b82f6;
   outline-offset: 2px;
 }
 
 .close-button i {
-  color: #333; /* Ensure icon is always visible */
+  color: #f8fafc; /* Ensure icon is always visible */
 }
 
 /* Form Title */
 .auth-modal-content h2 {
-  color: #2c3e50;
+  color: #f8fafc;
   margin: 0 30px 20px 0; /* Add right margin to prevent overlap with close button */
   padding-top: 10px;
+  font-weight: 600;
 }
 
 /* Error Message */
 .error-message {
-  color: red;
-  margin-bottom: 10px;
+  color: #f87171;
+  margin-bottom: 15px;
+  background-color: rgba(248, 113, 113, 0.1);
+  padding: 8px;
+  border-radius: 6px;
+  font-size: 0.9rem;
 }
 
 /* Form Groups */
 .form-group {
-  margin-bottom: 15px;
+  margin-bottom: 20px;
   text-align: left; /* Align labels and inputs to the left */
+  position: relative;
 }
 
 .form-group label {
   display: block;
-  margin-bottom: 5px;
-  color: #2c3e50;
+  margin-bottom: 8px;
+  color: #f8fafc;
   font-weight: 500;
+  font-size: 0.95rem;
 }
 
 /* Form Groups - ensure all inputs have black text */
@@ -107,19 +137,29 @@
 .form-group input[type="email"],
 .form-group input[type="password"] {
   width: 100%;
-  padding: 10px 12px;
+  padding: 12px 16px;
   margin-bottom: 5px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 8px;
   box-sizing: border-box;
   color: #333 !important; /* Force black text */
-  background-color: #fff;
+  background-color: rgba(255, 255, 255, 0.9);
+  font-size: 1rem;
+  transition: all 0.3s ease;
 }
 
 /* Ensure signup form inputs specifically have black text */
 .auth-modal-content form .form-group input,
 .auth-modal-content form .form-group select {
   color: #333 !important;
+}
+
+.form-group input:focus,
+.form-group select:focus {
+  outline: none;
+  border-color: #60a5fa;
+  box-shadow: 0 0 0 2px rgba(96, 165, 250, 0.3);
+  background-color: #fff;
 }
 
 .form-group input[type="checkbox"] {
@@ -132,25 +172,18 @@
 /* Add styles for placeholder text */
 .form-group input::placeholder,
 .form-group select::placeholder {
-  color: #999;
-}
-
-/* Add styles for focused state */
-.form-group input:focus,
-.form-group select:focus {
-  outline: none;
-  border-color: #1abc9c;
-  box-shadow: 0 0 0 2px rgba(26, 188, 156, 0.2);
+  color: #94a3b8;
 }
 
 /* Style for select dropdown */
 .form-group select {
   appearance: none;
-  background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
   background-repeat: no-repeat;
   background-position: right 10px center;
   background-size: 1em;
   padding-right: 40px;
+  background-color: rgba(255, 255, 255, 0.9);
 }
 
 /* Style for select options */
@@ -163,69 +196,92 @@
 .terms-group {
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start;
+  font-size: 0.9rem;
+  margin-top: 5px;
 }
 
 .terms-group label {
   display: flex;
   align-items: center;
   font-weight: normal;
+  color: #e2e8f0;
 }
 
 /* Submit Button */
 .submit-button {
   width: 100%;
-  padding: 12px 15px;
-  background-color: #1abc9c;
+  padding: 14px 15px;
+  background: linear-gradient(90deg, #3b82f6 0%, #2563eb 100%);
   color: #fff;
   border: none;
-  border-radius: 4px;
+  border-radius: 8px;
   cursor: pointer;
   font-size: 1rem;
-  transition: background-color 0.2s ease;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  transition: all 0.3s ease;
   transform: translateZ(0);
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+  margin-top: 10px;
+  position: relative;
+  overflow: hidden;
 }
 
 .submit-button:hover {
-  background-color: #16a085;
+  background: linear-gradient(90deg, #2563eb 0%, #1d4ed8 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 15px rgba(37, 99, 235, 0.4);
+}
+
+.submit-button:active {
+  transform: translateY(0);
 }
 
 /* Forgot Password Link */
 .forgot-password-link {
-  color: #1abc9c;
+  color: #60a5fa;
   cursor: pointer;
   display: block;
   margin-bottom: 10px;
+  transition: color 0.2s ease;
+  font-weight: 500;
 }
 
 .forgot-password-link:hover {
-  text-decoration: underline;
+  color: #93c5fd;
+  text-decoration: none;
 }
 
 /* Toggle Auth Mode Link */
 .toggle-link {
-  color: #1abc9c;
+  color: #60a5fa;
   cursor: pointer;
+  transition: color 0.2s ease;
+  font-weight: 500;
 }
 
 .toggle-link:hover {
-  text-decoration: underline;
+  color: #93c5fd;
+  text-decoration: none;
 }
 
 /* General Links Styling */
 .auth-modal-content a {
-  color: #1abc9c;
+  color: #60a5fa;
   text-decoration: none;
+  transition: color 0.2s ease;
+  font-weight: 500;
 }
 
 .auth-modal-content a:hover {
-  text-decoration: underline;
+  color: #93c5fd;
 }
 
 /* Responsive Adjustments */
 @media (max-width: 500px) {
   .auth-modal-content {
-    padding: 20px 15px;
+    padding: 25px 20px;
   }
 
   .auth-modal-content h2 {
@@ -252,10 +308,18 @@
 
 /* Add to AuthModal.css */
 .password-strength {
-  margin: 10px 0;
-  padding: 10px;
-  background-color: #f8f9fa;
-  border-radius: 4px;
+  margin: 15px 0;
+  padding: 15px;
+  background-color: rgba(255, 255, 255, 0.05);
+  border-radius: 8px;
+  font-size: 0.9rem;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.password-strength p {
+  margin: 0 0 10px 0;
+  color: #f8fafc;
+  font-weight: 500;
 }
 
 .password-strength ul {
@@ -265,27 +329,137 @@
 }
 
 .password-strength li {
-  margin: 5px 0;
-  padding-left: 20px;
+  margin: 8px 0;
+  padding-left: 25px;
   position: relative;
+  transition: color 0.3s ease;
 }
 
 .password-strength li:before {
   content: '✕';
   position: absolute;
   left: 0;
-  color: #dc3545;
+  color: #f87171;
+  font-weight: bold;
 }
 
 .password-strength li.valid:before {
   content: '✓';
-  color: #28a745;
+  color: #4ade80;
 }
 
 .invalid {
-  color: #dc3545;
+  color: #f87171;
 }
 
 .valid {
-  color: #28a745;
+  color: #4ade80;
+}
+
+/* Password field with toggle button */
+.password-input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.password-input-wrapper input {
+  padding-right: 45px; /* Make room for the button */
+}
+
+.toggle-password {
+  position: absolute;
+  right: 10px;
+  background: transparent;
+  border: none;
+  color: #60a5fa;
+  cursor: pointer;
+  font-size: 1.2rem;
+  padding: 5px;
+  height: 36px;
+  width: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2;
+}
+
+.toggle-password:hover {
+  color: #3b82f6;
+}
+
+.toggle-password:focus {
+  outline: none;
+}
+/* Loading spinner */
+.loading-spinner {
+  display: inline-block;
+  font-size: 1.2rem;
+  color: white;
+}
+
+.submit-button:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+/* Loading dots animation */
+.loading-dots {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  height: 24px;
+}
+
+.loading-dots .dot {
+  width: 8px;
+  height: 8px;
+  background-color: white;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+/* Progress bar loader */
+.progress-loader {
+  width: 100%;
+  height: 4px;
+  background-color: rgba(255, 255, 255, 0.2);
+  border-radius: 2px;
+  overflow: hidden;
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+}
+
+.progress-loader .bar {
+  height: 100%;
+  background: linear-gradient(90deg, #60a5fa, #3b82f6, #60a5fa);
+  background-size: 200% 100%;
+}
+
+/* Shimmer loading effect */
+.shimmer-button {
+  position: relative;
+  overflow: hidden;
+}
+
+.shimmer-button .text {
+  opacity: 0.7;
+}
+
+.shimmer-button .shimmer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.2) 50%,
+    transparent 100%
+  );
+  transform: skewX(-20deg);
 }

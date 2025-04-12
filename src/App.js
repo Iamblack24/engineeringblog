@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import WelcomeOverlay from './components/WelcomeOverlay';
@@ -98,8 +98,25 @@ import SimulationGenerator from './pages/SimulationGenerator';
 import GreenBuildingDesign from './pages/GreenBuildingDesign';
 import KnowledgeExtraction from './pages/KnowledgeExtraction';
 import AutoTutor from './pages/AutoTutor';
+import ExtensionHubPage from './pages/ExtensionHubPage';
 import AdsStrategyPage from './pages/AdsStrategyPage';
 import BillOfQuantitiesGenerator from './tools/BillOfQuantitiesGenerator';
+
+// Create a layout wrapper component
+const AppLayout = ({ children }) => {
+  const location = useLocation();
+  const isExtensionHubPage = location.pathname.startsWith('/hub/');
+  
+  return (
+    <>
+      {!isExtensionHubPage && <Navbar />}
+      <main className={`content no-whitespace ${isExtensionHubPage ? 'extension-mode' : ''}`}>
+        {children}
+      </main>
+      {!isExtensionHubPage && <Footer />}
+    </>
+  );
+};
 
 function App() {
   const { currentUser } = useContext(AuthContext);
@@ -132,7 +149,6 @@ function App() {
   return (
     <Router>
       <ScrollToTop />
-      <Navbar />
       {showWelcome && currentUser && (
         <WelcomeOverlay name={currentUser.displayName || currentUser.email} onClose={closeWelcome} />
       )}
@@ -142,7 +158,7 @@ function App() {
           <p>{notification.body}</p>
         </div>
       )}
-      <main className="content no-whitespace">
+      <AppLayout>
         <Routes>
           {/* Public Routes */}
           <Route path="/" element={<HomePage />} />
@@ -235,10 +251,10 @@ function App() {
           <Route path="/auto-tutor" element={<ProtectedRoute><AutoTutor /></ProtectedRoute>} />
           <Route path="/ads-strategy" element={<ProtectedRoute><AdsStrategyPage /></ProtectedRoute>} />
           <Route path="/tools/bill-of-quantities-generator" element={<ProtectedRoute><BillOfQuantitiesGenerator /></ProtectedRoute>} />
+          <Route path="/hub/:extensionId" element={<ProtectedRoute><ExtensionHubPage /></ProtectedRoute>} />
         </Routes>
-      </main>
+      </AppLayout>
       <InstallPrompt />
-      <Footer />
     </Router>
   );
 }

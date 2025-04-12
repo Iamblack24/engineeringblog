@@ -50,12 +50,16 @@ h2 {
 /* Form styles */
 .project-form, .task-form {
   background: white;
-  padding: 2rem;
-  border-radius: 0.5rem;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  margin-bottom: 2rem;
-  animation: fadeInUp 0.6s ease-out;
+  border-radius: 8px;
+  padding: 1.5rem;
+  width: 100%;
+  max-width: 600px;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+  animation: slideUp 0.4s ease;
   transition: transform 0.3s ease;
+  margin: auto;
 }
 
 .project-form:hover, .task-form:hover {
@@ -186,6 +190,183 @@ button:disabled {
   animation: slideInLeft 0.4s ease-out;
 }
 
+/* Dashboard & KPI Cards */
+.dashboard {
+  margin-bottom: 2rem;
+}
+
+.dashboard-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.quick-actions {
+  display: flex;
+  gap: 0.75rem;
+}
+
+.kpi-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.kpi-card {
+  background: white;
+  border-radius: 0.5rem;
+  padding: 1.5rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.kpi-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.kpi-number {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: #3182ce;
+  margin-bottom: 0.5rem;
+}
+
+.kpi-label {
+  color: #4a5568;
+  font-size: 0.875rem;
+}
+
+/* Tab Navigation */
+.tab-navigation {
+  display: flex;
+  border-bottom: 1px solid #e2e8f0;
+  margin-bottom: 2rem;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.tab-navigation::-webkit-scrollbar {
+  display: none;
+}
+
+.tab {
+  padding: 0.75rem 1.25rem;
+  border: none;
+  background: none;
+  color: #4a5568;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  border-bottom: 2px solid transparent;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.tab.active {
+  color: #3182ce;
+  border-bottom-color: #3182ce;
+}
+
+.tab:hover:not(.active) {
+  color: #2d3748;
+  background-color: #f7fafc;
+}
+
+.tab .material-icons {
+  font-size: 1.25rem;
+}
+
+/* Kanban Board Styling */
+.kanban-board {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 1rem;
+  margin: 2rem 0;
+  min-height: 60vh;
+}
+
+.kanban-column {
+  background: #f8fafc;
+  border-radius: 0.5rem;
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+}
+
+.column-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 2px solid #e2e8f0;
+}
+
+.column-header h3 {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #4a5568;
+}
+
+.task-count {
+  background: #e2e8f0;
+  color: #4a5568;
+  padding: 0.25rem 0.5rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.column-tasks {
+  flex: 1;
+  overflow-y: auto;
+  padding: 0.5rem 0;
+}
+
+.task-card {
+  background: white;
+  border-radius: 0.5rem;
+  padding: 1rem;
+  margin-bottom: 0.75rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.task-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.15);
+}
+
+.priority-indicator {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 4px;
+  height: 100%;
+}
+
+.priority-high {
+  background-color: #f56565;
+}
+
+.priority-medium {
+  background-color: #ecc94b;
+}
+
+.priority-low {
+  background-color: #48bb78;
+}
+
 /* Animations */
 @keyframes fadeIn {
   from { opacity: 0; }
@@ -247,6 +428,11 @@ button:disabled {
   }
 }
 
+@keyframes slideUp {
+  from { transform: translateY(50px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
 /* Responsive adjustments */
 @media (max-width: 768px) {
   .project-collaboration-ai {
@@ -270,6 +456,168 @@ button:disabled {
   .task-details {
     width: 95%;
     padding: 1.5rem;
+  }
+
+  .form-overlay {
+    align-items: flex-start;
+    padding: 0.5rem;
+  }
+  
+  .project-form, .task-form {
+    padding: 1rem;
+    border-radius: 6px;
+    max-height: 85vh;
+  }
+  
+  .form-header h2 {
+    font-size: 1.2rem;
+  }
+  
+  .form-group {
+    margin-bottom: 0.75rem;
+  }
+  
+  .form-actions {
+    flex-direction: column-reverse;
+    gap: 0.5rem;
+  }
+  
+  .form-actions button {
+    width: 100%;
+  }
+  
+  input, textarea, select {
+    padding: 0.5rem;
+    font-size: 16px; /* prevents iOS zoom on focus */
+  }
+  
+  .objective-item {
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+  
+  .objective-item .remove-button {
+    align-self: flex-end;
+  }
+
+  /* Make Kanban board columns stack on mobile */
+  .kanban-board {
+    grid-template-columns: 1fr;
+  }
+  
+  /* Adjust dashboard header for mobile */
+  .dashboard-header {
+    flex-direction: column;
+    gap: 0.75rem;
+    align-items: flex-start;
+  }
+  
+  .dashboard-header h1 {
+    font-size: 1.8rem;
+    text-align: left;
+  }
+  
+  /* Make the analytics charts responsive */
+  .chart-container {
+    overflow-x: auto;
+    width: 100%;
+  }
+  
+  /* Improve collaborator section */
+  .add-collaborator-section {
+    flex-direction: column;
+    width: 100%;
+  }
+  
+  /* Adjust tab navigation scrolling */
+  .tab-navigation {
+    margin-bottom: 1rem;
+  }
+  
+  .tab {
+    padding: 0.5rem 0.75rem;
+  }
+
+  .task-details {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    transform: none;
+    width: 100%;
+    height: 100%;
+    max-width: 100%;
+    max-height: 100%;
+    border-radius: 0;
+    padding: 1rem;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .task-details h2 {
+    font-size: 1.5rem;
+  }
+  
+  .task-details button:last-child {
+    margin-top: auto;
+    width: 100%;
+  }
+  
+  .comments textarea, .attachments input {
+    width: 100%;
+  }
+
+  /* Make project cards more responsive */
+  .project-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .project-card {
+    padding: 1rem;
+  }
+  
+  .project-card-header {
+    flex-wrap: wrap;
+  }
+  
+  .project-stats {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  
+  /* Improve AI assistant panel */
+  .ai-assistant-panel {
+    padding: 0.75rem;
+  }
+  
+  .assistant-chat {
+    max-height: 60vh;
+  }
+  
+  .chat-input {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  
+  .chat-input input {
+    width: 100%;
+  }
+  
+  .chat-input button {
+    align-self: flex-end;
+  }
+}
+
+/* Additional adjustment for very small screens */
+@media (max-width: 480px) {
+  .kpi-cards {
+    grid-template-columns: 1fr;
+  }
+  
+  .project-form, .task-form {
+    padding: 0.75rem;
   }
 }
 
@@ -323,4 +671,237 @@ button:disabled {
   border-radius: 0.5rem;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   animation: fadeInUp 0.6s ease-out;
+}
+
+/* Form overlay styling */
+.form-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  animation: fadeIn 0.3s ease;
+  overflow-y: auto;
+  padding: 1rem;
+}
+
+.form-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.form-header h2 {
+  margin: 0;
+  color: #2d3748;
+  font-size: 1.5rem;
+}
+
+.close-button {
+  background: none;
+  border: none;
+  color: #718096;
+  cursor: pointer;
+  font-size: 1.5rem;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.2s;
+}
+
+.close-button:hover {
+  color: #e53e3e;
+}
+
+.form-fields {
+  margin-bottom: 1.5rem;
+}
+
+.form-group {
+  margin-bottom: 1.25rem;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+  color: #4a5568;
+}
+
+.objective-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.objective-item {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.remove-button {
+  background: none;
+  border: none;
+  color: #e53e3e;
+  cursor: pointer;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.add-objective-button {
+  align-self: flex-start;
+  background: none;
+  border: 1px dashed #cbd5e0;
+  color: #4a5568;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+  transition: all 0.2s;
+}
+
+.add-objective-button:hover {
+  background: #f7fafc;
+  border-color: #a0aec0;
+}
+
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+}
+
+.cancel-button {
+  background: #e2e8f0;
+  color: #4a5568;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: all 0.2s;
+}
+
+.cancel-button:hover {
+  background: #cbd5e0;
+}
+
+.submit-button {
+  background: #4299e1;
+  color: white;
+  border: none;
+  padding: 0.5rem 1.5rem;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: all 0.2s;
+}
+
+.submit-button:hover:not(:disabled) {
+  background: #3182ce;
+}
+
+.submit-button:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+/* Project card styling improvements */
+.project-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1.5rem;
+  margin-top: 2rem;
+}
+
+.project-card {
+  background: white;
+  border-radius: 8px;
+  padding: 1.5rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.project-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+}
+
+.project-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.project-card-header h3 {
+  margin: 0;
+  color: #2d3748;
+  font-size: 1.25rem;
+}
+
+.project-menu {
+  position: relative;
+}
+
+.icon-button {
+  background: none;
+  border: none;
+  color: #718096;
+  cursor: pointer;
+  padding: 0.25rem;
+  border-radius: 50%;
+  transition: background-color 0.2s;
+}
+
+.icon-button:hover {
+  background-color: #f7fafc;
+}
+
+.dropdown-menu {
+  position: absolute;
+  right: 0;
+  top: 100%;
+  background: white;
+  border-radius: 4px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  z-index: 10;
+  min-width: 150px;
+  overflow: hidden;
+}
+
+.dropdown-menu button {
+  width: 100%;
+  text-align: left;
+  padding: 0.75rem 1rem;
+  border: none;
+  background: none;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.dropdown-menu button:hover {
+  background-color: #f7fafc;
+}
+
+.dropdown-menu button.danger {
+  color: #e53e3e;
+}
+
+.dropdown-menu button.danger:hover {
+  background-color: #fff5f5;
 }

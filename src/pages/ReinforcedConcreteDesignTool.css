@@ -18,6 +18,9 @@
 
 .form-group {
   margin-bottom: 15px;
+  flex: 1; /* Allow groups to grow */
+  min-width: 150px; /* Prevent groups from becoming too narrow */
+  margin-bottom: 0; /* Remove bottom margin as gap handles spacing */
 }
 
 .form-group label {
@@ -57,13 +60,105 @@ button:hover {
   background-color: var(--primary-color);
   border-radius: 8px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  border: 1px solid var(--accent-color); /* Add border */
 }
 
 .result h2 {
   color: var(--accent-color);
-  margin-bottom: 10px;
+  margin-bottom: 15px; /* Increased margin */
+  border-bottom: 1px solid var(--accent-color); /* Add separator */
+  padding-bottom: 5px;
 }
 
 .result p {
-  margin: 5px 0;
+  margin: 8px 0; /* Increased spacing */
+  line-height: 1.4;
+}
+
+.result p strong {
+  color: var(--accent-color); /* Highlight keys */
+  margin-right: 5px;
+}
+
+.result .notes,
+.result .error {
+  margin-top: 15px;
+  padding: 10px;
+  border-radius: 4px;
+  font-style: italic;
+}
+
+.result .notes {
+  background-color: rgba(255, 235, 59, 0.1); /* Light yellow for notes */
+  border-left: 3px solid #ffeb3b; /* Yellow border */
+}
+
+.result .error {
+  background-color: rgba(244, 67, 54, 0.1); /* Light red for errors */
+  border-left: 3px solid #f44336; /* Red border */
+  color: #d32f2f; /* Darker red text */
+  font-weight: bold;
+}
+
+.form-group label small,
+.form-group small {
+  display: block;
+  font-size: 0.8em;
+  color: #aaa; /* Lighter color for hints */
+  margin-top: 3px;
+}
+
+.form-group input[type="text"][disabled] {
+  background-color: #eee; /* Grey out disabled inputs */
+  cursor: not-allowed;
+}
+
+.fieldset {
+  border: 1px solid var(--accent-color);
+  border-radius: 4px;
+  padding: 15px;
+  margin-bottom: 20px;
+  background-color: rgba(0, 0, 0, 0.05); /* Subtle background for fieldsets */
+}
+
+.legend {
+  font-weight: bold;
+  color: var(--accent-color);
+  padding: 0 5px;
+}
+
+.form-row {
+  display: flex;
+  flex-wrap: wrap; /* Allow wrapping on smaller screens */
+  gap: 15px; /* Spacing between items in a row */
+  margin-bottom: 15px;
+}
+
+/* Style the derived inputs section */
+.derived-inputs { /* Renamed class for clarity */
+  margin-top: 10px;
+  padding: 10px;
+  background-color: var(--primary-color);
+  border: 1px dashed var(--accent-color); /* Dashed border */
+  border-radius: 4px;
+  font-size: 0.9em;
+  display: flex; /* Use flexbox for alignment */
+  flex-wrap: wrap;
+  gap: 10px; /* Spacing between items */
+  align-items: center;
+}
+
+.derived-inputs span {
+  background-color: rgba(82, 199, 184, 0.1); /* Light accent background */
+  padding: 2px 5px;
+  border-radius: 3px;
+}
+
+/* Ensure the main container has appropriate variables set if not globally defined */
+:root {
+  --primary-color: #f0f0f0;
+  --secondary-color: #ffffff;
+  --accent-color: #52c7b8;
+  --text-color: #333;
+  --background-color: #e0e0e0;
 }

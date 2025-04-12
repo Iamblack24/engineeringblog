@@ -116,6 +116,7 @@ button[type="submit"]:hover {
   background-color: #f8f9fa;
   border-radius: 8px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  animation: fadeIn 0.5s ease forwards;
 }
 
 .results h2 {
@@ -130,6 +131,104 @@ button[type="submit"]:hover {
   color: black;
   white-space: pre-wrap;
   text-align: center;
+}
+
+/* Add these styles to your BeamCalculator.css */
+.beam-visualization {
+  background: white;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  margin-bottom: 20px;
+}
+
+.visualization-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.toggle-button {
+  background-color: #6c757d;
+  color: white;
+  border: none;
+  padding: 8px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.toggle-button:hover {
+  background-color: #5a6268;
+}
+
+.beam-canvas {
+  width: 100%;
+  height: auto;
+  background-color: #f8f9fa;
+  border: 1px solid #dee2e6;
+  border-radius: 4px;
+}
+
+.results-chart {
+  background: white;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  margin-top: 20px;
+}
+
+.results-chart h2 {
+  text-align: center;
+  margin-bottom: 15px;
+  color: #343a40;
+  font-size: 20px;
+}
+
+.section-dimensions {
+  background-color: #f8f9fa;
+  padding: 15px;
+  border-radius: 8px;
+  margin-top: 10px;
+  margin-bottom: 15px;
+}
+
+.section-dimensions h3 {
+  margin-top: 0;
+  margin-bottom: 15px;
+  font-size: 18px;
+  color: #495057;
+}
+
+.dimension-inputs {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.calculated-inertia {
+  margin-top: 15px;
+  text-align: center;
+  font-weight: bold;
+  color: #495057;
+  background-color: #e9ecef;
+  padding: 10px;
+  border-radius: 4px;
+}
+
+.load-form {
+  background-color: #f1f3f5;
+  padding: 15px;
+  border-radius: 8px;
+  margin-bottom: 15px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+/* Animation styling */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 /* Media query for mobile responsiveness */
@@ -152,4 +251,112 @@ button[type="submit"]:hover {
   .results p {
     font-size: 13px;
   }
+}
+
+.results-summary {
+  background: white;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  margin-top: 20px;
+}
+
+.results-summary h2 {
+  text-align: center;
+  margin-bottom: 20px;
+  color: #343a40;
+}
+
+
+.summary-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 20px;
+}
+
+.summary-table td {
+  padding: 10px;
+  border-bottom: 1px solid #dee2e6;
+  color: #495057;
+}
+
+.summary-table td:first-child {
+  font-weight: bold;
+  width: 60%;
+  color:#0056b3;
+}
+.summary-table td:last-child {
+  text-align: right;
+  color: #343a40;
+}
+
+.safety-indicator {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  margin-top: 15px;
+  font-size: 18px;
+}
+
+.safety-label {
+  font-weight: bold;
+  color: #495057;
+}
+
+.safety-value {
+  padding: 5px 15px;
+  border-radius: 20px;
+  font-weight: bold;
+  color: black;
+}
+
+.danger {
+  background-color: #f8d7da;
+  color: #721c24;
+}
+
+.warning {
+  background-color: #fff3cd;
+  color: #856404;
+}
+
+.success {
+  background-color: #d4edda;
+  color: #155724;
+}
+
+.results-section-header {
+  margin-top: 30px;
+  text-align: center;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #dee2e6;
+}
+
+.results-section-header h2 {
+  color: #343a40;
+  margin-bottom: 5px;
+}
+
+.results-section-header p {
+  color: #6c757d;
+  font-size: 0.9rem;
+}
+.safety-explanation {
+  margin-top: 20px;
+  padding: 12px 15px;
+  background-color: #f8f9fa;
+  border-left: 4px solid #6c757d;
+  border-radius: 4px;
+  font-size: 0.9rem;
+  color: #495057;
+}
+
+.safety-explanation p {
+  margin: 0;
+  line-height: 1.5;
+}
+
+.safety-explanation strong {
+  color: #343a40;
 }

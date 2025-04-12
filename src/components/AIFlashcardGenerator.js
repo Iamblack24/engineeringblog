@@ -125,20 +125,28 @@ const AIFlashcardGenerator = ({ onClose }) => {
             
             <div className="flashcard-controls">
               <button onClick={handlePrevious} disabled={currentCard === 0}>
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M15 18l-6-6 6-6"/>
+                </svg>
                 Previous
               </button>
               <span>{currentCard + 1} / {flashcards.length}</span>
               <button onClick={handleNext} disabled={currentCard === flashcards.length - 1}>
                 Next
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M9 18l6-6-6-6"/>
+                </svg>
               </button>
             </div>
           </div>
         )}
         
         {isLoading && (
-          <div className="loading-spinner">
-            <div className="spinner"></div>
-            <p>Generating flashcards...</p>
+          <div className="loading-overlay">
+            <div className="pulse-spinner">
+              <div className="spinner-inner"></div>
+            </div>
+            <p className="loading-text">Generating flashcards</p>
           </div>
         )}
       </div>

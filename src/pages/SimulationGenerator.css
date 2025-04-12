@@ -1,24 +1,81 @@
 /* Main Container */
 .simulation-container {
+  --sim-primary: #3b82f6;
+  --sim-primary-dark: #2563eb;
+  --sim-primary-light: #60a5fa;
+  --sim-secondary: #10b981;
+  --sim-accent: #8b5cf6;
+  --sim-background: #f9fafb;
+  --sim-card-bg: #ffffff;
+  --sim-text-primary: #1f2937;
+  --sim-text-secondary: #4b5563;
+  --sim-text-light: #6b7280;
+  --sim-error: #ef4444;
+  --sim-success: #10b981;
+  --sim-warning: #f59e0b;
+  --sim-border: #e5e7eb;
+  --sim-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+  --sim-shadow: 0 4px 6px rgba(0, 0, 0, 0.05), 0 1px 3px rgba(0, 0, 0, 0.1);
+  --sim-shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  --sim-radius: 0.5rem;
+  --sim-radius-sm: 0.375rem;
+  --sim-radius-lg: 0.75rem;
+  --sim-transition: 200ms cubic-bezier(0.4, 0, 0.2, 1);
+  
+  /* Base container styles */
   max-width: 1200px;
-  margin: 2rem auto;
-  padding: 0 1rem;
+  margin: 0 auto;
+  padding: 2rem 1rem;
+  background-color: var(--sim-background);
+  color: var(--sim-text-primary);
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
 }
 
-/* Grid Layout */
+/* Header Section */
+.simulation-container .simulation-header {
+  text-align: center;
+  margin-bottom: 2.5rem;
+}
+
+.simulation-container .simulation-header h1 {
+  font-size: 2.25rem;
+  font-weight: 700;
+  margin-bottom: 0.75rem;
+  line-height: 1.2;
+  background: linear-gradient(to right, var(--sim-primary), var(--sim-accent));
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.simulation-container .simulation-header p {
+  font-size: 1.125rem;
+  color: var(--sim-text-secondary);
+  max-width: 42rem;
+  margin: 0 auto 1.5rem;
+}
+
+/* Grid Layout - Simplified for better control */
 .simulation-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  grid-template-columns: 1fr; /* Default to single column */
   gap: 2rem;
   margin-bottom: 2rem;
 }
 
-/* Form Elements */
+@media (min-width: 768px) { /* Apply two columns on medium screens and up */
+  .simulation-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+/* Form Elements - Minor tweaks for consistency */
 .simulation-form {
   background: white;
   padding: 1.5rem;
   border-radius: 0.5rem;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05); /* Softer shadow */
+  height: fit-content; /* Ensure form doesn't stretch unnecessarily */
 }
 
 .simulation-form input,
@@ -48,7 +105,75 @@
   color: #1f2937;
 }
 
-/* Buttons */
+/* Form Elements with improved styling */
+input[type="text"],
+input[type="number"],
+select,
+textarea {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid #e2e8f0;
+  border-radius: 0.375rem;
+  font-size: 1rem;
+  transition: all 0.2s ease;
+  background-color: white;
+}
+
+input[type="text"]:focus,
+input[type="number"]:focus,
+select:focus,
+textarea:focus {
+  outline: none;
+  border-color: #4f46e5;
+  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+}
+
+label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+  color: #1f2937;
+}
+
+/* Form validation & error styling */
+.simulation-container .form-input.error {
+  border-color: var(--sim-error);
+  background-color: rgba(239, 68, 68, 0.05);
+}
+
+.simulation-container .form-error {
+  color: var(--sim-error);
+  font-size: 0.85rem;
+  margin-top: 0.4rem;
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.simulation-container .form-helper {
+  color: var(--sim-text-light);
+  font-size: 0.85rem;
+  margin-top: 0.4rem;
+}
+
+.simulation-container .required {
+  color: var(--sim-error);
+  margin-left: 0.25rem;
+}
+
+/* Make number inputs less rigid */
+.simulation-container input[type="number"] {
+  appearance: textfield;
+  -moz-appearance: textfield;
+}
+
+.simulation-container input[type="number"]::-webkit-outer-spin-button,
+.simulation-container input[type="number"]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Buttons - Add hover/focus states */
 .simulation-button {
   display: inline-flex;
   align-items: center;
@@ -57,48 +182,75 @@
   font-weight: 500;
   color: white;
   background-color: #4f46e5;
+  border: 1px solid transparent; /* Add border for focus state */
   border-radius: 0.375rem;
-  transition: all 0.2s;
+  transition: all 0.2s ease-in-out; /* Smoother transition */
+  cursor: pointer; /* Ensure pointer cursor */
 }
 
 .simulation-button:hover {
   background-color: #4338ca;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Add subtle shadow on hover */
+}
+
+.simulation-button:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.2); /* Focus ring */
+  border-color: #6366f1;
 }
 
 .simulation-button:disabled {
   opacity: 0.5;
   cursor: not-allowed;
+  background-color: #a5b4fc; /* Lighter color when disabled */
+  box-shadow: none;
 }
 
-/* Visualization Area */
+/* Visualization Area - Ensure proper sizing */
 .visualization-area {
-  background: #1a1a1a;  /* Dark background */
-  padding: 1.5rem;
+  background: #1f2937; /* Slightly lighter dark */
+  padding: 1rem; /* Consistent padding */
   border-radius: 0.5rem;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
-  min-height: 400px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  min-height: 350px; /* Adjust as needed */
+  display: flex; /* Use flexbox for centering */
+  align-items: center;
+  justify-content: center;
+  position: relative; /* For loading overlay */
+  overflow: hidden; /* Ensure canvas doesn't overflow */
 }
 
+/* Ensure canvas fills the container */
 .visualization-area canvas {
+  display: block; /* Remove extra space below canvas */
   width: 100%;
   height: 100%;
-  min-height: 300px;
-  background-color: #1a1a1a;
+  max-width: 100%; /* Ensure it doesn't exceed container */
+  max-height: 500px; /* Optional: Set a max height */
+  object-fit: contain; /* Adjust as needed: contain, cover, fill */
   border-radius: 0.375rem;
-  outline: 1px solid #333;
 }
 
-/* AI Insights Section */
+/* Visualization Canvas */
+.visualization-container canvas {
+  border-radius: 0.375rem;
+  width: 100%;
+  height: 100%;
+}
+
+/* AI Insights Section - Improved styling */
 .ai-insights {
-  background: white;
+  background: #ffffff; /* White background */
+  color: #1f2937; /* Darker text */
   padding: 1.5rem;
   border-radius: 0.5rem;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
   margin-top: 2rem;
+  border: 1px solid #e5e7eb; /* Subtle border */
 }
 
 .ai-insights h2 {
-  color: white;
+  color: #111827; /* Even darker for heading */
   font-size: 1.25rem;
   font-weight: 600;
   margin-bottom: 1rem;
@@ -106,10 +258,14 @@
   border-bottom: 1px solid #e5e7eb;
 }
 
+/* Use prose styles within insights */
 .ai-insights .prose {
-  color: white;
+  color: #374151;
+  font-size: 1rem;
   line-height: 1.6;
+  max-width: none; /* Override default prose max-width if needed */
 }
+
 .p-4 {
   padding: 1rem;
 }
@@ -118,22 +274,95 @@
   margin-bottom: 1rem;
   font-weight: 600;
   line-height: 1.25;
-  color: white;
+  color: black;
 }
 .p-4 p {
-  color: white;
+  color: black;
 }
 
-/* Error Display */
+/* Preset cards */
+.preset-card {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+/* Markdown content styling */
+.prose {
+  max-width: 65ch;
+  color: var(--text-color, #333);
+}
+
+.prose h1, 
+.prose h2, 
+.prose h3, 
+.prose h4, 
+.prose h5, 
+.prose h6 {
+  color: #1a1a1a;
+  margin-top: 1.5em;
+  margin-bottom: 0.5em;
+  font-weight: 600;
+}
+
+.prose p, 
+.prose ul, 
+.prose ol {
+  margin-bottom: 1.25em;
+  line-height: 1.7;
+  color: #111;
+}
+
+.prose code {
+  background-color: rgba(0, 0, 0, 0.05);
+  padding: 0.2em 0.4em;
+  border-radius: 0.2em;
+  font-size: 0.9em;
+}
+
+.prose pre {
+  background-color: rgba(0, 0, 0, 0.05);
+  padding: 1em;
+  border-radius: 0.375rem;
+  overflow-x: auto;
+  margin: 1.5em 0;
+  color: #1a1a1a;
+}
+
+.prose table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1.5em 0;
+}
+
+.prose th {
+  background-color: rgba(0, 0, 0, 0.05);
+  color: #e2e8f0;
+  font-weight: 600;
+  text-align: left;
+  padding: 0.75em 1em;
+}
+
+.prose td {
+  padding: 0.75em 1em;
+  color: #1a1a1a;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+/* Error Display - Consistent styling */
 .error-message {
   background-color: #fee2e2;
-  color: #991b1b;
+  color: #b91c1c; /* Darker red */
   padding: 1rem;
   border-radius: 0.375rem;
   margin-top: 1rem;
+  border: 1px solid #fecaca; /* Lighter red border */
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
 }
 
-/* Loading State */
+/* Loading State - Smaller, centered spinner */
 .loading {
   display: flex;
   align-items: center;
@@ -141,31 +370,57 @@
   min-height: 200px;
 }
 
+.loading-overlay { /* New class for overlay within visualization */
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(31, 41, 55, 0.7); /* Semi-transparent dark overlay */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+  border-radius: 0.5rem; /* Match container */
+}
+
 .loading-spinner {
-  border: 3px solid #f3f3f3;
-  border-top: 3px solid #4f46e5;
-  border-radius: 50%;
-  width: 24px;
-  height: 24px;
-  animation: spin 1s linear infinite;
+  width: 24px; /* Smaller */
+  height: 24px; /* Smaller */
+  border: 3px solid rgba(255, 255, 255, 0.3); /* Lighter border */
+  border-top-color: #ffffff; /* White top border */
+  border-radius: 50%; /* Circular */
+  animation: spin 0.8s linear infinite;
 }
 
 @keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+  to { transform: rotate(360deg); }
 }
 
 /* Responsive Design */
 @media (max-width: 768px) {
+  .simulation-container {
+    margin: 1rem auto; /* Reduce margin */
+  }
+
   .simulation-grid {
-    grid-template-columns: 1fr;
+    gap: 1.5rem; /* Reduce gap */
   }
   
-  .simulation-form {
-    padding: 1rem;
+  .simulation-form,
+  .visualization-area,
+  .ai-insights {
+    padding: 1rem; /* Reduce padding */
   }
   
   .visualization-area {
-    min-height: 300px;
+    min-height: 300px; /* Adjust min-height */
   }
+  
+  .prose {
+    font-size: 0.95rem;
+  }
+  
+  .prose h1 { font-size: 1.75rem; }
+  .prose h2 { font-size: 1.5rem; }
 }

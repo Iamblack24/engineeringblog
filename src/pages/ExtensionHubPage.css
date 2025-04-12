@@ -1,0 +1,117 @@
+.extension-hub-page {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  background-color: var(--background-color, #f8fafc);
+}
+
+.extension-header {
+  display: flex;
+  align-items: center;
+  padding: 0.5rem 1rem; /* Reduced padding */
+  background-color: var(--primary-color);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  z-index: 10;
+  position: sticky;
+  top: 0; /* Ensure it sticks to the top */
+  width: 100%; /* Fix width issue - should be full width */
+  height: 40px; /* Set a specific compact height */
+}
+
+.back-button {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem; /* Reduced gap */
+  background: none;
+  border: none;
+  color: var(--text-color, #334155);
+  font-weight: 500;
+  font-size: 0.9rem; /* Smaller font size */
+  cursor: pointer;
+  padding: 0.3rem 0.7rem; /* Reduced padding */
+  border-radius: 4px; /* Smaller radius */
+  transition: all 0.2s ease;
+}
+
+.back-button:hover {
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+.extension-title {
+  margin-left: 1rem; /* Reduced margin */
+}
+
+.extension-title h1 {
+  font-size: 1.1rem; /* Smaller font size */
+  margin: 0;
+  color: var(--heading-color, #e7ecf3);
+}
+
+.extension-iframe-container {
+  flex: 1;
+  padding: 0;
+  overflow: hidden;
+  position: relative;
+}
+
+.extension-iframe {
+  width: 100%;
+  height: 100%;
+  border: none;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+}
+
+/* Loading state */
+.extension-hub-page.loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+}
+
+.loader {
+  border: 4px solid rgba(0, 0, 0, 0.1);
+  border-radius: 50%;
+  border-top: 4px solid var(--accent-color, #60a5fa);
+  width: 40px;
+  height: 40px;
+  animation: spin 1s linear infinite;
+  margin-bottom: 1rem;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Error state */
+.extension-hub-page.error {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  padding: 2rem;
+  text-align: center;
+}
+
+.extension-hub-page.error h2 {
+  color: #ef4444;
+  margin-bottom: 1rem;
+}
+
+.extension-hub-page.error .back-button {
+  margin-top: 2rem;
+  padding: 0.75rem 1.5rem;
+  background-color: var(--accent-color, #60a5fa);
+  color: white;
+}
+
+.extension-hub-page.error .back-button:hover {
+  background-color: #3b82f6;
+}

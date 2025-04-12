@@ -1,20 +1,48 @@
-/* SteelConnectionDesignTool.css */
+
 
 .steel-connection-design-tool {
-  max-width: 600px;
-  margin: 0 auto;
-  padding: 20px;
-  background-color: var(--primary-color); /* Changed background color */
+  max-width: 650px; /* Slightly wider */
+  margin: 20px auto; /* Center with margin */
+  padding: 25px;
+  background-color: var(--primary-color);
   color: var(--text-color);
   border-radius: 8px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Softer shadow */
+  font-family: sans-serif;
 }
 
 .steel-connection-design-tool h1 {
   text-align: center;
   color: var(--accent-color);
-  margin-bottom: 20px;
+  margin-bottom: 15px;
 }
+
+/* Disclaimer Style */
+.disclaimer {
+    font-size: 0.8em;
+    font-style: italic;
+    color: #6c757d; /* Grey text */
+    background-color: #e9ecef; /* Very light grey background */
+    padding: 8px 12px;
+    border-radius: 4px;
+    margin-bottom: 20px;
+    border: 1px solid #ced4da;
+}
+
+fieldset {
+    border: 1px solid #ccc;
+    padding: 15px 20px;
+    margin-bottom: 20px;
+    border-radius: 5px;
+}
+
+legend {
+    font-weight: bold;
+    padding: 0 10px;
+    color: var(--accent-color);
+    font-size: 1.1em;
+}
+
 
 .form-group {
   margin-bottom: 15px;
@@ -24,49 +52,95 @@
   display: block;
   margin-bottom: 5px;
   font-weight: bold;
-  color: var(--background-color); /* Ensured label text color */
+  color: #495057; /* Darker label text */
+  font-size: 0.95em;
 }
 
-.form-group input,
+.form-group input[type="number"],
 .form-group select {
   width: 100%;
   padding: 10px;
-  border: 1px solid var(--accent-color);
+  border: 1px solid #ced4da; /* Standard border */
   border-radius: 4px;
-  background-color: var(--secondary-color); /* Set input background color */
-  color: var(--text-color); /* Ensured input text color */
+  background-color: var(--secondary-color);
+  color: var(--text-color);
+  box-sizing: border-box; /* Include padding in width */
 }
+
+.form-group input::placeholder { /* Style placeholders */
+    color: #adb5bd;
+    opacity: 1;
+}
+
 
 button {
   width: 100%;
-  padding: 10px;
+  padding: 12px 15px; /* Slightly larger padding */
   background-color: var(--accent-color);
-  color: var(--background-color); /* Ensured button text color */
+  color: #ffffff; /* White text on button */
   border: none;
   border-radius: 4px;
   cursor: pointer;
-  font-size: 1rem;
+  font-size: 1.1em; /* Slightly larger font */
+  transition: background-color 0.2s ease;
+  margin-top: 10px; /* Space above button */
 }
 
 button:hover {
-  background-color: #52c7b8;
+  background-color: #0056b3; /* Darker blue on hover */
+}
+
+/* Error Message Style */
+.error-message {
+    color: var(--error-text);
+    background-color: var(--error-bg);
+    border: 1px solid var(--error-border);
+    padding: 10px 15px;
+    margin-top: 15px;
+    margin-bottom: 15px;
+    border-radius: 4px;
+    text-align: center;
 }
 
 .result {
-  margin-top: 20px;
-  padding: 15px;
-  background-color: var(--primary-color); /* Adjusted background color */
-  color: var(--text-color); /* Ensured result text color */
-  border-radius: 8px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  margin-top: 30px;
+  padding: 20px;
+  background-color: #e9ecef; /* Light grey background */
+  border: 1px solid #ced4da; /* Grey border */
+  border-radius: 6px;
 }
 
 .result h2 {
   color: var(--accent-color);
-  margin-bottom: 10px;
+  margin-bottom: 15px;
+  text-align: center;
+  border-bottom: 1px solid #ccc;
+  padding-bottom: 10px;
 }
 
 .result p {
-  margin: 5px 0;
-  color: var(--text-color); /* Ensured paragraph text color */
+  margin: 8px 0;
+  color: var(--text-color);
+  font-size: 1.05em; /* Slightly larger result text */
+  line-height: 1.5;
+}
+
+.result hr {
+    border: none;
+    border-top: 1px dashed #ccc;
+    margin: 10px 0;
+}
+
+.result strong {
+    color: #000; /* Black for emphasis */
+}
+
+/* Status styling */
+.result .safe {
+    color: var(--safe-color);
+    font-weight: bold;
+}
+.result .unsafe {
+    color: var(--unsafe-color);
+    font-weight: bold;
 }

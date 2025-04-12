@@ -1,9 +1,9 @@
 import React, { useContext, useEffect, useState, useRef } from 'react';
 import InteractiveToolCard from '../components/InteractiveToolCard';
 import AuthModal from '../components/AuthModal';
-import './InteractiveToolsPage.css'; // Import the CSS file for styling
+import './InteractiveToolsPage.css';
 import { AuthContext } from '../contexts/AuthContext';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 
 const tools = [
   {
@@ -16,11 +16,6 @@ const tools = [
     description: 'Manage your engineering projects with ease and efficiency.',
     link: '/project-collaboration-ai', // Replace with the actual link to the tool
   },
-  /*{
-    title: 'AI Room Architect',
-    description: 'Generate and visualize room designs using AI assistance.',
-    link: 'ai-architect',
-  },*/
   {
     title: 'Engineering software Tutor',
     description: 'Get step-by-step tutorials for engineering software tools.',
@@ -221,18 +216,14 @@ const tools = [
     description: 'Calculate areas and volumes from survey data.',
     link: '/tools/area-volume-calculator',
   }
-
-
-  
-
-  // Add more tools here
 ];
+
 const containerVariants = {
   hidden: { opacity: 0 },
   visible: {
     opacity: 1,
     transition: {
-      staggerChildren: 0.2
+      staggerChildren: 0.1
     }
   }
 };
@@ -252,11 +243,62 @@ const itemVariants = {
   }
 };
 
+const fadeInVariants = {
+  hidden: { opacity: 0 },
+  visible: { 
+    opacity: 1,
+    transition: { 
+      duration: 0.6,
+      ease: "easeOut" 
+    }
+  }
+};
+
+const tabVariants = {
+  inactive: { 
+    scale: 1,
+    boxShadow: "0px 4px 8px rgba(0, 0, 0, 0.1)"
+  },
+  active: { 
+    scale: 1.05,
+    boxShadow: "0px 8px 15px rgba(0, 0, 0, 0.2)",
+    transition: { type: "spring", stiffness: 300, damping: 20 }
+  }
+};
+
 const InteractiveToolsPage = () => {
-  const { currentUser } = useContext(AuthContext); // Get authentication status from context
+  const { currentUser } = useContext(AuthContext);
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [activeFeature, setActiveFeature] = useState(0);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [activeCategory, setActiveCategory] = useState('all');
   const featuresRef = useRef(null);
+  
+  const categorizedTools = React.useMemo(() => {
+    const aiKeywords = ['ai', 'assistant', 'intelligent', 'tutor', 'summarize', 'analysis', 'simulate', 'extract', 'design', 'green'];
+    
+    return tools.map(tool => {
+      const textToCheck = (tool.title + ' ' + tool.description).toLowerCase();
+      const isAiTool = aiKeywords.some(keyword => textToCheck.includes(keyword));
+      
+      return {
+        ...tool,
+        category: isAiTool ? 'ai' : 'standard'
+      };
+    });
+  }, []);
+  
+  const filteredTools = React.useMemo(() => {
+    return categorizedTools.filter(tool => {
+      const matchesSearch = searchTerm === '' || 
+        tool.title.toLowerCase().includes(searchTerm.toLowerCase()) || 
+        tool.description.toLowerCase().includes(searchTerm.toLowerCase());
+      
+      const matchesCategory = activeCategory === 'all' || tool.category === activeCategory;
+      
+      return matchesSearch && matchesCategory;
+    });
+  }, [categorizedTools, searchTerm, activeCategory]);
   
   const handleToolClick = (tool) => {
     if (!currentUser) {
@@ -272,18 +314,19 @@ const InteractiveToolsPage = () => {
     }
   }, [currentUser]);
 
-  // Add scroll event listener for features
   const handleFeaturesScroll = (event) => {
-    if (window.innerWidth <= 768) {  // Only track scroll on mobile
+    if (window.innerWidth <= 768) {
       const container = event.target;
       const scrollPosition = container.scrollLeft;
-      const itemWidth = container.offsetWidth * 0.85; // 85% of viewport
+      const itemWidth = container.offsetWidth * 0.85;
       const newActive = Math.round(scrollPosition / itemWidth);
       setActiveFeature(newActive);
     }
   };
 
-  
+  const handleCategoryChange = (category) => {
+    setActiveCategory(category);
+  };
 
   return (
     <div className="interactive-tools-page">
@@ -291,7 +334,6 @@ const InteractiveToolsPage = () => {
         <AuthModal onClose={() => setShowAuthModal(false)} />
       )}
       
-      {/* New AI Environment Section */}
       <div className="ai-environment-section">
         <h2>Built Environment AI Assistant</h2>
         <p>
@@ -334,42 +376,200 @@ const InteractiveToolsPage = () => {
           </div>
         )}
 
-        <button 
+        <motion.button 
           className="try-ai-btn"
           onClick={() => handleToolClick(tools[0])}
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
         >
           Try Built Environment AI
-        </button>
+        </motion.button>
       </div>
 
-      <h1>Interactive Tools</h1>
-      <p>Use our interactive tools to aid your engineering projects. Note: Verify results and report inaccuracies.</p>
-      <motion.div 
-        className="tools-list"
-        variants={containerVariants}
+      <motion.h1 
+        variants={fadeInVariants}
         initial="hidden"
         animate="visible"
-        viewport={{ once: true }}
       >
-        {tools.map((tool, index) => (
-          <motion.div
-            key={index}
-            variants={itemVariants}
-            whileHover={{ 
-              scale: 1.05,
-              transition: { duration: 0.2 }
-            }}
-            whileTap={{ scale: 0.95 }}
+        Interactive Tools
+      </motion.h1>
+      
+      <motion.p
+        variants={fadeInVariants}
+        initial="hidden"
+        animate="visible"
+      >
+        Use our interactive tools to aid your engineering projects. Note: Verify results and report inaccuracies.
+      </motion.p>
+      
+      <motion.div 
+        className="search-container"
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.2 }}
+      >
+        <i className="fas fa-search search-icon"></i>
+        <input
+          type="text"
+          placeholder="Search for tools..."
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          className="search-input"
+        />
+        {searchTerm && (
+          <motion.button 
+            className="clear-search"
+            onClick={() => setSearchTerm('')}
+            whileHover={{ scale: 1.1 }}
+            whileTap={{ scale: 0.9 }}
           >
-            <InteractiveToolCard
-              title={tool.title}
-              description={tool.description}
-              link={tool.link}
-              onClick={() => handleToolClick(tool)}
-            />
-          </motion.div>
-        ))}
+            <i className="fas fa-times"></i>
+          </motion.button>
+        )}
       </motion.div>
+      
+      <motion.div 
+        className="category-tabs"
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.3 }}
+      >
+        <motion.button
+          className={`category-tab ${activeCategory === 'all' ? 'active' : ''}`}
+          onClick={() => handleCategoryChange('all')}
+          variants={tabVariants}
+          initial="inactive"
+          animate={activeCategory === 'all' ? 'active' : 'inactive'}
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+        >
+          <i className="fas fa-th-large"></i>
+          <span>All Tools</span>
+          <motion.span 
+            className="tool-count"
+            animate={{ scale: [1, 1.2, 1] }}
+            transition={{ duration: 0.3 }}
+          >
+            {categorizedTools.length}
+          </motion.span>
+        </motion.button>
+        
+        <motion.button
+          className={`category-tab ${activeCategory === 'ai' ? 'active' : ''}`}
+          onClick={() => handleCategoryChange('ai')}
+          variants={tabVariants}
+          initial="inactive"
+          animate={activeCategory === 'ai' ? 'active' : 'inactive'}
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+        >
+          <i className="fas fa-robot"></i>
+          <span>AI-Powered</span>
+          <motion.span 
+            className="tool-count"
+            animate={{ scale: activeCategory === 'ai' ? [1, 1.2, 1] : 1 }}
+            transition={{ duration: 0.3 }}
+          >
+            {categorizedTools.filter(tool => tool.category === 'ai').length}
+          </motion.span>
+        </motion.button>
+        
+        <motion.button
+          className={`category-tab ${activeCategory === 'standard' ? 'active' : ''}`}
+          onClick={() => handleCategoryChange('standard')}
+          variants={tabVariants}
+          initial="inactive"
+          animate={activeCategory === 'standard' ? 'active' : 'inactive'}
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+        >
+          <i className="fas fa-calculator"></i>
+          <span>Standard Tools</span>
+          <motion.span 
+            className="tool-count"
+            animate={{ scale: activeCategory === 'standard' ? [1, 1.2, 1] : 1 }}
+            transition={{ duration: 0.3 }}
+          >
+            {categorizedTools.filter(tool => tool.category === 'standard').length}
+          </motion.span>
+        </motion.button>
+      </motion.div>
+      
+      <AnimatePresence>
+        {searchTerm && (
+          <motion.div 
+            className="search-results-info"
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+          >
+            Found {filteredTools.length} tools matching "{searchTerm}"
+          </motion.div>
+        )}
+      </AnimatePresence>
+      
+      <AnimatePresence mode="wait">
+        <motion.div 
+          className="tools-grid"
+          key={activeCategory + searchTerm}
+          variants={containerVariants}
+          initial="hidden"
+          animate="visible"
+          exit={{ opacity: 0 }}
+        >
+          {filteredTools.length > 0 ? (
+            filteredTools.map((tool, index) => (
+              <motion.div
+                key={tool.title}
+                className={`tool-card-wrapper ${tool.category}`}
+                variants={itemVariants}
+                whileHover={{ 
+                  scale: 1.03,
+                  transition: { duration: 0.2 }
+                }}
+                whileTap={{ scale: 0.98 }}
+              >
+                <InteractiveToolCard
+                  title={tool.title}
+                  description={tool.description}
+                  link={tool.link}
+                  onClick={() => handleToolClick(tool)}
+                />
+                {tool.category === 'ai' && (
+                  <motion.div 
+                    className="ai-badge"
+                    initial={{ opacity: 0, scale: 0 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{ delay: 0.3 }}
+                  >
+                    <i className="fas fa-robot"></i>
+                  </motion.div>
+                )}
+              </motion.div>
+            ))
+          ) : (
+            <motion.div 
+              className="no-results"
+              variants={fadeInVariants}
+            >
+              <i className="fas fa-search"></i>
+              <h3>No matching tools found</h3>
+              <p>Try adjusting your search or selecting a different category</p>
+              <motion.button 
+                className="reset-search-btn"
+                onClick={() => {
+                  setSearchTerm('');
+                  setActiveCategory('all');
+                }}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+              >
+                Reset Filters
+              </motion.button>
+            </motion.div>
+          )}
+        </motion.div>
+      </AnimatePresence>
     </div>
   );
 };

@@ -58,17 +58,28 @@
 
 .unit-input-section input {
   width: 100%;
-  padding: var(--spacing-md);
+  padding: 1rem;
   margin: var(--spacing-md) 0;
   border: 2px solid var(--border-color);
   border-radius: var(--border-radius-md);
   font-size: 1rem;
-  transition: border-color 0.3s ease;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 }
 
 .unit-input-section input:focus {
   outline: none;
-  border-color: var(--primary-color);
+  border-color: var(--primary-color, #4f46e5);
+  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.2);
+  transform: translateY(-1px);
+}
+
+.unit-input-section button {
+  width: 100%;
+  padding: 1rem;
+  margin-top: var(--spacing-md);
+  background: var(--primary-color, #4f46e5);
+  box-shadow: 0 4px 6px rgba(79, 70, 229, 0.2);
 }
 
 button {
@@ -94,14 +105,15 @@ button:disabled {
 
 .flashcard {
   perspective: 1000px;
-  height: 300px;
+  min-height: 300px;
   cursor: pointer;
   margin: var(--spacing-lg) 0;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
 @media (max-width: 768px) {
   .flashcard {
-    height: 250px;
+    min-height: 250px;
   }
 }
 
@@ -110,8 +122,11 @@ button:disabled {
   width: 100%;
   height: 100%;
   text-align: center;
-  transition: transform 0.8s;
+  transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
   transform-style: preserve-3d;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+  border-radius: var(--border-radius-lg);
+  min-height: 300px;
 }
 
 .flashcard.flipped .flashcard-inner {
@@ -122,6 +137,7 @@ button:disabled {
   position: absolute;
   width: 100%;
   height: 100%;
+  min-height: 300px;
   backface-visibility: hidden;
   display: flex;
   flex-direction: column;
@@ -129,25 +145,45 @@ button:disabled {
   align-items: center;
   padding: var(--spacing-xl);
   border-radius: var(--border-radius-lg);
-  background: white;
-  box-shadow: 0 4px 12px var(--shadow-color);
+}
+
+.flashcard-front {
+  background: linear-gradient(145deg, #ffffff, #f5f7fa);
+  color: var(--text-color, #333);
 }
 
 .flashcard-back {
   transform: rotateY(180deg);
-  background: var(--background-color);
+  background: linear-gradient(145deg, #f0f4ff, #e6f0ff);
+  color: var(--text-color, #333);
 }
 
 .flashcard h3 {
-  color: var(--primary-color);
+  color: var(--primary-color, #4f46e5);
   margin-bottom: var(--spacing-md);
-  font-size: 1.2rem;
+  font-size: 1.3rem;
+  position: relative;
+  padding-bottom: 10px;
+}
+
+.flashcard h3::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 40px;
+  height: 3px;
+  background-color: var(--primary-color, #4f46e5);
+  border-radius: 3px;
 }
 
 .flashcard p {
-  color: var(--text-color);
-  font-size: 1rem;
-  line-height: 1.5;
+  color: var(--text-color, #333);
+  font-size: 1.1rem;
+  line-height: 1.6;
+  max-width: 100%;
+  overflow-wrap: break-word;
 }
 
 .flashcard-controls {
@@ -155,12 +191,45 @@ button:disabled {
   justify-content: space-between;
   align-items: center;
   margin-top: var(--spacing-lg);
+  width: 100%;
   padding: 0 var(--spacing-md);
 }
 
-.flashcard-controls span {
-  color: var(--text-color);
+.flashcard-controls button {
+  padding: 0.7rem 1.5rem;
+  border: none;
+  background-color: var(--primary-color, #4f46e5);
+  color: white;
   font-weight: 500;
+  border-radius: var(--border-radius-md);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  flex: 1;
+  max-width: 45%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.flashcard-controls button:hover:not(:disabled) {
+  background-color: var(--primary-hover, #3c35b5);
+  transform: translateY(-2px);
+}
+
+.flashcard-controls button:disabled {
+  background-color: #cbd5e1;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.flashcard-controls span {
+  background-color: var(--primary-color, #4f46e5);
+  color: white;
+  padding: 0.5rem 1rem;
+  border-radius: var(--border-radius-md);
+  font-weight: 500;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .close-btn {
@@ -229,15 +298,24 @@ button:disabled {
   .flashcard-controls {
     flex-direction: column;
     gap: var(--spacing-md);
+    align-items: stretch;
   }
 
   .flashcard-controls button {
+    max-width: 100%;
     width: 100%;
   }
 
   .flashcard-controls span {
     order: -1;
-    margin-bottom: var(--spacing-sm);
+    margin-bottom: var(--spacing-md);
+    width: 100%;
+    text-align: center;
+    background-color: transparent;
+    color: var(--text-color, #333);
+    box-shadow: none;
+    font-weight: 600;
+    font-size: 1.1rem;
   }
 
   .error-message {
@@ -250,8 +328,28 @@ button:disabled {
     width: 100%;
   }
 
+  .flashcard {
+    min-height: 220px;
+  }
+
+  .flashcard-inner, 
+  .flashcard-front, 
+  .flashcard-back {
+    min-height: 220px;
+    padding: var(--spacing-md);
+  }
+
+  .flashcard h3 {
+    font-size: 1.1rem;
+  }
+
   .flashcard p {
-    font-size: 0.9rem;
+    font-size: 0.95rem;
+    line-height: 1.5;
+  }
+
+  .unit-input-section h2 {
+    font-size: 1.3rem;
   }
 }
 
@@ -275,5 +373,141 @@ button:disabled {
 button:focus, input:focus {
   outline: 2px solid var(--primary-color);
   outline-offset: 2px;
+}
+
+/* Modern Loading Animation */
+.loading-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(3px);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  z-index: 10;
+  border-radius: var(--border-radius-lg);
+  animation: fadeIn 0.3s ease;
+}
+
+.loading-text {
+  font-weight: 500;
+  color: var(--primary-color, #4f46e5);
+  margin-top: var(--spacing-lg);
+  position: relative;
+}
+
+.loading-text::after {
+  content: "";
+  animation: loadingDots 1.5s infinite;
+}
+
+@keyframes loadingDots {
+  0%, 20% { content: "."; }
+  40%, 60% { content: ".."; }
+  80%, 100% { content: "..."; }
+}
+
+.pulse-spinner {
+  position: relative;
+  width: 60px;
+  height: 60px;
+}
+
+.pulse-spinner::before,
+.pulse-spinner::after {
+  content: '';
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background-color: var(--primary-color, #4f46e5);
+  opacity: 0.6;
+  animation: pulse 2s ease-in-out infinite;
+}
+
+.pulse-spinner::after {
+  animation-delay: -1s;
+}
+
+.spinner-inner {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 40px;
+  height: 40px;
+  border: 3px solid transparent;
+  border-top-color: var(--primary-color, #4f46e5);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(0);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1.5);
+    opacity: 0;
+  }
+}
+
+/* Comprehensive Responsive Design */
+@media (max-width: 768px) {
+  .flashcard-generator-content {
+    width: 95%;
+    max-width: 500px;
+    padding: var(--spacing-lg);
+  }
+  
+  .flashcard {
+    min-height: 250px;
+  }
+  
+  .flashcard-inner, 
+  .flashcard-front, 
+  .flashcard-back {
+    min-height: 250px;
+  }
+  
+  .flashcard p {
+    font-size: 1rem;
+  }
+}
+
+/* Touch-specific improvements */
+@media (pointer: coarse) {
+  .flashcard-controls button {
+    padding: 0.8rem;
+    min-height: 44px; /* Minimum touch target size */
+  }
+  
+  .close-btn {
+    min-height: 44px;
+    min-width: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  /* Add hint for touch users */
+  .flashcard::before {
+    content: 'Tap to flip';
+    position: absolute;
+    bottom: 10px;
+    right: 10px;
+    background: rgba(0,0,0,0.6);
+    color: white;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    z-index: 5;
+    opacity: 0.8;
+  }
 }
 

@@ -1,46 +1,61 @@
 import React, { useState, useContext } from 'react';
 import DesignMaterialCard from '../components/DesignMaterialCard';
 import AffiliateMarketingCard from '../components/AffiliateMarketingcard';
-//import EducationalResourcesCard from '../components/EducationalResourcesCard';
+import ExtensionCard from '../components/ExtensionCard'; // New component for extensions
 import AuthModal from '../components/AuthModal';
 import './DesignMaterialsPage.css';
 import { AuthContext } from '../contexts/AuthContext';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 
-const designMaterials = [
+// Engineering Hub Extensions data
+const engineeringExtensions = [
   {
-    id: 1,
-    title: 'Structural CAD Design for Multi-Storey Building',
-    author: 'Eng Phil Mbogandi',
-    specialists: ['Owen Richard', 'Scott Evans'],
-    price: 'Ksh 100,000',
-    description: 'Cad design for a commercial building rising 6 floors.',
-    images: [
-      '/cad1.jpg',
-      '/cad2.jpg',
-      '/cad3.jpg',
+    id: 'study-boost',
+    title: 'Study Boost',
+    description: 'Upload your study materials and let our AI create personalized summaries, quizzes, and explanations to help you master any subject.',
+    icon: 'fa-graduation-cap',
+    features: [
+      'AI-powered concept explanations',
+      'Interactive practice problems',
+      'Study progress tracking',
+      'Personalized learning paths'
     ],
-    purchaseLink: '/purchase/1',
-    contactLink: '/contact',
+    color: '#4F46E5', // Indigo
+    path: '/hub/study-boost',
+    externalUrl: 'https://study-helper-boost.vercel.app/'
   },
   {
-    id: 2,
-    title: 'Interior Design for Residential Apartment',
-    author: 'Architect Jane Kariuki',
-    specialists: ['Alice Wangui', 'David Mwangi'],
-    price: 'Ksh 50,000',
-    description: 'Interior design for a modern apartment with contemporary finishes.',
-    images: [
-      '/interior1.jpg',
-      '/interior2.jpg',
-      '/interior3.jpg',
+    id: 'concrete-design',
+    title: 'Concrete Design AI',
+    description: 'Visualize and analyze reinforced concrete systems. View reinforcement details in 3D and 2D and export detailed analysis in pdf and Dxf formats. Use a preset of rules or charge your questions to AI.',
+    icon: 'fa-cubes',
+    features: [
+      '3D model visualization',
+      'AI design assistant',
+      'PDF and DXF export',
+      'Interactive reinforcement detailing'
     ],
-    purchaseLink: '/purchase/2',
-    contactLink: '/contact',
-  }
-  // Add more design materials as needed
-]; 
+    color: '#EC4899', // Pink
+    path: '/hub/concrete-design',
+    externalUrl: 'https://concreteaiengineeringhub.netlify.app/' // Placeholder for future integration
+  },
+  /*{
+    id: 'material-explorer',
+    title: 'Material Explorer',
+    description: 'Comprehensive database of engineering materials with detailed properties, applications, and comparison tools to help you select the perfect material for your projects.',
+    icon: 'fa-flask',
+    features: [
+      'Material property database',
+      'Visual comparison tools',
+      'Application suggestions',
+      'Cost and sustainability metrics'
+    ],
+    color: '#F59E0B', // Amber
+    path: '/hub/material-explorer',
+    externalUrl: '#' // Placeholder for future integration
+  }*/
+];
 
 const affiliatemarketing = [
   {
@@ -321,6 +336,19 @@ const InteriorDesignIllustration = () => (
   </motion.svg>
 );
 
+// New Component: SectionHeader
+const SectionHeader = ({ title, subtitle }) => (
+  <motion.div 
+    className="section-header"
+    initial={{ opacity: 0, y: 20 }}
+    animate={{ opacity: 1, y: 0 }}
+    transition={{ duration: 0.5 }}
+  >
+    <h1>{title}</h1>
+    {subtitle && <p className="section-subtitle">{subtitle}</p>}
+  </motion.div>
+);
+
 const DesignMaterialsPage = () => {
   const { currentUser } = useContext(AuthContext);
   const [showAuthModal, setShowAuthModal] = useState(false);
@@ -333,11 +361,9 @@ const DesignMaterialsPage = () => {
     return true;
   };
 
-   const handleAuthRequired = () => {
-     setShowAuthModal(true);
-   };
-
-
+  const handleAuthRequired = () => {
+    setShowAuthModal(true);
+  };
 
   return (
     <div className="design-materials-page">
@@ -345,6 +371,7 @@ const DesignMaterialsPage = () => {
         <AuthModal onClose={() => setShowAuthModal(false)} />
       )}
       
+      {/* AI Optimizer Preview Section */}
       <section className="ai-optimizer-preview">
         <motion.div 
           className="ai-optimizer-card"
@@ -396,25 +423,44 @@ const DesignMaterialsPage = () => {
         </motion.div>
       </section>
 
-      <h1>Design Materials for Purchase</h1>
-      <div className="materials-list">
-        {designMaterials.map((material, index) => (
-          <React.Fragment key={material.id}>
-            <DesignMaterialCard 
-              material={material} 
-              onInteraction={() => { handleInteraction(); handleAuthRequired(); }} 
+      {/* New Engineering Hub Extensions Section */}
+      <section className="engineering-hub-section">
+        <SectionHeader 
+          title="Engineering Hub Extensions" 
+          subtitle="Powerful tools to enhance your engineering workflow" 
+        />
+        
+        <motion.div 
+          className="extensions-container"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.5, delay: 0.2 }}
+        >
+          {engineeringExtensions.map((extension, index) => (
+            <ExtensionCard 
+              key={extension.id}
+              extension={extension}
+              index={index}
+              onInteraction={handleInteraction}
             />
-            {index === 0 && <InteriorDesignIllustration />}
-          </React.Fragment>
-        ))}
-      </div> 
-      {/* New Affiliate Marketing Section */}
-      <h1>Recommended Engineering Software</h1>
-      <div className="affiliate-marketing-list">
-        {affiliatemarketing.map((marketing) => (
-          <AffiliateMarketingCard key={marketing.id} marketing={marketing} />
-        ))}
-      </div>
+          ))}
+        </motion.div>
+      </section>
+      
+      {/* Recommended Software Section */}
+      <section className="recommended-software-section">
+        <SectionHeader title="Recommended Engineering Software" />
+        <motion.div 
+          className="affiliate-marketing-list"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.5, delay: 0.3 }}
+        >
+          {affiliatemarketing.map((marketing) => (
+            <AffiliateMarketingCard key={marketing.id} marketing={marketing} />
+          ))}
+        </motion.div>
+      </section>
     </div>
   );
 };

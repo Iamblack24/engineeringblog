@@ -1,87 +1,179 @@
 /* src/pages/SoilBearingCapacityCalculator.css */
 
 .soil-bearing-capacity-calculator {
-    max-width: 800px;
-    margin: 0 auto;
+    max-width: 750px; /* Adjusted width */
+    margin: 20px auto; /* Added top/bottom margin */
     padding: 25px;
-    background-color: #f0f8ff;
-    border-radius: 10px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    background-color: #f8f9fa; /* Lighter background */
+    border-radius: 8px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    font-family: sans-serif;
+    color: #333;
   }
-  
+
   .soil-bearing-capacity-calculator h1 {
     text-align: center;
     margin-bottom: 25px;
-    color: #004080;
+    color: #0056b3; /* Standard blue */
   }
-  
-  .form-group {
+
+  fieldset {
+    border: 1px solid #ccc;
+    padding: 15px 20px;
     margin-bottom: 20px;
+    border-radius: 5px;
   }
-  
+
+  legend {
+    font-weight: bold;
+    padding: 0 10px;
+    color: #0056b3;
+    font-size: 1.1em;
+  }
+
+  .form-group {
+    margin-bottom: 15px; /* Reduced margin */
+  }
+
   .form-group label {
     display: block;
     font-weight: bold;
-    margin-bottom: 8px;
-    color: #003366;
+    margin-bottom: 5px;
+    color: #555; /* Darker grey */
+    font-size: 0.95em;
   }
-  
+
   .form-group input[type="number"],
   .form-group select {
     width: 100%;
-    padding: 12px;
-    border: 1px solid #b3c6ff;
-    border-radius: 5px;
-    font-size: 16px;
+    padding: 10px; /* Adjusted padding */
+    border: 1px solid #ccc; /* Standard border */
+    border-radius: 4px;
+    font-size: 1em; /* Standard font size */
+    box-sizing: border-box;
   }
-  
+
   .form-group select {
-    background-color: #e6f2ff;
+    background-color: #fff; /* Standard background */
   }
-  
+
+  .form-group small {
+    font-size: 0.8em;
+    color: #666;
+    margin-top: 3px;
+    display: block;
+  }
+
+
   button[type="submit"] {
     display: block;
     width: 100%;
-    padding: 15px;
-    background-color: #0066cc;
+    padding: 12px 15px; /* Adjusted padding */
+    background-color: #007bff; /* Standard blue */
     color: white;
     border: none;
-    border-radius: 5px;
-    font-size: 18px;
+    border-radius: 4px;
+    font-size: 1.1em; /* Slightly larger font */
     cursor: pointer;
-    transition: background-color 0.3s ease;
+    transition: background-color 0.2s ease;
+    margin-top: 10px; /* Space above button */
   }
-  
+
   button[type="submit"]:hover {
-    background-color: #004d99;
+    background-color: #0056b3; /* Darker blue on hover */
   }
-  
+
+  /* Error Message Style */
+  .error-message {
+      color: #D8000C; /* Red */
+      background-color: #FFD2D2; /* Light red */
+      border: 1px solid #D8000C;
+      padding: 10px 15px;
+      margin-top: 15px;
+      margin-bottom: 15px;
+      border-radius: 4px;
+      text-align: center;
+  }
+
+  /* Warning Message Style */
+  .warning-message {
+      color: #9F6000; /* Orange/Brown */
+      background-color: #FEEFB3; /* Light yellow */
+      border: 1px solid #9F6000;
+      padding: 10px 15px;
+      margin-top: 15px;
+      margin-bottom: 15px;
+      border-radius: 4px;
+  }
+  .warning-message h4 {
+      margin-top: 0;
+      margin-bottom: 8px;
+      color: #9F6000;
+      font-size: 1.05em;
+  }
+  .warning-message ul {
+      margin: 0;
+      padding-left: 20px;
+  }
+   .warning-message li {
+      margin-bottom: 5px;
+      font-size: 0.9em;
+  }
+
+
   .results {
     margin-top: 30px;
     padding: 20px;
-    background-color: #e6ffe6;
-    border: 1px solid #99ff99;
+    background-color: #e9ecef; /* Light grey background */
+    border: 1px solid #ced4da; /* Grey border */
     border-radius: 6px;
-    text-align: center;
+    /* text-align: center; */ /* Remove center alignment */
   }
-  
+
   .results h2 {
-    margin-bottom: 15px;
-    color: #006600;
+    margin-bottom: 20px;
+    color: #343a40; /* Dark grey */
+    text-align: center;
+    border-bottom: 1px solid #ccc;
+    padding-bottom: 10px;
   }
-  
-  .results p {
-    font-size: 18px;
-    font-weight: bold;
-    color: #004d00;
+
+  .results-summary {
+      text-align: center;
+      margin-bottom: 20px;
   }
-  
-  .results ul {
-    list-style-type: none;
-    padding: 0;
+
+  .results-summary p {
+    font-size: 1.1em; /* Slightly larger */
+    margin-bottom: 10px;
+    color: #212529; /* Darker text */
   }
-  
-  .results ul li {
-    font-size: 16px;
-    margin: 5px 0;
+   .results-summary p strong {
+      font-size: 1.2em; /* Emphasize value */
+      color: #0056b3;
+   }
+
+
+  .results-details {
+      margin-top: 15px;
+      padding-top: 15px;
+      border-top: 1px dashed #ccc;
+  }
+
+  .results-details h3 {
+      font-size: 1.05em;
+      color: #495057;
+      margin-bottom: 10px;
+  }
+
+  .results-details p {
+    font-size: 0.95em;
+    color: #495057; /* Medium grey */
+    margin-bottom: 5px;
+    line-height: 1.4;
+  }
+
+  /* Subscripts in results */
+  .results sub {
+      font-size: 0.75em;
   }
