@@ -274,6 +274,56 @@ const InteractiveToolsPage = () => {
   const [activeCategory, setActiveCategory] = useState('all');
   const featuresRef = useRef(null);
   
+  // Helper function to get surrounding words for context
+  const getWordContext = (text, keyword, windowSize) => {
+    const words = text.split(/\s+/);
+    const keywordIndex = words.findIndex(w => w.includes(keyword));
+    
+    if (keywordIndex === -1) return [];
+    
+    const startIndex = Math.max(0, keywordIndex - windowSize);
+    const endIndex = Math.min(words.length - 1, keywordIndex + windowSize);
+    
+    return words.slice(startIndex, endIndex + 1);
+  };
+  
+  // Helper function to calculate string similarity (Levenshtein distance-based)
+  const calculateSimilarity = (str1, str2) => {
+    if (str1 === str2) return 1.0;
+    if (str1.length < 2 || str2.length < 2) return 0.0;
+    
+    // Simple Levenshtein distance implementation
+    const len1 = str1.length;
+    const len2 = str2.length;
+    const maxDist = Math.max(len1, len2);
+    
+    let matrix = [];
+    
+    // Initialize matrix
+    for (let i = 0; i <= len1; i++) {
+      matrix[i] = [i];
+    }
+    
+    for (let j = 0; j <= len2; j++) {
+      matrix[0][j] = j;
+    }
+    
+    // Fill matrix
+    for (let i = 1; i <= len1; i++) {
+      for (let j = 1; j <= len2; j++) {
+        const cost = str1.charAt(i - 1) === str2.charAt(j - 1) ? 0 : 1;
+        matrix[i][j] = Math.min(
+          matrix[i-1][j] + 1,      // deletion
+          matrix[i][j-1] + 1,      // insertion
+          matrix[i-1][j-1] + cost  // substitution
+        );
+      }
+    }
+    
+    // Calculate similarity as 1 - normalized distance
+    return 1.0 - (matrix[len1][len2] / maxDist);
+  };
+  
   const categorizedTools = React.useMemo(() => {
     // Core AI-related keywords with weights
     const aiKeywords = {
@@ -395,19 +445,6 @@ const InteractiveToolsPage = () => {
     });
   }, []);
   
-  // Helper function to get surrounding words for context
-  const getWordContext = (text, keyword, windowSize) => {
-    const words = text.split(/\s+/);
-    const keywordIndex = words.findIndex(w => w.includes(keyword));
-    
-    if (keywordIndex === -1) return [];
-    
-    const startIndex = Math.max(0, keywordIndex - windowSize);
-    const endIndex = Math.min(words.length - 1, keywordIndex + windowSize);
-    
-    return words.slice(startIndex, endIndex + 1);
-  };
-  
   // Improved search algorithm with relevance scoring and fuzzy matching
   const filteredTools = React.useMemo(() => {
     if (!searchTerm.trim()) {
@@ -513,43 +550,6 @@ const InteractiveToolsPage = () => {
     
     return scoredTools;
   }, [categorizedTools, searchTerm, activeCategory]);
-  
-  // Helper function to calculate string similarity (Levenshtein distance-based)
-  const calculateSimilarity = (str1, str2) => {
-    if (str1 === str2) return 1.0;
-    if (str1.length < 2 || str2.length < 2) return 0.0;
-    
-    // Simple Levenshtein distance implementation
-    const len1 = str1.length;
-    const len2 = str2.length;
-    const maxDist = Math.max(len1, len2);
-    
-    let matrix = [];
-    
-    // Initialize matrix
-    for (let i = 0; i <= len1; i++) {
-      matrix[i] = [i];
-    }
-    
-    for (let j = 0; j <= len2; j++) {
-      matrix[0][j] = j;
-    }
-    
-    // Fill matrix
-    for (let i = 1; i <= len1; i++) {
-      for (let j = 1; j <= len2; j++) {
-        const cost = str1.charAt(i - 1) === str2.charAt(j - 1) ? 0 : 1;
-        matrix[i][j] = Math.min(
-          matrix[i-1][j] + 1,      // deletion
-          matrix[i][j-1] + 1,      // insertion
-          matrix[i-1][j-1] + cost  // substitution
-        );
-      }
-    }
-    
-    // Calculate similarity as 1 - normalized distance
-    return 1.0 - (matrix[len1][len2] / maxDist);
-  };
 
   const handleToolClick = (tool) => {
     if (!currentUser) {
