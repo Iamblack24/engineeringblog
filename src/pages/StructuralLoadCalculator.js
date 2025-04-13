@@ -1,7 +1,9 @@
 // src/pages/StructuralLoadCalculator.js
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react'; // Added useRef
 import './StructuralLoadCalculator.css';
 import { Line } from 'react-chartjs-2';
+import jsPDF from 'jspdf';
+import html2canvas from 'html2canvas';
 import {
   Chart as ChartJS,
   LineElement,
@@ -27,6 +29,7 @@ const StructuralLoadCalculator = () => {
   const [result, setResult] = useState(null);
   const [shearForce, setShearForce] = useState([]);
   const [bendingMoment, setBendingMoment] = useState([]);
+  const resultsRef = useRef(null); // Ref for the content to export
 
   // Handle beam type selection
   const handleBeamTypeChange = (e) => {
@@ -81,118 +84,90 @@ const StructuralLoadCalculator = () => {
   // Calculate Reactions based on beam type
   const calculateReactions = () => {
     const L = beam.mainSpan;
-    const l = beam.overhang || 0;
+    const l = beam.overhang || 0; // Overhang length
 
-    // Total load from point loads
-    let totalPointLoad = 0;
-    pointLoads.forEach((load) => {
-      totalPointLoad += load.value;
-    });
-
-    // Total load from UDLs
-    let totalUdlLoad = 0;
-    udls.forEach((udl) => {
-      const length = udl.end - udl.start;
-      totalUdlLoad += udl.w * length;
-    });
-
-    const totalLoad = totalPointLoad + totalUdlLoad;
-
+    let totalLoad = 0;
     let RA = 0;
     let RB = 0;
-    let centroid = 0;
-    let momentA = 0;
-    let fixedEndMoments = {};
+    let MA = 0; // Fixed End Moment at A
+    let MB = 0; // Fixed End Moment at B
+
+    // Calculate total load first
+    pointLoads.forEach(load => totalLoad += load.value);
+    udls.forEach(udl => totalLoad += udl.w * (udl.end - udl.start));
 
     switch (beamType) {
       case 'simplySupported':
-        // Reactions for Simply Supported Beams
-        // Sum of moments about A: RB * L = Total Load * (centroid position)
-        pointLoads.forEach((load) => {
-          centroid += load.value * load.position;
-        });
-         
-        udls.forEach((udl) => {
+        let momentAboutA_ss = 0;
+        pointLoads.forEach(load => momentAboutA_ss += load.value * load.position);
+        udls.forEach(udl => {
           const length = udl.end - udl.start;
-          const totalUdLoad = udl.w * length;
-          const udlCentroid = udl.start + length / 2;
-          centroid += totalUdLoad * udlCentroid;
+          momentAboutA_ss += (udl.w * length) * (udl.start + length / 2);
         });
-        
-        centroid /= totalLoad;
-        RB = (totalLoad * centroid) / L;
+        if (L > 0) RB = momentAboutA_ss / L;
         RA = totalLoad - RB;
         break;
 
       case 'fixed':
-        // Reactions for Fixed Beams
-        pointLoads.forEach((load) => {
-          centroid += load.value * load.position;
+        // Calculate Fixed End Moments (FEMs) using superposition
+        MA = 0;
+        MB = 0;
+        pointLoads.forEach(load => {
+          const a = load.position;
+          const b = L - a;
+          if (L > 0) {
+            MA -= (load.value * a * b * b) / (L * L); // Hogging (-)
+            MB += (load.value * a * a * b) / (L * L); // Sagging (+) - Check convention, often MB is also hogging
+          }
+        });
+        udls.forEach(udl => {
+          // Formula for partial UDL on fixed beam is complex.
+          // Using approximation for full UDL for simplicity, needs refinement for partial.
+          // Assuming UDL covers the whole span for FEM calculation:
+          if (udl.start === 0 && udl.end === L && L > 0) {
+             MA -= (udl.w * L * L) / 12; // Hogging (-)
+             MB += (udl.w * L * L) / 12; // Sagging (+) - Check convention
+          }
+          // TODO: Add accurate partial UDL FEM calculation if needed
         });
 
-        udls.forEach((udl) => {
-          const length = udl.end - udl.start;
-          const totalUdLoad = udl.w * length;
-          const udlCentroid = udl.start + length / 2;
-          centroid += totalUdLoad * udlCentroid;
+        // Calculate reactions including effect of FEMs
+        let loadMomentAboutA_fixed = 0;
+        pointLoads.forEach(load => loadMomentAboutA_fixed += load.value * load.position);
+        udls.forEach(udl => {
+             const length = udl.end - udl.start;
+             loadMomentAboutA_fixed += (udl.w * length) * (udl.start + length / 2);
         });
-        
-        centroid /= totalLoad;
-        RB = (totalLoad * centroid) / L;
+
+        if (L > 0) {
+            // Sum moments about A = 0: RB*L + MA - MB - loadMomentAboutA_fixed = 0
+            RB = (loadMomentAboutA_fixed + MB - MA) / L;
+        }
         RA = totalLoad - RB;
-        
-        // Calculate fixed end moments
-        const MA = -(totalLoad * centroid * (L - centroid)) / (2 * L);
-        const MB = (totalLoad * centroid * (L - centroid)) / (2 * L);
-        
-        // Store moments for use in results
-        fixedEndMoments = { MA, MB };
         break;
 
       case 'cantilever':
-        // Reactions for Cantilever Beams
-        // Fixed at one end (A), free at the other
-
-        pointLoads.forEach((load) => {
-          momentA += load.value * load.position;
-        });
-
-        udls.forEach((udl) => {
+        // Fixed at A (x=0)
+        MA = 0; // Moment reaction at fixed support A
+        pointLoads.forEach(load => MA -= load.value * load.position); // Hogging moment is negative
+        udls.forEach(udl => {
           const length = udl.end - udl.start;
-          const totalUdLoad = udl.w * length;
-          const udlCentroid = udl.start + length / 2;
-          momentA += totalUdLoad * udlCentroid;
+          MA -= (udl.w * length) * (udl.start + length / 2); // Hogging moment is negative
         });
-
-        RA = totalLoad;
-        RB = 0; // No support at the free end
+        RA = totalLoad; // Vertical reaction at fixed support A
+        RB = 0;
         break;
 
       case 'overhanging':
-        // Reactions for Overhanging Beams
-        // As previously implemented
-        // Sum of moments about A
-        pointLoads.forEach((load) => {
-          if (load.position <= L) {
-            momentA += load.value * load.position;
-          } else {
-            momentA += load.value * L;
-          }
-        });
-
-        udls.forEach((udl) => {
+        // Supports at x=0 (A) and x=L (B)
+        let momentAboutA_oh = 0;
+        pointLoads.forEach(load => momentAboutA_oh += load.value * load.position);
+        udls.forEach(udl => {
           const length = udl.end - udl.start;
-          const totalUdLoad = udl.w * length;
-          const centroid = udl.start + length / 2;
-
-          if (centroid <= L) {
-            momentA += totalUdLoad * centroid;
-          } else {
-            momentA += totalUdLoad * L;
-          }
+          momentAboutA_oh += (udl.w * length) * (udl.start + length / 2);
         });
-
-        RB = momentA / (L + l);
+        // Sum moments about A = 0: RB*L - momentAboutA_oh = 0
+        if (L > 0) RB = momentAboutA_oh / L;
         RA = totalLoad - RB;
         break;
 
@@ -201,6 +176,8 @@ const StructuralLoadCalculator = () => {
         RB = 0;
     }
 
+    // Return MA and MB only if it's a fixed beam
+    const fixedEndMoments = beamType === 'fixed' || beamType === 'cantilever' ? { MA, MB } : {};
     return { RA, RB, totalLoad, fixedEndMoments };
   };
 
@@ -209,89 +186,87 @@ const StructuralLoadCalculator = () => {
     e.preventDefault();
 
     // Validate inputs
-    if (!beam.mainSpan || (beamType === 'overhanging' && beam.overhang === '')) {
-      alert('Uhm we may need valuuess.');
-      return;
+    if (!beam.mainSpan || beam.mainSpan <= 0 || (beamType === 'overhanging' && (!beam.overhang || beam.overhang < 0))) {
+       alert('Please enter valid positive beam dimensions.');
+       return;
     }
+    // Add more validation for load positions vs beam length
 
     // Calculate reactions
     const { RA, RB, totalLoad, fixedEndMoments } = calculateReactions();
+    const MA = fixedEndMoments.MA || 0; // Get MA if it exists
+
+    // Define L within this scope
+    const L = beam.mainSpan; 
 
     // Initialize arrays for shear force and bending moment
     const shear = [];
     const momentArr = [];
 
-    const totalLength =
-      beamType === 'overhanging' ? beam.mainSpan + beam.overhang : beam.mainSpan;
-    const increment = 0.1; // Define the resolution of the diagrams
+    const totalLength = beamType === 'overhanging' ? beam.mainSpan + beam.overhang : beam.mainSpan;
+    const increment = totalLength / 100; // Use relative increment
 
-    for (let x = 0; x <= totalLength; x += increment) {
-      let V = RA;
-      let M = RA * x;
+    for (let i = 0; i <= 100; i++) {
+        const x = i * increment;
+        let V = RA;
+        // Start moment with MA for fixed/cantilever beams
+        let M = MA + RA * x; 
 
-      // Apply point loads
-      pointLoads.forEach((load) => {
-        if (x >= load.position && (beamType !== 'overhanging' || load.position <= beam.mainSpan)) {
-          V -= load.value;
-          M -= load.value * (x - load.position);
+        // Apply point loads
+        pointLoads.forEach((load) => {
+            if (x >= load.position) {
+                V -= load.value;
+                M -= load.value * (x - load.position);
+            }
+        });
+
+        // Apply UDLs
+        udls.forEach((udl) => {
+            const w = udl.w;
+            const a = udl.start;
+            const b = udl.end;
+
+            if (x >= a && x <= b) {
+                const span = x - a;
+                V -= w * span;
+                M -= (w * Math.pow(span, 2)) / 2;
+            } else if (x > b) {
+                const span = b - a;
+                V -= w * span;
+                M -= w * span * (x - (a + b) / 2);
+            }
+        });
+
+        // Apply reaction RB for simply supported and overhanging beams at x=L
+        // Check if L is defined and greater than 0 before using it
+        if (L && L > 0 && (beamType === 'simplySupported' || beamType === 'overhanging') && x >= L) { 
+             // Apply RB shear jump correctly - only if x is exactly L or slightly after
+             // The loop structure makes exact application tricky. Better to calculate piecewise.
+             // Simplified: Assume RB acts at L. The shear calculation handles this implicitly if RA+RB = totalLoad.
+             // Moment calculation needs adjustment for RB past L
+             if (x > L) {
+                 M -= RB * (x - L); // Moment effect of RB past support B
+             }
         }
-      });
+        // Note: The shear jump at RB isn't explicitly shown with this loop method,
+        // but the values before and after L should reflect it.
 
-      // Apply UDLs
-      udls.forEach((udl) => {
-        const w = udl.w;
-        const a = udl.start;
-        const b = udl.end;
-
-        if (x >= a && x <= b && (beamType !== 'overhanging' || a <= beam.mainSpan)) {
-          const span = x - a;
-          V -= w * span;
-          M -= (w * Math.pow(span, 2)) / 2;
-        } else if (x > b && (beamType !== 'overhanging' || a <= beam.mainSpan)) {
-          const span = b - a;
-          V -= w * span;
-          M -= w * span * (x - (a + b) / 2);
-        }
-
-        // Handle overhang UDLs
-        if (beamType === 'overhanging') {
-          if (udl.start > beam.mainSpan && x >= udl.start && x <= udl.end) {
-            const span = x - udl.start;
-            V -= w * span;
-            M -= (w * Math.pow(span, 2)) / 2;
-          } else if (udl.start > beam.mainSpan && x > udl.end) {
-            const span = udl.end - udl.start;
-            V -= w * span;
-            M -= w * span * (x - (udl.start + udl.end) / 2);
-          }
-        }
-      });
-
-      // Apply reaction RB if applicable
-      if (beamType === 'overhanging' && x > beam.mainSpan) {
-        V -= RB;
-        M -= RB * (x - beam.mainSpan);
-      }
-
-      shear.push({ x: parseFloat(x.toFixed(2)), y: parseFloat(V.toFixed(2)) });
-      momentArr.push({ x: parseFloat(x.toFixed(2)), y: parseFloat(M.toFixed(2)) });
+        shear.push({ x: parseFloat(x.toFixed(2)), y: parseFloat(V.toFixed(2)) });
+        // Ensure moment convention consistency (sagging positive)
+        momentArr.push({ x: parseFloat(x.toFixed(2)), y: parseFloat(M.toFixed(2)) });
     }
 
-    setResult({ 
-      RA: RA.toFixed(2), 
-      RB: RB.toFixed(2), 
+    setResult({
+      RA: RA.toFixed(2),
+      RB: RB.toFixed(2),
       totalLoad: totalLoad.toFixed(2),
-      ...(beamType === 'fixed' && fixedEndMoments 
-        ? {
-            MA: fixedEndMoments.MA.toFixed(2),
-            MB: fixedEndMoments.MB.toFixed(2)
-          } 
-        : {})
+      ...(fixedEndMoments.MA !== undefined && { MA: fixedEndMoments.MA.toFixed(2) }), // Include MA if defined
+      ...(fixedEndMoments.MB !== undefined && beamType === 'fixed' && { MB: fixedEndMoments.MB.toFixed(2) }), // Include MB only for fixed
     });
     setShearForce(shear);
     setBendingMoment(momentArr);
   };
-  //after this calculations are over
+
   // Prepare Chart Data for Shear Force and Bending Moment
   const prepareChartData = () => {
     const shearLabels = shearForce.map((point) => point.x);
@@ -328,6 +303,35 @@ const StructuralLoadCalculator = () => {
         ],
       },
     };
+  };
+
+  // PDF Export Function
+  const exportToPDF = () => {
+    const content = resultsRef.current;
+    if (!content) {
+      alert("Results area not found.");
+      return;
+    }
+
+    html2canvas(content, { scale: 2 }) // Increase scale for better resolution
+      .then((canvas) => {
+        const imgData = canvas.toDataURL('image/png');
+        const pdf = new jsPDF('p', 'mm', 'a4');
+        const pdfWidth = pdf.internal.pageSize.getWidth();
+        const pdfHeight = pdf.internal.pageSize.getHeight();
+        const imgWidth = canvas.width;
+        const imgHeight = canvas.height;
+        const ratio = Math.min(pdfWidth / imgWidth, pdfHeight / imgHeight);
+        const imgX = (pdfWidth - imgWidth * ratio) / 2;
+        const imgY = 10; // Margin from top
+
+        pdf.addImage(imgData, 'PNG', imgX, imgY, imgWidth * ratio, imgHeight * ratio);
+        pdf.save('structural-load-calculation.pdf');
+      })
+      .catch(err => {
+        console.error("Error generating PDF:", err);
+        alert("Failed to generate PDF.");
+      });
   };
 
   return (
@@ -462,93 +466,107 @@ const StructuralLoadCalculator = () => {
         <button type="submit">Calculate</button>
       </form>
 
+      {/* Wrap results and diagrams in a div with the ref */}
+      <div ref={resultsRef}>
+        {result && (
+          <div className="results">
+            <h2>Results</h2>
+            <p>Reaction at A (RA): {result.RA} kN</p>
+            <p>Reaction at B (RB): {result.RB} kN</p>
+            <p>Total Load: {result.totalLoad} kN</p>
+            {beamType === 'fixed' && (
+              <>
+                <p>Fixed End Moment at A (MA): {result.MA} kN·m</p>
+                <p>Fixed End Moment at B (MB): {result.MB} kN·m</p>
+              </>
+            )}
+          </div>
+        )}
+
+        {(shearForce.length > 0 && bendingMoment.length > 0) && (
+          <div className="diagrams">
+            <h2>Shear Force Diagram</h2>
+            <div className="chart-container">
+              <Line
+                data={prepareChartData().shear}
+                options={{
+                  responsive: true,
+                  maintainAspectRatio: false,
+                  plugins: {
+                    legend: {
+                      position: 'top',
+                    },
+                    title: {
+                      display: true,
+                      text: 'Shear Force Diagram',
+                    },
+                  },
+                  scales: {
+                    x: {
+                      title: {
+                        display: true,
+                        text: 'Position (m)',
+                      },
+                    },
+                    y: {
+                      title: {
+                        display: true,
+                        text: 'Shear Force (kN)',
+                      },
+                    },
+                  },
+                }}
+                height={300}
+              />
+            </div>
+
+            <h2>Bending Moment Diagram</h2>
+            <div className="chart-container">
+              <Line
+                data={prepareChartData().moment}
+                options={{
+                  responsive: true,
+                  maintainAspectRatio: false,
+                  plugins: {
+                    legend: {
+                      position: 'top',
+                    },
+                    title: {
+                      display: true,
+                      text: 'Bending Moment Diagram',
+                    },
+                  },
+                  scales: {
+                    x: {
+                      title: {
+                        display: true,
+                        text: 'Position (m)',
+                      },
+                    },
+                    y: {
+                      title: {
+                        display: true,
+                        text: 'Bending Moment (kN·m)',
+                      },
+                    },
+                  },
+                }}
+                height={300}
+              />
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* Add Export Button */}
       {result && (
-        <div className="results">
-          <h2>Results</h2>
-          <p>Reaction at A (RA): {result.RA} kN</p>
-          <p>Reaction at B (RB): {result.RB} kN</p>
-          <p>Total Load: {result.totalLoad} kN</p>
-          {beamType === 'fixed' && (
-            <>
-              <p>Fixed End Moment at A (MA): {result.MA} kN·m</p>
-              <p>Fixed End Moment at B (MB): {result.MB} kN·m</p>
-            </>
-          )}
-        </div>
-      )}
-
-      {(shearForce.length > 0 && bendingMoment.length > 0) && (
-        <div className="diagrams">
-          <h2>Shear Force Diagram</h2>
-          <div className="chart-container">
-            <Line
-              data={prepareChartData().shear}
-              options={{
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                  legend: {
-                    position: 'top',
-                  },
-                  title: {
-                    display: true,
-                    text: 'Shear Force Diagram',
-                  },
-                },
-                scales: {
-                  x: {
-                    title: {
-                      display: true,
-                      text: 'Position (m)',
-                    },
-                  },
-                  y: {
-                    title: {
-                      display: true,
-                      text: 'Shear Force (kN)',
-                    },
-                  },
-                },
-              }}
-              height={300}
-            />
-          </div>
-
-          <h2>Bending Moment Diagram</h2>
-          <div className="chart-container">
-            <Line
-              data={prepareChartData().moment}
-              options={{
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                  legend: {
-                    position: 'top',
-                  },
-                  title: {
-                    display: true,
-                    text: 'Bending Moment Diagram',
-                  },
-                },
-                scales: {
-                  x: {
-                    title: {
-                      display: true,
-                      text: 'Position (m)',
-                    },
-                  },
-                  y: {
-                    title: {
-                      display: true,
-                      text: 'Bending Moment (kN·m)',
-                    },
-                  },
-                },
-              }}
-              height={300}
-            />
-          </div>
-        </div>
+         <button
+            type="button"
+            onClick={exportToPDF}
+            style={{ marginTop: '20px', display: 'block', marginLeft: 'auto', marginRight: 'auto' }} // Center button
+         >
+            Export Results to PDF
+         </button>
       )}
     </div>
   );

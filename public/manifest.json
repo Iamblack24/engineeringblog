@@ -3,18 +3,18 @@
   "name": "Engineering Hub: Tools For Innovation",
   "icons": [
     {
-      "src": "log.webp",
+      "src": "enghub.png",
       "sizes": "64x64 32x32 24x24 16x16",
-      "type": "image/webp"
+      "type": "image/png"
     },
     {
-      "src": "log.webp",
-      "type": "image/webp",
+      "src": "enghub.png",
+      "type": "image/png",
       "sizes": "192x192"
     },
     {
-      "src": "log.webp",
-      "type": "image/webp",
+      "src": "enghub.png",
+      "type": "image/png",
       "sizes": "512x512"
     }
   ],

@@ -2,7 +2,8 @@
     max-width: 1200px;
     margin: 2rem auto;
     padding: 2rem;
-    background: var(--primary-color);
+    background: var(--secondary-color); /* Use secondary for main background */
+    color: var(--text-color);
     border-radius: 12px;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   }
@@ -27,10 +28,10 @@
   }
   
   .input-section {
-    background: rgba(23, 42, 69, 0.5);
+    background: var(--primary-color); /* Use primary for sections */
     padding: 1.5rem;
     border-radius: 8px;
-    border: 1px solid rgba(100, 255, 218, 0.1);
+    border: 1px solid var(--input-border-color);
   }
   
   .input-section h3 {
@@ -45,9 +46,12 @@
   
   .input-group label {
     display: block;
-    color: var(--text-color);
+    font-weight: 500; /* Slightly bolder labels */
+    color: var(--text-secondary-color, #aabbcc); /* Lighter color for less emphasis */
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
     margin-bottom: 0.5rem;
-    font-size: 0.9rem;
   }
   
   .input-group input[type="number"],
@@ -56,16 +60,26 @@
     width: 100%;
     padding: 0.8rem;
     border-radius: 4px;
-    border: 1px solid var(--accent-color);
-    background: var(--secondary-color);
+    border: 1px solid var(--input-border-color, #3a506b);
+    background: var(--input-bg-color, #1f2a3d); /* Slightly different background for inputs */
     color: var(--text-color);
     font-size: 1rem;
+    margin-top: 0.25rem; /* Add space between label and input */
   }
   
   .input-group input:focus,
   .input-group select:focus {
     outline: none;
     box-shadow: 0 0 0 2px rgba(100, 255, 218, 0.2);
+  }
+  
+  .input-group.optional label::after {
+    content: " (Optional)";
+    font-style: italic;
+    font-weight: normal;
+    color: var(--text-secondary-color, #aabbcc);
+    font-size: 0.8rem;
+    margin-left: 5px;
   }
   
   .calculate-button {
@@ -90,11 +104,11 @@
   
   /* Results Section Styles */
   .results-section {
-    background: rgba(23, 42, 69, 0.5);
+    background: var(--primary-color);
     padding: 2rem;
     border-radius: 8px;
     margin-top: 2rem;
-    border: 1px solid rgba(100, 255, 218, 0.1);
+    border: 1px solid var(--input-border-color);
     animation: fadeIn 0.5s ease-out;
   }
   
@@ -105,7 +119,7 @@
   }
   
   .result-item {
-    background: rgba(255, 255, 255, 0.05);
+    background: rgba(100, 255, 218, 0.05); /* Subtle accent background */
     padding: 1.5rem;
     border-radius: 8px;
     border: 1px solid rgba(100, 255, 218, 0.1);
@@ -123,7 +137,18 @@
   .horizontal-diagram,
   .vertical-diagram,
   .cross-section-diagram {
-    background: rgba(0, 0, 0, 0.2);
+    background: repeating-linear-gradient(
+      45deg,
+      rgba(0, 0, 0, 0.1),
+      rgba(0, 0, 0, 0.1) 10px,
+      rgba(0, 0, 0, 0.15) 10px,
+      rgba(0, 0, 0, 0.15) 20px
+    ); /* Subtle pattern */
+    border: 1px dashed var(--input-border-color, #3a506b); /* Dashed border */
+    color: var(--text-secondary-color, #aabbcc);
+    font-size: 0.9rem;
+    text-align: center;
+    padding: 1rem;
     border-radius: 6px;
     margin: 1rem 0;
     min-height: 200px;
@@ -131,6 +156,7 @@
     justify-content: center;
     align-items: center;
     overflow: hidden;
+    animation: diagramFade 0.5s ease-out;
   }
   
   /* Metrics Grid Styles */
@@ -208,6 +234,8 @@
     border-radius: 12px;
     font-size: 0.9rem;
     font-weight: 500;
+    color: #fff; /* Ensure text is readable on colored backgrounds */
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.3); /* Add subtle shadow */
   }
   
   .safety-rating.excellent { background: #4CAF50; }
@@ -215,6 +243,11 @@
   .safety-rating.fair { background: #FFC107; }
   .safety-rating.poor { background: #FF5722; }
   .safety-rating.critical { background: #F44336; }
+  .safety-rating.acceptable { background: #4CAF50; color: #fff; } /* Added 'acceptable' */
+  .safety-rating.below.minimum { background: #FFC107; color: #000; } /* Example for contrast */
+  .safety-rating.exceeds.maximum { background: #FF9800; color: #000; } /* Example for contrast */
+  .safety-rating.adequate { background: #8BC34A; color: #000; } /* Example for contrast */
+  .safety-rating.limited { background: #FF5722; color: #fff; }
   
   /* Recommendations Styles */
   .recommendations {
@@ -242,18 +275,21 @@
   .priority-low { border-left-color: #4CAF50; }
   
   /* Error Styles */
-  .errors {
-    background: rgba(255, 107, 107, 0.1);
-    padding: 1rem;
-    border-radius: 6px;
-    margin: 1rem 0;
-    border: 1px solid rgba(255, 107, 107, 0.3);
+  .errors-section { /* Renamed from .errors for clarity */
+    background: rgba(244, 67, 54, 0.1);
+    border: 1px solid rgba(244, 67, 54, 0.4);
+    padding: 1rem 1.5rem;
+    border-radius: 8px;
+    margin-bottom: 2rem; /* Space below errors */
   }
   
-  .error {
-    color: #ff6b6b;
-    font-size: 0.9rem;
-    margin: 0.3rem 0;
+  .error-message { /* Renamed from .error */
+    color: #ff8a80; /* Brighter red for dark theme */
+    font-size: 0.95rem;
+    margin-bottom: 0.5rem;
+  }
+  .error-message:last-child {
+    margin-bottom: 0;
   }
   
   /* Responsive Design */
@@ -316,12 +352,6 @@
     }
   }
   
-  .horizontal-diagram,
-  .vertical-diagram,
-  .cross-section-diagram {
-    animation: diagramFade 0.5s ease-out;
-  }
-  
   /* Print styles */
   @media print {
     .highway-geometric-calculator {
@@ -349,4 +379,16 @@
     .cross-section-diagram {
       border: 1px solid #000;
     }
+  }
+  
+  /* Add root variables if not already defined elsewhere */
+  :root {
+    --primary-color: #0a192f;
+    --secondary-color: #112240;
+    --accent-color: #64ffda;
+    --text-color: #ccd6f6;
+    --text-secondary-color: #8892b0;
+    --input-bg-color: #1f2a3d;
+    --input-border-color: #3a506b;
+    /* Add other variables as needed */
   }

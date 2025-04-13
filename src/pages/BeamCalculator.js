@@ -44,7 +44,6 @@ const BeamCalculator = () => {
       case 'i-beam':
         // Simplified I-beam calculation
         const flangeArea = sectionDimensions.flangeWidth * sectionDimensions.flangeThickness;
-        const totalHeight = sectionDimensions.webHeight + 2 * sectionDimensions.flangeThickness;
         
         // Moment of inertia about neutral axis
         const flangeInertia = 2 * (sectionDimensions.flangeWidth * Math.pow(sectionDimensions.flangeThickness, 3) / 12 
@@ -108,330 +107,270 @@ const BeamCalculator = () => {
       return;
     }
 
-    const shearForces = [];
-    const bendingMoments = [];
-    const deflections = [];
+    const L = parseFloat(length);
+    const numPoints = 101; // Number of points to calculate along the beam
+    const step = L / (numPoints - 1);
 
-    // Enhanced formulas for shear, moment, and deflection based on support types and loads
+    // Initialize arrays for superposition
+    let shearData = Array(numPoints).fill(0).map((_, i) => ({ position: i * step, value: 0 }));
+    let momentData = Array(numPoints).fill(0).map((_, i) => ({ position: i * step, value: 0 }));
+    let deflectionData = Array(numPoints).fill(0).map((_, i) => ({ position: i * step, value: 0 }));
+
+    const E_Pa = parseFloat(E) * 1e9; // Convert GPa to Pa
+    const I_m4 = calculateMomentOfInertia(); // Use calculated or custom I in m^4
+
+    if (E_Pa <= 0 || I_m4 <= 0) {
+        alert("Elastic Modulus (E) and Moment of Inertia (I) must be positive.");
+        return;
+    }
+    const EI = E_Pa * I_m4; // N·m²
+
+    // Apply superposition for each load
     loads.forEach(load => {
-      if (supportType === 'simply-supported') {
-        if (load.type === 'point') {
-          const P = load.magnitude;
-          const a = load.position;
-          const L = parseFloat(length);
-          const b = L - a;
-          
-          const R1 = (P * b) / L;
-          const R2 = (P * a) / L;
-          
-          // Calculate shear at multiple points
-          for (let i = 0; i <= 100; i++) {
-            const x = (i / 100) * L;
-            let shearValue = 0;
-            
-            if (x < a) {
-              shearValue = R1;
-            } else {
-              shearValue = -R2;
-            }
-            
-            shearForces.push({ position: x, value: shearValue });
-          }
-          
-          // Calculate moment at multiple points
-          for (let i = 0; i <= 100; i++) {
-            const x = (i / 100) * L;
-            let momentValue = 0;
-            
-            if (x < a) {
-              momentValue = R1 * x;
-            } else {
-              momentValue = R2 * (L - x);
-            }
-            
-            bendingMoments.push({ position: x, value: momentValue });
-          }
-          
-          // Calculate deflection at multiple points
-          for (let i = 0; i <= 100; i++) {
-            const x = (i / 100) * L;
-            let deflectionValue = 0;
-            
-            if (x < a) {
-              deflectionValue = (P * b * x / (6 * E * I * L)) * (L**2 - b**2 - x**2);
-            } else {
-              deflectionValue = (P * a * (L - x) / (6 * E * I * L)) * (L**2 - a**2 - (L - x)**2);
-            }
-            
-            deflections.push({ position: x, value: deflectionValue });
-          }
-        } else if (load.type === 'udl') {
-          const w = load.magnitude;
-          const a = load.startPosition;
-          const b = load.endPosition;
-          const L = parseFloat(length);
+      const w = parseFloat(load.magnitude) * 1000; // Convert kN or kN/m to N or N/m
+      const P = parseFloat(load.magnitude) * 1000; // Convert kN to N
+      const a = parseFloat(load.position); // For point load
+      const udl_a = parseFloat(load.startPosition); // For UDL
+      const udl_b = parseFloat(load.endPosition); // For UDL
 
-          const totalLoad = w * (b - a);
-          const R1 = (totalLoad * (L - (a + b) / 2)) / L;
-          const R2 = (totalLoad * (a + b) / 2) / L;
+      for (let i = 0; i < numPoints; i++) {
+        const x = shearData[i].position;
+        let shearValue = 0;
+        let momentValue = 0;
+        let deflectionValue = 0;
 
-          // Calculate shear, moment and deflection at multiple points
-          for (let i = 0; i <= 100; i++) {
-            const x = (i / 100) * L;
-            let shearValue, momentValue, deflectionValue;
-            
-            // Shear force calculation with proper discontinuity
-            if (x < a) {
-              shearValue = R1;
-            } else if (x >= a && x <= b) {
-              shearValue = R1 - w * (x - a);
-            } else {
-              shearValue = -R2;
-            }
-            
-            // Moment calculation with proper curve
-            if (x < a) {
-              momentValue = R1 * x;
-            } else if (x >= a && x <= b) {
-              momentValue = R1 * x - w * (x - a) * (x - a) / 2;
-            } else {
-              momentValue = R2 * (L - x);
-            }
-            
-            // Add correct deflection formula for UDL on simply supported beam
-            // EI value in N·m²
-            const EInNm2 = parseFloat(E) * 1e9 * parseFloat(I) * 1e-8;
+        // --- Simply Supported ---
+        if (supportType === 'simply-supported') {
+          if (load.type === 'point') {
+            const b = L - a;
+            const R1 = (P * b) / L;
+            const R2 = (P * a) / L;
 
-            if (x < a) {
-              // Region before the UDL
-              deflectionValue = (R1 * x * (L*L - x*x)) / (6 * EInNm2);
-            } 
-            else if (x >= a && x <= b) {
-              // Region under the UDL
-              deflectionValue = (1/(24*EInNm2)) * (
-                R1 * x * (L*L - x*x) - 
-                w * (x - a) * (x - a) * (x - a) * (3*L - x)
-              );
-            } 
-            else {
-              // Region after the UDL
-              deflectionValue = (1/(6*EInNm2)) * (
-                R1 * x * (L*L - x*x) - 
-                w * (b - a) * (3*L*x - 3*x*x - Math.pow(b+a, 2)/2 + a*b)
-              );
+            // Shear
+            if (x < a) shearValue = R1;
+            else if (x > a) shearValue = -R2;
+            else shearValue = R1; // At the point load, take value just before
+
+            // Moment
+            if (x <= a) momentValue = R1 * x;
+            else momentValue = R1 * x - P * (x - a); // Or R2 * (L - x)
+
+            // Deflection
+            if (EI > 0) {
+                if (x <= a) deflectionValue = (P * b * x) / (6 * EI * L) * (L*L - b*b - x*x);
+                else deflectionValue = (P * a * (L - x)) / (6 * EI * L) * (L*L - a*a - (L-x)*(L-x));
             }
 
-            shearForces.push({ position: x, value: shearValue });
-            bendingMoments.push({ position: x, value: momentValue });
-            deflections.push({ position: x, value: deflectionValue });
+          } else if (load.type === 'udl') {
+            const loadLength = udl_b - udl_a;
+            const totalLoad = w * loadLength;
+            const R1 = (totalLoad * (L - (udl_a + udl_b) / 2)) / L;
+            const R2 = totalLoad - R1;
+
+            // Shear
+            if (x < udl_a) shearValue = R1;
+            else if (x >= udl_a && x <= udl_b) shearValue = R1 - w * (x - udl_a);
+            else shearValue = -R2;
+
+            // Moment
+            if (x < udl_a) momentValue = R1 * x;
+            else if (x >= udl_a && x <= udl_b) momentValue = R1 * x - w * (x - udl_a) * (x - udl_a) / 2;
+            else momentValue = R2 * (L - x); // Simpler form for x > b
+
+            // Deflection (Using superposition/integration - complex, simplified below)
+            // Note: Exact deflection formula for partial UDL is complex. Using an approximation or specific case formula.
+            // The formula below is more accurate for full UDL (a=0, b=L)
+             if (EI > 0) {
+                 // General formula using Macaulay's method concept (approximate for partial UDL)
+                 const term1 = R1 * x * x * x / 6;
+                 let term2 = 0;
+                 if (x > udl_a) term2 = w * Math.pow(x - udl_a, 4) / 24;
+                 let term3 = 0;
+                 if (x > udl_b) term3 = -w * Math.pow(x - udl_b, 4) / 24; // Correction term if needed
+
+                 // Constants of integration C1, C2. For simply supported, deflection(0)=0, deflection(L)=0
+                 // C2 = 0 (since deflection(0)=0)
+                 // C1 derived from deflection(L)=0
+                 const R1_term_L = R1 * L*L*L / 6;
+                 let w_term_L_a = 0; if (L > udl_a) w_term_L_a = w * Math.pow(L - udl_a, 4) / 24;
+                 let w_term_L_b = 0; if (L > udl_b) w_term_L_b = -w * Math.pow(L - udl_b, 4) / 24; // Correction term if needed
+
+                 const C1 = -(R1_term_L - w_term_L_a + w_term_L_b) / L;
+
+                 deflectionValue = (term1 - term2 + term3 + C1 * x) / EI;
+             }
           }
         }
-      } else if (supportType === 'cantilever') {
-        if (load.type === 'point') {
-          const P = parseFloat(load.magnitude);
-          const a = parseFloat(load.position);
-          const L = parseFloat(length);
-          
-          // For cantilever beam, fixed at x=0, free at x=L
-          // Calculate values at multiple points
-          for (let i = 0; i <= 100; i++) {
-            const x = (i / 100) * L;
-            let shearValue = 0;
-            let momentValue = 0;
-            let deflectionValue = 0;
-            
-            // Shear force calculation
-            if (x <= a) {
-              shearValue = P;
-            } else {
-              shearValue = 0;
+        // --- Cantilever (Fixed at x=0) ---
+        else if (supportType === 'cantilever') {
+          if (load.type === 'point') {
+            const R_fixed = P; // Reaction force at fixed end
+            const M_fixed = -P * a; // Reaction moment at fixed end
+
+            // Shear
+            if (x < a) shearValue = P; // Positive shear convention
+            else shearValue = 0;
+
+            // Moment (Negative for hogging)
+            if (x <= a) momentValue = M_fixed + R_fixed * x; // = -P*a + P*x = -P*(a-x)
+            else momentValue = 0;
+
+            // Deflection
+            if (EI > 0) {
+                if (x <= a) deflectionValue = (P * x*x) / (6 * EI) * (3*a - x);
+                else deflectionValue = (P * a*a) / (6 * EI) * (3*x - a);
             }
-            
-            // Bending moment calculation
-            if (x <= a) {
-              momentValue = P * (a - x);
-            } else {
-              momentValue = 0;
+
+          } else if (load.type === 'udl') {
+            const loadLength = udl_b - udl_a;
+            const R_fixed = w * loadLength;
+            const M_fixed = -w * loadLength * ((udl_a + udl_b) / 2);
+
+            // Shear
+            if (x < udl_a) shearValue = R_fixed;
+            else if (x >= udl_a && x <= udl_b) shearValue = R_fixed - w * (x - udl_a); // = w*(udl_b - x)
+            else shearValue = 0;
+
+            // Moment (Negative for hogging)
+            if (x < udl_a) momentValue = M_fixed + R_fixed * x;
+            else if (x >= udl_a && x <= udl_b) momentValue = M_fixed + R_fixed * x - w * (x - udl_a)*(x - udl_a) / 2; // = -w*(udl_b-x)^2 / 2
+            else momentValue = 0;
+
+            // Deflection
+            if (EI > 0) {
+                // Declare constants needed in multiple blocks
+                let C1_prime, C2_prime; 
+                
+                // Using formulas derived from integration/superposition
+                if (x < udl_a) {
+                    // ... (previous code for x < udl_a) ...
+                    // Match slope and deflection at x=udl_a with previous segment
+                    const slope_at_a = (M_fixed * udl_a + R_fixed * udl_a*udl_a / 2) / EI;
+                    const defl_at_a = (M_fixed * udl_a*udl_a / 2 + R_fixed * udl_a*udl_a*udl_a / 6) / EI; // defl_at_a is used here
+                    C1_prime = slope_at_a - (w * Math.pow(udl_b - udl_a, 3) / (6 * EI)); // Assign value to C1_prime
+                    C2_prime = defl_at_a - (-w * Math.pow(udl_b - udl_a, 4) / (24 * EI)) - C1_prime * udl_a; // Assign value to C2_prime
+                    deflectionValue = (-w * Math.pow(udl_b - x, 4) / (24 * EI)) + C1_prime * x + C2_prime;
+
+                } else if (x >= udl_a && x <= udl_b) {
+                    // Deflection under the load
+                    // Integrate M(x) = -w*(udl_b-x)^2 / 2
+                    // Slope(x) = w*(udl_b-x)^3 / (6*EI) + C1'
+                    // Defl(x) = -w*(udl_b-x)^4 / (24*EI) + C1'*x + C2'
+                    // Match slope and deflection at x=udl_a with previous segment
+                    const slope_at_a = (M_fixed * udl_a + R_fixed * udl_a*udl_a / 2) / EI;
+                    const defl_at_a = (M_fixed * udl_a*udl_a / 2 + R_fixed * udl_a*udl_a*udl_a / 6) / EI; // Keep as const, used below
+                    // Assign to the outer C1_prime and C2_prime declared with let
+                    C1_prime = slope_at_a - (w * Math.pow(udl_b - udl_a, 3) / (6 * EI)); 
+                    C2_prime = defl_at_a - (-w * Math.pow(udl_b - udl_a, 4) / (24 * EI)) - C1_prime * udl_a; 
+                    deflectionValue = (-w * Math.pow(udl_b - x, 4) / (24 * EI)) + C1_prime * x + C2_prime;
+
+                } else { // x > udl_b
+                    // Deflection after the load. M(x)=0, Shear(x)=0
+                    // Slope(x) = C1''
+                    // Defl(x) = C1''*x + C2''
+                    // Match slope and deflection at x=udl_b with previous segment
+                    const slope_at_b = C1_prime; // Now C1_prime is accessible
+                    const defl_at_b = C1_prime * udl_b + C2_prime; // Now C1_prime and C2_prime are accessible
+                    const C1_double_prime = slope_at_b;
+                    const C2_double_prime = defl_at_b - C1_double_prime * udl_b;
+                    deflectionValue = C1_double_prime * x + C2_double_prime;
+                }
             }
-            
-            // Deflection calculation - convert E from GPa to Pa
-            const EInNm2 = parseFloat(E) * 1e9 * parseFloat(I) * 1e-8;
-            if (x <= a) {
-              deflectionValue = (P * Math.pow(x, 2) * (3*a - x)) / (6 * EInNm2);
-            } else {
-              deflectionValue = (P * Math.pow(a, 2) * (3*x - a)) / (6 * EInNm2);
-            }
-            
-            shearForces.push({ position: x, value: shearValue });
-            bendingMoments.push({ position: x, value: momentValue });
-            deflections.push({ position: x, value: deflectionValue });
-          }
-        } 
-        else if (load.type === 'udl') {
-          const w = parseFloat(load.magnitude);
-          const a = parseFloat(load.startPosition);
-          const b = parseFloat(load.endPosition);
-          const L = parseFloat(length);
-          
-          // For cantilever with UDL
-          for (let i = 0; i <= 100; i++) {
-            const x = (i / 100) * L;
-            let shearValue = 0;
-            let momentValue = 0;
-            let deflectionValue = 0;
-            
-            // Shear force calculation
-            if (x < a) {
-              shearValue = w * (b - a);
-            } else if (x >= a && x <= b) {
-              shearValue = w * (b - x);
-            } else {
-              shearValue = 0;
-            }
-            
-            // Bending moment calculation
-            if (x < a) {
-              momentValue = w * (b - a) * ((a + b)/2 - x);
-            } else if (x >= a && x <= b) {
-              momentValue = (w * Math.pow(b - x, 2)) / 2;
-            } else {
-              momentValue = 0;
-            }
-            
-            // Deflection calculation
-            const EInNm2 = parseFloat(E) * 1e9 * parseFloat(I) * 1e-8;
-            if (x < a) {
-              deflectionValue = (w/(24*EInNm2)) * (
-                4*Math.pow(b-a,3)*x - Math.pow(x,4) + 
-                6*Math.pow(b-a,2)*Math.pow(x,2) - 4*(b-a)*Math.pow(x,3)
-              );
-            } else if (x >= a && x <= b) {
-              deflectionValue = (w/(24*EInNm2)) * (
-                4*Math.pow(b-x,3)*x - Math.pow(b-x,4)
-              );
-            } else {
-              deflectionValue = (w/(24*EInNm2)) * (
-                Math.pow(b-a,2) * (4*b*x - 2*a*x - Math.pow(b-a,2) - 2*Math.pow(x,2))
-              );
-            }
-            
-            shearForces.push({ position: x, value: shearValue });
-            bendingMoments.push({ position: x, value: momentValue });
-            deflections.push({ position: x, value: deflectionValue });
           }
         }
-      } else if (supportType === 'fixed') {
-        if (load.type === 'point') {
-          const P = parseFloat(load.magnitude);
-          const a = parseFloat(load.position);
-          const L = parseFloat(length);
-          const b = L - a;
-          
-          // Fixed-end moments
-          const M1 = -P * a * b * b / (L * L);
-          const M2 = P * a * a * b / (L * L);
-          
-          // Reactions including moment effects
-          const R1 = P * b / L - (M1 + M2) / L;
-          const R2 = P * a / L + (M1 + M2) / L;
-          
-          // Generate continuous curves for shear, moment and deflection
-          for (let i = 0; i <= 100; i++) {
-            const x = (i / 100) * L;
-            let shearValue = 0;
-            let momentValue = 0;
-            let deflectionValue = 0;
-            
-            // Shear force calculation
-            if (x < a) {
-              shearValue = R1;
-            } else {
-              shearValue = -R2;
+        // --- Fixed ---
+        else if (supportType === 'fixed') {
+          if (load.type === 'point') {
+            const b = L - a;
+            // Fixed-end moments
+            const M1_fem = -P * a * b * b / (L * L);
+            const M2_fem = P * a * a * b / (L * L);
+            // Reactions
+            const R1 = P * b / L + (M1_fem - M2_fem) / L; // Corrected reaction formula
+            const R2 = P * a / L - (M1_fem - M2_fem) / L; // Corrected reaction formula
+
+            // Shear
+            if (x < a) shearValue = R1;
+            else if (x > a) shearValue = -R2; // R1 - P
+            else shearValue = R1; // Value just before load
+
+            // Moment
+            if (x <= a) momentValue = M1_fem + R1 * x;
+            else momentValue = M1_fem + R1 * x - P * (x - a); // = M2_fem - R2*(L-x)
+
+            // Deflection
+            if (EI > 0) {
+                // Using standard formulas for fixed beam point load
+                if (x <= a) deflectionValue = (P * b*b * x*x) / (6 * EI * L*L*L) * (3*a*L - 3*a*x - b*x);
+                else deflectionValue = (P * a*a * (L-x)*(L-x)) / (6 * EI * L*L*L) * (3*b*L - 3*b*(L-x) - a*(L-x));
+                 // Alternative form check
+                 if (x <= a) deflectionValue = (x*x / (6*EI)) * (M1_fem * 3 + R1 * x); // Incorrect
+                 // Using integration M(x)/EI
+                 // Slope(x) = (1/EI) * [M1_fem*x + R1*x*x/2] for x < a
+                 // Defl(x) = (1/EI) * [M1_fem*x*x/2 + R1*x*x*x/6] for x < a (since slope(0)=0, defl(0)=0)
+                 // Slope(x) = (1/EI) * [M1_fem*x + R1*x*x/2 - P*(x-a)*(x-a)/2] + C1' for x > a
+                 // Defl(x) = (1/EI) * [M1_fem*x*x/2 + R1*x*x*x/6 - P*(x-a)^3/6] + C1'*x + C2' for x > a
+                 // Need C1', C2' by matching slope/defl at x=a
+                 const slope_at_a = (M1_fem*a + R1*a*a/2) / EI;
+                 const defl_at_a = (M1_fem*a*a/2 + R1*a*a*a/6) / EI;
+                 const C1_prime = slope_at_a - (M1_fem*a + R1*a*a/2) / EI; // Should be 0? Check integration
+                 // Slope(x) = (1/EI) * integral(M(x)) + C1
+                 // Slope(x) for x > a = (1/EI) * [M1_fem*x + R1*x*x/2 - P*(x-a)^2/2] + C1_match
+                 // Slope(a) from left = (1/EI) * [M1_fem*a + R1*a*a/2]
+                 // Slope(a) from right = (1/EI) * [M1_fem*a + R1*a*a/2] + C1_match
+                 // => C1_match = 0
+                 // Defl(x) for x > a = (1/EI) * [M1_fem*x*x/2 + R1*x*x*x/6 - P*(x-a)^3/6] + C2_match
+                 // Defl(a) from left = (1/EI) * [M1_fem*a*a/2 + R1*a*a*a/6]
+                 // Defl(a) from right = (1/EI) * [M1_fem*a*a/2 + R1*a*a*a/6] + C2_match
+                 // => C2_match = 0
+                 if (x <= a) deflectionValue = (M1_fem*x*x/2 + R1*x*x*x/6) / EI;
+                 else deflectionValue = (M1_fem*x*x/2 + R1*x*x*x/6 - P*Math.pow(x-a, 3)/6) / EI;
             }
-            
-            // Bending moment calculation
-            if (x < a) {
-              momentValue = M1 + R1 * x;
-            } else {
-              momentValue = M1 + R1 * x - P * (x - a);
-            }
-            
-            // Deflection calculation
-            const EInNm2 = parseFloat(E) * 1e9 * parseFloat(I) * 1e-8;
-            if (x < a) {
-              deflectionValue = (1/(6*EInNm2)) * (
-                M1 * Math.pow(x, 2) + (R1*Math.pow(x, 3))/3 - (P*a*b*b*x*x)/(L*L)
-              );
-            } else {
-              deflectionValue = (1/(6*EInNm2)) * (
-                M1 * Math.pow(x, 2) + (R1*Math.pow(x, 3))/3 - P*Math.pow(x-a, 3)/3 - (P*a*a*b*x*x)/(L*L)
-              );
-            }
-            
-            shearForces.push({ position: x, value: shearValue });
-            bendingMoments.push({ position: x, value: momentValue });
-            deflections.push({ position: x, value: deflectionValue });
-          }
-        } 
-        else if (load.type === 'udl') {
-          const w = parseFloat(load.magnitude);
-          const a = parseFloat(load.startPosition);
-          const b = parseFloat(load.endPosition);
-          const L = parseFloat(length);
-          
-          const q = b - a; // Length of UDL
-          const c = (a + b) / 2; // Center of UDL
-          const totalLoad = w * q;
-          
-          // Fixed-end moments for UDL
-          const M1 = -w * q * q / 12;
-          const M2 = w * q * q / 12;
-          
-          // Reactions
-          const R1 = totalLoad * (L - c) / L - (M1 - M2) / L;
-          const R2 = totalLoad * c / L + (M1 - M2) / L;
-          
-          for (let i = 0; i <= 100; i++) {
-            const x = (i / 100) * L;
-            let shearValue = 0;
-            let momentValue = 0;
-            let deflectionValue = 0;
-            
-            // Shear force
-            if (x < a) {
-              shearValue = R1;
-            } else if (x >= a && x <= b) {
-              shearValue = R1 - w * (x - a);
-            } else {
-              shearValue = -R2;
-            }
-            
-            // Bending moment
-            if (x < a) {
-              momentValue = M1 + R1 * x;
-            } else if (x >= a && x <= b) {
-              momentValue = M1 + R1 * x - w * Math.pow(x - a, 2) / 2;
-            } else {
-              momentValue = M2 + R2 * (L - x);
-            }
-            
-            // Deflection - simplified approximation
-            const EInNm2 = parseFloat(E) * 1e9 * parseFloat(I) * 1e-8;
-            // Complex formula - simplified approximation used
-            deflectionValue = w * Math.pow(q, 4) / (384 * EInNm2) * Math.sin(Math.PI * x / L);
-            
-            shearForces.push({ position: x, value: shearValue });
-            bendingMoments.push({ position: x, value: momentValue });
-            deflections.push({ position: x, value: deflectionValue });
+
+          } else if (load.type === 'udl') {
+            // Correct formulas for Fixed Beam with Partial UDL (w from udl_a to udl_b)
+            const a = udl_a; // Rename for formula clarity
+            const b = udl_b;
+            // Fixed-end moments (Using standard formulas)
+            const M1_fem = -(w / (12 * L*L)) * ( Math.pow(L-a, 3) * (L+3*a) - Math.pow(L-b, 3) * (L+3*b) );
+            const M2_fem = +(w / (12 * L*L)) * ( Math.pow(b, 3) * (4*L - 3*b) - Math.pow(a, 3) * (4*L - 3*a) );
+
+            // Reactions
+            const totalLoad = w * (b - a);
+            const centroid = (a + b) / 2;
+            const R1 = (totalLoad * (L - centroid)) / L + (M1_fem - M2_fem) / L;
+            const R2 = totalLoad - R1;
+
+            // Shear
+            if (x < a) shearValue = R1;
+            else if (x >= a && x <= b) shearValue = R1 - w * (x - a);
+            else shearValue = -R2; // R1 - totalLoad
+
+            // Moment
+            if (x < a) momentValue = M1_fem + R1 * x;
+            else if (x >= a && x <= b) momentValue = M1_fem + R1 * x - w * Math.pow(x - a, 2) / 2;
+            else momentValue = M1_fem + R1 * x - totalLoad * (x - centroid); // Or M2_fem - R2*(L-x)
+
+            // Deflection
+            // The exact deflection formula for a partial UDL on a fixed beam is very complex.
+            // Setting to 0 as placeholder.
+            deflectionValue = 0; // Not implemented due to complexity
           }
         }
+
+        // Add calculated values to the data arrays (Superposition)
+        // Convert back N to kN and N.m to kN.m for consistency with inputs/charts
+        shearData[i].value += shearValue / 1000;
+        momentData[i].value += momentValue / 1000;
+        deflectionData[i].value += deflectionValue; // Deflection is already in meters
       }
     });
 
-    setShear(shearForces);
-    setMoment(bendingMoments);
-    setDeflection(deflections);
-    calculateStress();
+    // Set state with final superimposed results
+    setShear(shearData);
+    setMoment(momentData);
+    setDeflection(deflectionData);
+    calculateStress(); // Calculate stress based on the final moment diagram
   };
 
   // Add this state
@@ -441,46 +380,67 @@ const BeamCalculator = () => {
 
   // Add this in your calculateResults function, after setting moment, shear and deflection
   const calculateStress = () => {
-    if (!moment || moment.length === 0) return;
-    
-    let maxMoment = 0;
-    moment.forEach(m => {
-      if (Math.abs(m.value) > Math.abs(maxMoment)) {
-        maxMoment = m.value;
+    // Make sure moment state is updated before calculating stress
+    // Use the momentData directly if state update is async
+    const finalMomentData = moment; // Use state if available
+    if (!finalMomentData || finalMomentData.length === 0) return;
+
+    let maxAbsMoment = 0;
+    finalMomentData.forEach(m => {
+      if (Math.abs(m.value) > maxAbsMoment) {
+        maxAbsMoment = Math.abs(m.value); // Use absolute value for max stress calculation
       }
     });
-    
+
     // Calculate section modulus based on shape
+    const I_m4 = calculateMomentOfInertia(); // m^4
     let sectionModulus = 0;
+    let y_max = 0; // Distance from neutral axis to extreme fiber
+
     if (crossSection === 'rectangle') {
-      sectionModulus = (sectionDimensions.width * Math.pow(sectionDimensions.height, 2)) / 6; // m³
+        y_max = sectionDimensions.height / 2;
+        sectionModulus = I_m4 / y_max; // m³ (Correct calculation is I/y_max)
     } else if (crossSection === 'circle') {
-      sectionModulus = (Math.PI * Math.pow(sectionDimensions.diameter / 2, 3)) / 4; // m³
+        y_max = sectionDimensions.diameter / 2;
+        sectionModulus = I_m4 / y_max; // m³
     } else if (crossSection === 'i-beam') {
-      const totalHeight = sectionDimensions.webHeight + 2 * sectionDimensions.flangeThickness;
-      sectionModulus = calculateMomentOfInertia() / (totalHeight / 2); // m³
-    } else {
-      // For custom, use approximation
-      const momentOfInertia = parseFloat(I) * 1e-8; // cm⁴ to m⁴
-      sectionModulus = momentOfInertia / 0.15; // Approximate using half of typical height
+        const totalHeight = sectionDimensions.webHeight + 2 * sectionDimensions.flangeThickness;
+        y_max = totalHeight / 2;
+        sectionModulus = I_m4 / y_max; // m³
+    } else { // Custom I
+        // Cannot determine y_max for custom I, use approximation or require input
+        // Approximation: Assume symmetric section, estimate height ~ 0.3m -> y_max ~ 0.15m
+        y_max = 0.15; // Approximation!
+        if (I_m4 > 0) {
+            sectionModulus = I_m4 / y_max; // Approximate section modulus
+        } else {
+            sectionModulus = 0;
+        }
     }
-    
-    // Add edge case handling to prevent division by zero
-    if (Math.abs(maxMoment) < 0.00001 || Math.abs(sectionModulus) < 0.00001) {
-      // Handle the case where moment or section modulus is extremely small
+
+    // Add edge case handling
+    if (Math.abs(maxAbsMoment) < 1e-9 || sectionModulus <= 1e-12) {
       setMaxStress(0);
-      setSafetyFactor(99); // Effectively infinite safety factor
+      setSafetyFactor(Infinity); // Use Infinity for clarity
       return;
     }
-    
+
     // Calculate maximum stress in MPa
-    const stress = (maxMoment * 1000) / sectionModulus; // N/m² (Pa)
-    const stressInMPa = stress / 1e6;
-    setMaxStress(stressInMPa);
-    
+    // Moment is in kN.m, convert to N.m
+    const maxMoment_Nm = maxAbsMoment * 1000;
+    const stress_Pa = maxMoment_Nm / sectionModulus; // N/m² (Pa)
+    const stress_MPa = stress_Pa / 1e6;
+    setMaxStress(stress_MPa);
+
     // Calculate safety factor
-    const safety = allowableStress / stressInMPa; // Both in MPa
-    setSafetyFactor(safety);
+    if (allowableStress > 0 && stress_MPa > 1e-9) { // Avoid division by zero or near-zero stress
+        const safety = allowableStress / Math.abs(stress_MPa); // Use absolute stress
+        setSafetyFactor(safety);
+    } else if (allowableStress > 0) {
+        setSafetyFactor(Infinity); // Effectively infinite safety if stress is zero
+    } else {
+        setSafetyFactor(0); // Safety factor is 0 if allowable stress is 0 or negative
+    }
   };
 
   // Add this function to generate smooth chart data

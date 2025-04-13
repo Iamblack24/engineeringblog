@@ -390,7 +390,7 @@ const SlopeStabilityCalculator = () => {
             {/* Chart Display */}
             {chartData && (
               <div className="chart-container">
-                <Bar data={chartData} options={chartOptions} height={250} /> {/* Adjust height */}
+                <Bar data={chartData} options={chartOptions} /> 
               </div>
             )}
         </div>

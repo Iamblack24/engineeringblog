@@ -15,10 +15,31 @@
   margin-bottom: 20px;
 }
 
+.structural-load-calculator h2 {
+  margin-top: 25px;
+  margin-bottom: 15px;
+  padding-bottom: 5px;
+  border-bottom: 1px solid #eee;
+  color: var(--accent-color); /* Use accent color for headings */
+}
+
 .structural-load-calculator form {
   display: flex;
   flex-direction: column;
   gap: 20px;
+}
+
+.structural-load-calculator form button[type="button"],
+.structural-load-calculator form button[type="submit"] {
+  margin-top: 10px; /* Add space above buttons */
+  align-self: flex-start; /* Align add buttons left */
+}
+
+.structural-load-calculator form button[type="submit"] {
+  align-self: center; /* Center the main calculate button */
+  padding: 12px 25px;
+  font-size: 1.1em;
+  margin-top: 20px;
 }
 
 .form-group {
@@ -39,10 +60,16 @@
 }
 
 .load-group {
-  border: 1px solid #ddd;
+  border: 1px solid #e0e0e0;
   padding: 15px;
-  border-radius: 4px;
-  background-color: #f9f9f9;
+  border-radius: 6px;
+  background-color: #ffffff; /* White background for contrast */
+  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+  position: relative; /* For potential remove button */
+}
+
+.load-group:hover {
+   border-color: #c0c0c0;
 }
 
 .load-group + .load-group {
@@ -68,13 +95,26 @@ button[type="submit"]:hover {
 
 .results {
   margin-top: 30px;
-  padding: 15px;
-  background-color: #f1f1f1;
-  border-radius: 4px;
+  padding: 20px;
+  background-color: #e9f5ff; /* Light blue background */
+  border: 1px solid #b3d7ff; /* Blue border */
+  border-radius: 8px;
 }
 
 .results h2 {
   margin-top: 0;
+  border-bottom: none;
+  color: #0056b3; /* Darker blue for results heading */
+}
+
+.results p {
+  margin: 8px 0;
+  font-size: 1.05em;
+}
+
+.results p span {
+  font-weight: bold;
+  margin-right: 5px;
 }
 
 .diagrams {
@@ -84,10 +124,17 @@ button[type="submit"]:hover {
 .diagrams h2 {
   text-align: center;
   margin-bottom: 20px;
+  color: #333;
+  font-weight: 600;
 }
 
 .chart-container {
-  margin-bottom: 40px;
+  padding: 15px;
+  border: 1px solid #eee;
+  border-radius: 6px;
+  background-color: #fff;
+  margin-bottom: 30px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.05);
 }
 
 /* Responsive Design for Mobile Devices */

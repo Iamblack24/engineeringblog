@@ -275,31 +275,282 @@ const InteractiveToolsPage = () => {
   const featuresRef = useRef(null);
   
   const categorizedTools = React.useMemo(() => {
-    const aiKeywords = ['ai', 'assistant', 'intelligent', 'tutor', 'summarize', 'analysis', 'simulate', 'extract', 'design', 'green'];
+    // Core AI-related keywords with weights
+    const aiKeywords = {
+      // Strong indicators of AI functionality (high weight)
+      strong: {
+        keywords: ['ai', 'artificial intelligence', 'machine learning', 'neural', 'nlp', 'language model', 
+                  'deep learning', 'intelligent assistant', 'predictive analytics', 'computer vision'],
+        weight: 10
+      },
+      // Medium strength indicators
+      medium: {
+        keywords: ['assistant', 'intelligent', 'automate', 'predict', 'recognition', 'cognitive', 
+                  'smart', 'analyze patterns', 'automated design', 'recommendation'],
+        weight: 5
+      },
+      // Weak indicators that need context
+      weak: {
+        keywords: ['analysis', 'simulate', 'optimization', 'extract', 'generate', 'tutor', 'summarize'],
+        weight: 2
+      }
+    };
+    
+    // Keywords that indicate traditional non-AI tools when they appear alone
+    const traditionalToolKeywords = [
+      'calculator', 'database', 'converter', 'manual', 'tables', 'formulas', 'equations',
+      'spreadsheet', 'template', 'reference'
+    ];
+    
+    // Known AI tools by title pattern matching (override for specific cases)
+    const knownAiTools = [
+      'built environment ai', 'summarize technical', 'knowledge extraction', 
+      'tutor', 'green building design', 'simulation generator'
+    ];
+    
+    // Explicitly non-AI tools regardless of description
+    const explicitlyNonAiTools = [
+      'matrix calculator', 'unit conversion', 'area & volume calculator',
+      'leveling calculator', 'traverse calculator'
+    ];
     
     return tools.map(tool => {
-      const textToCheck = (tool.title + ' ' + tool.description).toLowerCase();
-      const isAiTool = aiKeywords.some(keyword => textToCheck.includes(keyword));
+      const titleLower = tool.title.toLowerCase();
+      const descLower = tool.description.toLowerCase();
+      const fullText = `${titleLower} ${descLower}`;
       
+      // Override for explicitly known tools
+      if (knownAiTools.some(pattern => titleLower.includes(pattern))) {
+        return { ...tool, category: 'ai' };
+      }
+      
+      if (explicitlyNonAiTools.some(pattern => titleLower.includes(pattern))) {
+        return { ...tool, category: 'standard' };
+      }
+      
+      // Calculate AI score
+      let aiScore = 0;
+      
+      // Check for strong indicators
+      aiKeywords.strong.keywords.forEach(keyword => {
+        if (fullText.includes(keyword)) {
+          aiScore += aiKeywords.strong.weight;
+        }
+      });
+      
+      // Check for medium indicators
+      aiKeywords.medium.keywords.forEach(keyword => {
+        if (fullText.includes(keyword)) {
+          aiScore += aiKeywords.medium.weight;
+        }
+      });
+      
+      // Check for weak indicators (with context validation)
+      aiKeywords.weak.keywords.forEach(keyword => {
+        if (fullText.includes(keyword)) {
+          // Only count weak keywords if they appear in specific AI-related contexts
+          const context = getWordContext(fullText, keyword, 5);
+          const hasAiContext = context.some(word => 
+            aiKeywords.strong.keywords.includes(word) || 
+            aiKeywords.medium.keywords.includes(word)
+          );
+          
+          if (hasAiContext) {
+            aiScore += aiKeywords.weak.weight;
+          } else {
+            // Reduced score for weak keywords without AI context
+            aiScore += 1;
+          }
+        }
+      });
+      
+      // Check for traditional tool indicators (negative score)
+      const hasStrongTraditionalIndicator = traditionalToolKeywords.some(keyword => 
+        titleLower.includes(keyword)
+      );
+      
+      if (hasStrongTraditionalIndicator && aiScore < 8) {
+        aiScore -= 3; // Reduce score for calculator-type tools
+      }
+      
+      // Additional heuristics for specific tool types
+      if (titleLower.includes('design') && !titleLower.includes('automatic') && aiScore < 5) {
+        // Many design tools are traditional unless specified as automatic
+        aiScore -= 2;
+      }
+      
+      if (titleLower.includes('calculator') || titleLower.includes('analysis')) {
+        // Most calculators and analysis tools are traditional unless other AI indicators exist
+        if (aiScore < 6) {
+          aiScore = 0;
+        }
+      }
+      
+      // Determine category based on final score
       return {
         ...tool,
-        category: isAiTool ? 'ai' : 'standard'
+        category: aiScore >= 5 ? 'ai' : 'standard',
+        aiScore // Keep for debugging
       };
     });
   }, []);
   
+  // Helper function to get surrounding words for context
+  const getWordContext = (text, keyword, windowSize) => {
+    const words = text.split(/\s+/);
+    const keywordIndex = words.findIndex(w => w.includes(keyword));
+    
+    if (keywordIndex === -1) return [];
+    
+    const startIndex = Math.max(0, keywordIndex - windowSize);
+    const endIndex = Math.min(words.length - 1, keywordIndex + windowSize);
+    
+    return words.slice(startIndex, endIndex + 1);
+  };
+  
+  // Improved search algorithm with relevance scoring and fuzzy matching
   const filteredTools = React.useMemo(() => {
-    return categorizedTools.filter(tool => {
-      const matchesSearch = searchTerm === '' || 
-        tool.title.toLowerCase().includes(searchTerm.toLowerCase()) || 
-        tool.description.toLowerCase().includes(searchTerm.toLowerCase());
-      
-      const matchesCategory = activeCategory === 'all' || tool.category === activeCategory;
-      
-      return matchesSearch && matchesCategory;
-    });
+    if (!searchTerm.trim()) {
+      // If no search term, just filter by category
+      return categorizedTools.filter(tool => 
+        activeCategory === 'all' || tool.category === activeCategory
+      );
+    }
+    
+    // Process search terms - split into words for multi-word search
+    const searchTerms = searchTerm.toLowerCase().split(/\s+/).filter(term => term.length > 1);
+    
+    // Search results with scoring
+    const scoredTools = categorizedTools
+      .map(tool => {
+        const titleLower = tool.title.toLowerCase();
+        const descLower = tool.description.toLowerCase();
+        let score = 0;
+        let matchDetails = [];
+        
+        // Calculate score based on different match types
+        searchTerms.forEach(term => {
+          // Exact matches in title (highest priority)
+          if (titleLower === term) {
+            score += 100;
+            matchDetails.push('exact-title');
+          }
+          // Title starts with term
+          else if (titleLower.startsWith(term)) {
+            score += 50;
+            matchDetails.push('starts-title');
+          }
+          // Word in title starts with term
+          else if (titleLower.split(/\s+/).some(word => word.startsWith(term))) {
+            score += 40;
+            matchDetails.push('word-starts-title');
+          }
+          // Term appears anywhere in title
+          else if (titleLower.includes(term)) {
+            score += 30;
+            matchDetails.push('in-title');
+          }
+          
+          // Exact word match in description
+          if (descLower.split(/\s+/).includes(term)) {
+            score += 20;
+            matchDetails.push('word-in-desc');
+          }
+          // Term appears anywhere in description
+          else if (descLower.includes(term)) {
+            score += 10;
+            matchDetails.push('in-desc');
+          }
+          
+          // Fuzzy matching for typos or close matches (for terms longer than 3 chars)
+          if (term.length > 3) {
+            // Check each word in title for similarity
+            titleLower.split(/\s+/).forEach(word => {
+              if (word.length > 3) {
+                const similarity = calculateSimilarity(word, term);
+                if (similarity > 0.7 && similarity < 1) { // High similarity but not exact match
+                  score += 15;
+                  matchDetails.push('fuzzy-title');
+                }
+              }
+            });
+            
+            // Similar check for description keywords
+            descLower.split(/\s+/).forEach(word => {
+              if (word.length > 3) {
+                const similarity = calculateSimilarity(word, term);
+                if (similarity > 0.6 && similarity < 1) { // Slightly lower threshold for description
+                  score += 5;
+                  matchDetails.push('fuzzy-desc');
+                }
+              }
+            });
+          }
+        });
+        
+        // Check if all search terms are matched somewhere (requires all terms to match for multi-word searches)
+        const allTermsMatched = searchTerms.every(term => 
+          titleLower.includes(term) || descLower.includes(term) ||
+          matchDetails.some(detail => detail.includes('fuzzy'))
+        );
+        
+        // If not all terms matched and we have multiple terms, significantly reduce score
+        if (!allTermsMatched && searchTerms.length > 1) {
+          score = score / 5;
+        }
+        
+        return {
+          ...tool,
+          score,
+          matchDetails
+        };
+      })
+      .filter(tool => {
+        // Must have some relevance score
+        return tool.score > 0 && (activeCategory === 'all' || tool.category === activeCategory);
+      })
+      .sort((a, b) => b.score - a.score); // Sort by descending score
+    
+    return scoredTools;
   }, [categorizedTools, searchTerm, activeCategory]);
   
+  // Helper function to calculate string similarity (Levenshtein distance-based)
+  const calculateSimilarity = (str1, str2) => {
+    if (str1 === str2) return 1.0;
+    if (str1.length < 2 || str2.length < 2) return 0.0;
+    
+    // Simple Levenshtein distance implementation
+    const len1 = str1.length;
+    const len2 = str2.length;
+    const maxDist = Math.max(len1, len2);
+    
+    let matrix = [];
+    
+    // Initialize matrix
+    for (let i = 0; i <= len1; i++) {
+      matrix[i] = [i];
+    }
+    
+    for (let j = 0; j <= len2; j++) {
+      matrix[0][j] = j;
+    }
+    
+    // Fill matrix
+    for (let i = 1; i <= len1; i++) {
+      for (let j = 1; j <= len2; j++) {
+        const cost = str1.charAt(i - 1) === str2.charAt(j - 1) ? 0 : 1;
+        matrix[i][j] = Math.min(
+          matrix[i-1][j] + 1,      // deletion
+          matrix[i][j-1] + 1,      // insertion
+          matrix[i-1][j-1] + cost  // substitution
+        );
+      }
+    }
+    
+    // Calculate similarity as 1 - normalized distance
+    return 1.0 - (matrix[len1][len2] / maxDist);
+  };
+
   const handleToolClick = (tool) => {
     if (!currentUser) {
       setShowAuthModal(true);
@@ -503,7 +754,19 @@ const InteractiveToolsPage = () => {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -10 }}
           >
-            Found {filteredTools.length} tools matching "{searchTerm}"
+            {filteredTools.length > 0 ? (
+              <>
+                Found <strong>{filteredTools.length}</strong> tools matching "<em>{searchTerm}</em>"
+                {filteredTools.length > 0 && searchTerm.split(/\s+/).length > 1 && (
+                  <span className="search-tip">
+                    <i className="fas fa-info-circle"></i> 
+                    Results are sorted by relevance
+                  </span>
+                )}
+              </>
+            ) : (
+              <span>No tools found matching "<em>{searchTerm}</em>"</span>
+            )}
           </motion.div>
         )}
       </AnimatePresence>

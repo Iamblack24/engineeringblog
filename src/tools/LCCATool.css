@@ -128,11 +128,164 @@ button:hover {
   color: #495057;
 }
 
+.result-card strong {
+  color: #0056b3; /* Darker blue for emphasis */
+  font-size: 1.1em;
+}
+
 .chart-container {
-  height: 400px;
+  position: relative; /* Needed for chart responsiveness */
+  height: 450px; /* Increased height */
+  width: 100%;
   margin-top: 30px;
   padding: 20px;
   background-color: white;
   border-radius: 8px;
   box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+/* Project Info Grid */
+.info-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 15px;
+}
+
+/* Periodic Cost Group Styling */
+.periodic-cost-group h3 {
+  margin-bottom: 10px; /* Less space below heading */
+}
+
+.periodic-input-form {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 10px;
+  align-items: center; /* Align items vertically */
+}
+
+.periodic-input-form input {
+  flex: 1; /* Allow inputs to grow */
+  min-width: 60px; /* Ensure inputs don't get too small */
+  margin-top: 0; /* Remove default margin */
+}
+
+.add-periodic-btn {
+  padding: 6px 12px;
+  font-size: 1.2rem;
+  line-height: 1;
+  margin-top: 0; /* Remove default margin */
+  flex-shrink: 0; /* Prevent button from shrinking */
+}
+
+.periodic-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  max-height: 150px; /* Limit height and add scroll */
+  overflow-y: auto;
+  border: 1px solid #e0e0e0;
+  border-radius: 4px;
+  padding: 5px;
+}
+
+.periodic-list li {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 4px 8px;
+  font-size: 0.85rem;
+  background-color: #fff;
+  border-bottom: 1px solid #eee;
+}
+.periodic-list li:last-child {
+  border-bottom: none;
+}
+
+.remove-periodic-btn {
+  background: none;
+  border: none;
+  color: #dc3545;
+  cursor: pointer;
+  font-size: 1rem;
+  padding: 0 5px;
+  margin: 0;
+  line-height: 1;
+}
+
+/* Button Styling */
+.add-alternative-btn {
+  display: block; /* Make button full width */
+  width: 100%;
+  margin-top: 20px;
+  background-color: #28a745; /* Green color */
+}
+.add-alternative-btn:hover {
+  background-color: #218838;
+}
+
+.calculate-lcca-btn {
+  background-color: #ffc107; /* Amber color */
+  color: #212529;
+}
+.calculate-lcca-btn:hover {
+  background-color: #e0a800;
+}
+
+.export-button {
+  margin-top: 20px;
+  background-color: #6c757d; /* Gray color */
+}
+.export-button:hover {
+  background-color: #5a6268;
+}
+
+/* Alternatives Summary List */
+.alternatives-section ul {
+    list-style: none;
+    padding: 0;
+}
+.alternatives-section li {
+    background-color: #e9ecef; /* Slightly different background */
+    padding: 10px 15px;
+    margin-bottom: 8px;
+    border-radius: 4px;
+}
+.alternatives-section li h3 {
+    margin: 0;
+    font-size: 1.1rem;
+    color: #495057;
+}
+
+/* Optional Field Styling */
+.optional-label label, /* Target the label text itself if needed */
+.optional-label { /* Target the container label */
+  color: #6c757d; /* Gray color for optional label text */
+  font-style: italic;
+}
+
+.optional-label input::placeholder {
+  color: #adb5bd; /* Lighter placeholder text */
+  font-style: italic;
+}
+
+/* Note below heading */
+.input-note {
+  font-size: 0.8rem;
+  color: #6c757d;
+  margin-top: -10px; /* Pull up below heading */
+  margin-bottom: 10px;
+  font-style: italic;
+}
+
+/* Separator for optional sections */
+.optional-hr {
+  border: none;
+  border-top: 1px dashed #ced4da;
+  margin: 15px 0;
+}
+
+/* Adjust input group padding if needed */
+.input-group {
+  padding: 15px;
+  /* ... existing ... */
 }
