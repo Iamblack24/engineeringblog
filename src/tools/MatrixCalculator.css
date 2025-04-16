@@ -60,6 +60,7 @@
   text-align: center;
   font-size: 0.95em;
   /* Remove spinner buttons for cleaner look */
+  appearance: textfield;
   -moz-appearance: textfield;
 }
 .matrix-settings .size-input input[type="number"]::-webkit-outer-spin-button,

@@ -1,0 +1,409 @@
+.moving-load-analyzer {
+  padding: 25px;
+  max-width: 1400px; /* Allow wider layout */
+  margin: 20px auto;
+  background-color: #f8f9fa; /* Light background */
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  color: #333;
+}
+
+.moving-load-analyzer h2 {
+  text-align: center;
+  color: #0056b3; /* Primary color */
+  margin-bottom: 10px;
+}
+
+.tool-description {
+  text-align: center;
+  margin-bottom: 30px;
+  font-size: 1.05em;
+  color: #555;
+  line-height: 1.6;
+}
+
+.analyzer-container {
+  display: flex;
+  flex-wrap: wrap; /* Allow wrapping on smaller screens */
+  gap: 30px;
+}
+
+.configuration-panel {
+  flex: 1; /* Take up available space */
+  min-width: 350px; /* Minimum width before wrapping */
+  background-color: #ffffff;
+  padding: 20px;
+  border-radius: 6px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+  border: 1px solid #e0e0e0;
+}
+
+.visualization-panel {
+  flex: 2; /* Take up more space */
+  min-width: 600px; /* Minimum width */
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.config-section {
+  margin-bottom: 25px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid #eee;
+}
+
+.config-section:last-child {
+  border-bottom: none;
+  margin-bottom: 0;
+  padding-bottom: 0;
+}
+
+.config-section h3 {
+  margin-top: 0;
+  margin-bottom: 15px;
+  color: #0056b3;
+  font-size: 1.2em;
+  border-bottom: 2px solid #007bff;
+  padding-bottom: 5px;
+  display: inline-block;
+}
+
+.input-group {
+  margin-bottom: 15px;
+  display: flex;
+  flex-direction: column; /* Stack label and input */
+}
+
+.input-group label {
+  margin-bottom: 6px;
+  font-weight: 600;
+  font-size: 0.9em;
+  color: #495057;
+}
+
+.input-group input[type="number"],
+.input-group select {
+  padding: 10px;
+  border: 1px solid #ced4da;
+  border-radius: 4px;
+  font-size: 0.95em;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.input-group input[type="number"]:focus,
+.input-group select:focus {
+  border-color: #80bdff;
+  outline: 0;
+  box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+}
+
+.input-group input[type="range"] {
+  width: 100%;
+  cursor: pointer;
+  margin-top: 5px;
+}
+
+/* Style range slider value display */
+.input-group input[type="range"] + span {
+  font-size: 0.9em;
+  color: #6c757d;
+  margin-left: 10px;
+  display: inline-block; /* Align next to label if needed */
+  min-width: 50px; /* Ensure space */
+  text-align: right;
+}
+
+/* Style range slider label and value on the same line */
+.input-group label[for="position"],
+.input-group label[for="influenceLinePosition"] {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.checkbox-group {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.checkbox-group input[type="checkbox"] {
+  margin-right: 10px;
+  width: 16px;
+  height: 16px;
+  cursor: pointer;
+}
+
+.checkbox-group label {
+  margin-bottom: 0; /* Reset margin */
+  font-weight: normal;
+  cursor: pointer;
+  font-size: 0.95em;
+}
+
+.animation-controls {
+  margin-top: 20px;
+  padding-top: 15px;
+  border-top: 1px dashed #ccc;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.primary-button,
+.secondary-button {
+  padding: 10px 15px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 1em;
+  transition: background-color 0.2s ease, transform 0.1s ease;
+}
+
+.primary-button {
+  background-color: #007bff;
+  color: white;
+}
+
+.primary-button:hover {
+  background-color: #0056b3;
+}
+
+.primary-button:active {
+  transform: scale(0.98);
+}
+
+.secondary-button {
+  background-color: #6c757d;
+  color: white;
+}
+
+.secondary-button:hover {
+  background-color: #5a6268;
+}
+
+.train-loads-config {
+  margin-top: 15px;
+  padding: 10px;
+  background-color: #e9ecef;
+  border-radius: 4px;
+  font-size: 0.9em;
+}
+
+.train-loads-config p {
+  margin: 0 0 10px 0;
+  font-weight: bold;
+}
+
+/* Visualization Panel */
+.beam-display,
+.results-display {
+  background-color: #ffffff;
+  padding: 20px;
+  border-radius: 6px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+  border: 1px solid #e0e0e0;
+}
+
+.beam-display h3,
+.results-display h3 {
+  margin-top: 0;
+  margin-bottom: 15px;
+  color: #343a40;
+  font-size: 1.15em;
+}
+
+.diagram-renderer {
+  position: relative; /* For legend positioning if needed */
+}
+
+.beam-canvas,
+.diagram-canvas {
+  display: block; /* Prevent extra space below canvas */
+  width: 100%; /* Make canvas responsive */
+  max-width: 800px; /* Match JS width */
+  height: auto; /* Maintain aspect ratio */
+  margin: 0 auto; /* Center canvas */
+  background-color: #fff; /* Ensure background */
+  border: 1px solid #ddd;
+  margin-bottom: 10px;
+}
+
+.diagram-legend {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 15px;
+  margin-top: 15px;
+  padding: 10px;
+  background-color: #f1f1f1;
+  border-radius: 4px;
+  font-size: 0.85em;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+}
+
+.legend-color {
+  width: 15px;
+  height: 15px;
+  margin-right: 5px;
+  border: 1px solid rgba(0, 0, 0, 0.2);
+}
+
+.legend-label {
+  color: #333;
+}
+
+.results-display {
+  margin-top: 20px; /* Space between diagram and results */
+}
+
+.result-values {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); /* Responsive columns */
+  gap: 10px 20px; /* Row and column gap */
+}
+
+.result-item {
+  display: flex;
+  justify-content: space-between;
+  padding: 8px 0;
+  border-bottom: 1px solid #eee;
+}
+
+.result-item:last-child {
+  border-bottom: none;
+}
+
+.result-label {
+  font-weight: 600;
+  color: #555;
+  margin-right: 10px;
+}
+
+.result-value {
+  font-weight: bold;
+  color: #0056b3;
+  text-align: right;
+}
+
+/* Responsive adjustments */
+
+/* Medium screens (tablets, smaller laptops) */
+@media (max-width: 1100px) { /* Adjust breakpoint if needed */
+  .analyzer-container {
+    flex-direction: column; /* Stack panels vertically */
+  }
+  .configuration-panel,
+  .visualization-panel {
+    min-width: 100%; /* Allow panels to take full width */
+    flex: none; /* Reset flex-grow/shrink */
+  }
+  .visualization-panel {
+     min-width: unset; /* Remove min-width when stacked */
+  }
+}
+
+/* Small screens (phones) */
+@media (max-width: 768px) {
+  .moving-load-analyzer {
+    padding: 15px; /* Reduce padding */
+  }
+  .configuration-panel,
+  .visualization-panel,
+  .beam-display,
+  .results-display {
+    padding: 15px; /* Reduce padding inside panels */
+  }
+  .moving-load-analyzer h2 {
+    font-size: 1.5em; /* Adjust heading size */
+  }
+  .tool-description {
+    font-size: 0.95em; /* Adjust description size */
+    margin-bottom: 20px;
+  }
+  .config-section h3 {
+    font-size: 1.1em; /* Adjust section heading size */
+  }
+  .input-group label {
+    font-size: 0.85em; /* Smaller labels */
+  }
+  .input-group input[type="number"],
+  .input-group select {
+    padding: 8px; /* Slightly smaller inputs */
+    font-size: 0.9em;
+  }
+  .primary-button,
+  .secondary-button {
+    padding: 8px 12px;
+    font-size: 0.95em;
+  }
+  .result-values {
+    grid-template-columns: 1fr; /* Single column for results */
+    gap: 5px 15px; /* Adjust gap */
+  }
+  .result-item {
+    padding: 6px 0; /* Reduce result item padding */
+    flex-direction: column; /* Stack label and value */
+    align-items: flex-start; /* Align items left */
+  }
+  .result-label {
+    margin-right: 0;
+    margin-bottom: 3px; /* Space between label and value */
+    font-size: 0.85em;
+  }
+  .result-value {
+    text-align: left; /* Align value left */
+    font-size: 0.95em;
+  }
+  .diagram-legend {
+    font-size: 0.8em; /* Smaller legend text */
+    gap: 10px;
+  }
+  .beam-canvas,
+  .diagram-canvas {
+     max-width: 100%; /* Ensure canvas doesn't overflow container */
+  }
+}
+
+/* Very small screens */
+@media (max-width: 480px) {
+  .moving-load-analyzer {
+    padding: 10px;
+  }
+  .configuration-panel,
+  .visualization-panel,
+  .beam-display,
+  .results-display {
+    padding: 10px;
+  }
+  .moving-load-analyzer h2 {
+    font-size: 1.3em;
+  }
+  .tool-description {
+    font-size: 0.9em;
+  }
+}
+
+@media (max-width: 992px) {
+  .analyzer-container {
+    flex-direction: column;
+  }
+  .configuration-panel,
+  .visualization-panel {
+    min-width: 100%; /* Full width on smaller screens */
+  }
+}
+
+@media (max-width: 768px) {
+  .moving-load-analyzer {
+    padding: 15px;
+  }
+  .result-values {
+    grid-template-columns: 1fr; /* Single column on very small screens */
+  }
+}

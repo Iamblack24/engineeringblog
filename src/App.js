@@ -101,6 +101,7 @@ import AutoTutor from './pages/AutoTutor';
 import ExtensionHubPage from './pages/ExtensionHubPage';
 import AdsStrategyPage from './pages/AdsStrategyPage';
 import BillOfQuantitiesGenerator from './tools/BillOfQuantitiesGenerator';
+import MovingLoadAnalyzer from './tools/MovingLoadAnalyzer/MovingLoadAnalyzer';
 
 // Create a layout wrapper component
 const AppLayout = ({ children }) => {
@@ -252,6 +253,7 @@ function App() {
           <Route path="/ads-strategy" element={<ProtectedRoute><AdsStrategyPage /></ProtectedRoute>} />
           <Route path="/tools/bill-of-quantities-generator" element={<ProtectedRoute><BillOfQuantitiesGenerator /></ProtectedRoute>} />
           <Route path="/hub/:extensionId" element={<ProtectedRoute><ExtensionHubPage /></ProtectedRoute>} />
+          <Route path="/moving-load-analyzer" element={<ProtectedRoute><MovingLoadAnalyzer /></ProtectedRoute>} />
         </Routes>
       </AppLayout>
       <InstallPrompt />
