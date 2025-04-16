@@ -37,6 +37,11 @@ const tools = [
     link: '/green-building-design',
   },
   {
+    title: 'Moving load Analysis',
+    description: 'Analyze the effects of moving loads on structures.',
+    link: '/moving-loads-analyzer',
+  },
+  {
     title: 'Load, fluid simulation and analysis',
     description: 'Analyze loads and fluid flow in engineering systems.',
     link: '/simulation-generator',
