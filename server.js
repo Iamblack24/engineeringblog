@@ -29,7 +29,7 @@ const PORT = process.env.PORT || 3001; // Use different port for SSR server
 app.use(cors({
   origin: isDev 
   ? 'http://localhost:3000'
-  : ['https://engineeringhub.engineer', 'https://www.engineeringhub.engineer'],
+  : ['https://engineeringhub.engineer', 'https://www.engineeringhub.engineer', 'https://enginehub.onrender.com'],
   methods: ['POST', 'GET', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],
   credentials: true

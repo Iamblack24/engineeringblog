@@ -1,5 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './SteelSectionDatabase.css';
+import { Chart } from 'react-chartjs-2';
+import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, LineElement, PointElement } from 'chart.js';
+
+// Register ChartJS components
+ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, LineElement, PointElement);
 
 const SteelSectionDatabase = () => {
   const [sectionType, setSectionType] = useState('universal_beams');
@@ -7,8 +12,19 @@ const SteelSectionDatabase = () => {
   const [selectedSection, setSelectedSection] = useState(null);
   const [sortField, setSortField] = useState('designation');
   const [sortOrder, setSortOrder] = useState('asc');
+  const [loading, setLoading] = useState(false);
+  const [calculationResults, setCalculationResults] = useState(null);
+  const [calculationInputs, setCalculationInputs] = useState({
+    span: 6, // meters
+    load: 20, // kN/m
+    grade: 'S355',
+    supportType: 'simply_supported',
+    deflectionLimit: 'L/360',
+    fireResistance: 30, // minutes
+    corrosionProtection: 'galvanized'
+  });
 
-  // Steel section types and their properties
+  // Enhanced steel section types with more properties and grades
   const sectionTypes = {
     universal_beams: {
       name: 'Universal Beams (UB)',
@@ -30,9 +46,20 @@ const SteelSectionDatabase = () => {
           elastic_modulus_y: 74.3e3,
           elastic_modulus_z: 8.11e3,
           plastic_modulus_y: 85.4e3,
-          plastic_modulus_z: 12.6e3
+          plastic_modulus_z: 12.6e3,
+          available_grades: ['S275', 'S355', 'S450'],
+          fire_ratings: {
+            '30': { reduction_factor: 0.85 },
+            '60': { reduction_factor: 0.7 },
+            '90': { reduction_factor: 0.5 }
+          },
+          corrosion_rates: {
+            'unprotected': 0.1,
+            'painted': 0.05,
+            'galvanized': 0.02
+          }
         },
-        // Add more UB sections here
+        // Add more UB sections with enhanced properties
       ]
     },
     universal_columns: {
@@ -55,9 +82,20 @@ const SteelSectionDatabase = () => {
           elastic_modulus_y: 14.7e3,
           elastic_modulus_z: 4.92e3,
           plastic_modulus_y: 16.6e3,
-          plastic_modulus_z: 7.54e3
+          plastic_modulus_z: 7.54e3,
+          available_grades: ['S275', 'S355', 'S450'],
+          fire_ratings: {
+            '30': { reduction_factor: 0.85 },
+            '60': { reduction_factor: 0.7 },
+            '90': { reduction_factor: 0.5 }
+          },
+          corrosion_rates: {
+            'unprotected': 0.1,
+            'painted': 0.05,
+            'galvanized': 0.02
+          }
         },
-        // Add more UC sections here
+        // Add more UC sections with enhanced properties
       ]
     },
     channels: {
@@ -186,6 +224,108 @@ const SteelSectionDatabase = () => {
     }
   };
 
+  // Material properties for different grades
+  const materialProperties = {
+    S275: {
+      yield_strength: 275,
+      ultimate_strength: 430,
+      youngs_modulus: 210000,
+      poissons_ratio: 0.3,
+      density: 7850
+    },
+    S355: {
+      yield_strength: 355,
+      ultimate_strength: 510,
+      youngs_modulus: 210000,
+      poissons_ratio: 0.3,
+      density: 7850
+    },
+    S450: {
+      yield_strength: 450,
+      ultimate_strength: 550,
+      youngs_modulus: 210000,
+      poissons_ratio: 0.3,
+      density: 7850
+    }
+  };
+
+  // Calculate section capacity
+  const calculateSectionCapacity = (section, inputs) => {
+    const material = materialProperties[inputs.grade];
+    const span = inputs.span * 1000; // convert to mm
+    const load = inputs.load * 1000; // convert to N/mm
+
+    // Calculate bending moment
+    let maxMoment;
+    if (inputs.supportType === 'simply_supported') {
+      maxMoment = (load * Math.pow(span, 2)) / 8;
+    } else if (inputs.supportType === 'cantilever') {
+      maxMoment = (load * Math.pow(span, 2)) / 2;
+    }
+
+    // Calculate section capacity
+    const plasticMoment = section.plastic_modulus_y * material.yield_strength;
+    const elasticMoment = section.elastic_modulus_y * material.yield_strength;
+
+    // Calculate deflection
+    const deflection = (5 * load * Math.pow(span, 4)) / (384 * material.youngs_modulus * section.moment_of_inertia_y);
+    const deflectionLimit = span / 360; // L/360
+
+    // Calculate shear capacity
+    const shearArea = section.depth * section.web_thickness;
+    const shearCapacity = (shearArea * material.yield_strength) / Math.sqrt(3);
+
+    // Calculate fire resistance
+    const fireReduction = section.fire_ratings[inputs.fireResistance]?.reduction_factor || 1;
+    const fireMomentCapacity = plasticMoment * fireReduction;
+
+    // Calculate corrosion allowance
+    const corrosionRate = section.corrosion_rates[inputs.corrosionProtection] || 0.1;
+    const designLife = 50; // years
+    const corrosionAllowance = corrosionRate * designLife;
+
+    return {
+      maxMoment,
+      plasticMoment,
+      elasticMoment,
+      deflection,
+      deflectionLimit,
+      shearCapacity,
+      fireMomentCapacity,
+      corrosionAllowance,
+      utilization: {
+        bending: maxMoment / plasticMoment,
+        shear: (load * span / 2) / shearCapacity,
+        deflection: deflection / deflectionLimit,
+        fire: maxMoment / fireMomentCapacity
+      }
+    };
+  };
+
+  // Handle calculation inputs change
+  const handleCalculationInputChange = (field, value) => {
+    setCalculationInputs(prev => ({
+      ...prev,
+      [field]: value
+    }));
+  };
+
+  // Perform calculations
+  const performCalculations = () => {
+    if (!selectedSection) return;
+
+    setLoading(true);
+    try {
+      const results = calculateSectionCapacity(selectedSection, calculationInputs);
+      setCalculationResults(results);
+    } catch (error) {
+      console.error('Calculation error:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Format property values
   const formatProperty = (value, property) => {
     if (typeof value === 'number') {
       if (property.includes('moment_of_inertia')) {
@@ -208,6 +348,13 @@ const SteelSectionDatabase = () => {
     return value;
   };
 
+  // Handle section selection
+  const handleSectionSelect = (section) => {
+    setSelectedSection(section);
+    setCalculationResults(null);
+  };
+
+  // Handle sort
   const handleSort = (field) => {
     if (sortField === field) {
       setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
@@ -217,6 +364,7 @@ const SteelSectionDatabase = () => {
     }
   };
 
+  // Get sorted sections
   const getSortedSections = () => {
     const sections = [...sectionTypes[sectionType].sections];
     return sections.sort((a, b) => {
@@ -231,13 +379,14 @@ const SteelSectionDatabase = () => {
     });
   };
 
+  // Filter sections
   const filteredSections = getSortedSections().filter(section =>
     section.designation.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   return (
     <div className="steel-section-database">
-      <h2>Steel Section Database</h2>
+      <h2>Enhanced Steel Section Database</h2>
       
       <div className="controls">
         <div className="section-type-select">
@@ -309,7 +458,7 @@ const SteelSectionDatabase = () => {
                 <td>
                   <button 
                     className="view-details-btn"
-                    onClick={() => setSelectedSection(section)}
+                    onClick={() => handleSectionSelect(section)}
                   >
                     View Details
                   </button>
@@ -323,9 +472,10 @@ const SteelSectionDatabase = () => {
       {selectedSection && (
         <div className="section-details">
           <h3>Section Properties: {selectedSection.designation}</h3>
+          
           <div className="properties-grid">
             {Object.entries(selectedSection).map(([key, value]) => {
-              if (key !== 'designation') {
+              if (key !== 'designation' && !key.includes('_ratings') && !key.includes('_rates')) {
                 return (
                   <div key={key} className="property-item">
                     <span className="property-label">
@@ -339,6 +489,170 @@ const SteelSectionDatabase = () => {
               }
               return null;
             })}
+          </div>
+
+          <div className="calculation-section">
+            <h4>Section Capacity Calculator</h4>
+            <div className="calculation-inputs">
+              <div className="input-group">
+                <label>Span (m):</label>
+                <input
+                  type="number"
+                  value={calculationInputs.span}
+                  onChange={(e) => handleCalculationInputChange('span', parseFloat(e.target.value))}
+                  min="1"
+                  step="0.1"
+                />
+              </div>
+              <div className="input-group">
+                <label>Load (kN/m):</label>
+                <input
+                  type="number"
+                  value={calculationInputs.load}
+                  onChange={(e) => handleCalculationInputChange('load', parseFloat(e.target.value))}
+                  min="1"
+                  step="1"
+                />
+              </div>
+              <div className="input-group">
+                <label>Grade:</label>
+                <select
+                  value={calculationInputs.grade}
+                  onChange={(e) => handleCalculationInputChange('grade', e.target.value)}
+                >
+                  {selectedSection.available_grades.map(grade => (
+                    <option key={grade} value={grade}>{grade}</option>
+                  ))}
+                </select>
+              </div>
+              <div className="input-group">
+                <label>Support Type:</label>
+                <select
+                  value={calculationInputs.supportType}
+                  onChange={(e) => handleCalculationInputChange('supportType', e.target.value)}
+                >
+                  <option value="simply_supported">Simply Supported</option>
+                  <option value="cantilever">Cantilever</option>
+                </select>
+              </div>
+              <div className="input-group">
+                <label>Fire Resistance (min):</label>
+                <select
+                  value={calculationInputs.fireResistance}
+                  onChange={(e) => handleCalculationInputChange('fireResistance', e.target.value)}
+                >
+                  <option value="30">30 minutes</option>
+                  <option value="60">60 minutes</option>
+                  <option value="90">90 minutes</option>
+                </select>
+              </div>
+              <div className="input-group">
+                <label>Corrosion Protection:</label>
+                <select
+                  value={calculationInputs.corrosionProtection}
+                  onChange={(e) => handleCalculationInputChange('corrosionProtection', e.target.value)}
+                >
+                  <option value="unprotected">Unprotected</option>
+                  <option value="painted">Painted</option>
+                  <option value="galvanized">Galvanized</option>
+                </select>
+              </div>
+            </div>
+
+            <button 
+              className="calculate-btn"
+              onClick={performCalculations}
+              disabled={loading}
+            >
+              {loading ? 'Calculating...' : 'Calculate Capacity'}
+            </button>
+
+            {calculationResults && (
+              <div className="calculation-results">
+                <h5>Results</h5>
+                <div className="results-grid">
+                  <div className="result-item">
+                    <span className="result-label">Maximum Moment:</span>
+                    <span className="result-value">
+                      {calculationResults.maxMoment.toFixed(2)} N·mm
+                    </span>
+                  </div>
+                  <div className="result-item">
+                    <span className="result-label">Plastic Moment Capacity:</span>
+                    <span className="result-value">
+                      {calculationResults.plasticMoment.toFixed(2)} N·mm
+                    </span>
+                  </div>
+                  <div className="result-item">
+                    <span className="result-label">Deflection:</span>
+                    <span className="result-value">
+                      {calculationResults.deflection.toFixed(2)} mm
+                    </span>
+                  </div>
+                  <div className="result-item">
+                    <span className="result-label">Deflection Limit:</span>
+                    <span className="result-value">
+                      {calculationResults.deflectionLimit.toFixed(2)} mm
+                    </span>
+                  </div>
+                  <div className="result-item">
+                    <span className="result-label">Shear Capacity:</span>
+                    <span className="result-value">
+                      {calculationResults.shearCapacity.toFixed(2)} N
+                    </span>
+                  </div>
+                  <div className="result-item">
+                    <span className="result-label">Fire Moment Capacity:</span>
+                    <span className="result-value">
+                      {calculationResults.fireMomentCapacity.toFixed(2)} N·mm
+                    </span>
+                  </div>
+                  <div className="result-item">
+                    <span className="result-label">Corrosion Allowance:</span>
+                    <span className="result-value">
+                      {calculationResults.corrosionAllowance.toFixed(2)} mm
+                    </span>
+                  </div>
+                </div>
+
+                <div className="utilization-chart">
+                  <Chart
+                    type="bar"
+                    data={{
+                      labels: ['Bending', 'Shear', 'Deflection', 'Fire'],
+                      datasets: [{
+                        label: 'Utilization Ratio',
+                        data: [
+                          calculationResults.utilization.bending,
+                          calculationResults.utilization.shear,
+                          calculationResults.utilization.deflection,
+                          calculationResults.utilization.fire
+                        ],
+                        backgroundColor: [
+                          calculationResults.utilization.bending > 1 ? '#ff6b6b' : '#64ffda',
+                          calculationResults.utilization.shear > 1 ? '#ff6b6b' : '#64ffda',
+                          calculationResults.utilization.deflection > 1 ? '#ff6b6b' : '#64ffda',
+                          calculationResults.utilization.fire > 1 ? '#ff6b6b' : '#64ffda'
+                        ]
+                      }]
+                    }}
+                    options={{
+                      responsive: true,
+                      scales: {
+                        y: {
+                          beginAtZero: true,
+                          max: 1.2,
+                          title: {
+                            display: true,
+                            text: 'Utilization Ratio'
+                          }
+                        }
+                      }
+                    }}
+                  />
+                </div>
+              </div>
+            )}
           </div>
         </div>
       )}

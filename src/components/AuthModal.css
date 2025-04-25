@@ -5,7 +5,7 @@
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(10, 20, 30, 0.8); /* Darker background */
+  background-color: rgba(2, 6, 23, 0.95); /* Darker navy background */
   display: flex;
   justify-content: center;
   align-items: center;
@@ -16,25 +16,25 @@
   contain: content;
   transform: translateZ(0);
   -webkit-font-smoothing: antialiased;
-  backdrop-filter: blur(8px);
+  backdrop-filter: blur(12px);
 }
 
 /* Modal Content */
 .auth-modal-content {
-  background: linear-gradient(135deg, #1e3a8a 0%, #1e3a8a 100%);
-  padding: 30px 20px;
+  background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+  padding: 40px 30px;
   width: 100%;
   max-width: 400px;
   border-radius: 12px;
   position: relative;
   text-align: center;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
   max-height: 90vh; /* Prevent modal from exceeding viewport height */
   overflow-y: auto; /* Allow scrolling within the modal content */
   transform: translateZ(0);
   backface-visibility: hidden;
   color: #f8fafc;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.05);
 }
 
 .auth-modal-content::before {
@@ -66,8 +66,8 @@
   position: absolute;
   top: 15px;
   right: 15px;
-  background-color: rgba(255, 255, 255, 0.1); /* Always visible light gray background */
-  border: 1px solid rgba(255, 255, 255, 0.2); /* Add border for better visibility */
+  background-color: rgba(15, 23, 42, 0.8);
+  border: 1px solid rgba(255, 255, 255, 0.1);
   font-size: 1.5rem;
   color: #f8fafc;
   cursor: pointer;
@@ -83,7 +83,8 @@
 }
 
 .close-button:hover {
-  background-color: rgba(255, 255, 255, 0.2);
+  background-color: rgba(30, 41, 59, 0.8);
+  border-color: rgba(255, 255, 255, 0.2);
   transform: scale(1.1);
   box-shadow: 0 3px 6px rgba(0, 0, 0, 0.15);
 }
@@ -109,110 +110,114 @@
 .error-message {
   color: #f87171;
   margin-bottom: 15px;
-  background-color: rgba(248, 113, 113, 0.1);
+  background-color: rgba(220, 38, 38, 0.1);
   padding: 8px;
   border-radius: 6px;
   font-size: 0.9rem;
+  border: 1px solid rgba(220, 38, 38, 0.2);
 }
 
 /* Form Groups */
 .form-group {
-  margin-bottom: 20px;
-  text-align: left; /* Align labels and inputs to the left */
+  margin-bottom: 1.5rem;
   position: relative;
 }
 
 .form-group label {
   display: block;
-  margin-bottom: 8px;
-  color: #f8fafc;
+  margin-bottom: 0.5rem;
+  color: #e2e8f0;
+  font-size: 0.9rem;
   font-weight: 500;
-  font-size: 0.95rem;
 }
 
-/* Form Groups - ensure all inputs have black text */
 .form-group input,
-.form-group select,
-.form-group input[type="text"],
-.form-group input[type="email"],
-.form-group input[type="password"] {
+.form-group select {
   width: 100%;
-  padding: 12px 16px;
-  margin-bottom: 5px;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: 8px;
-  box-sizing: border-box;
-  color: #333 !important; /* Force black text */
-  background-color: rgba(255, 255, 255, 0.9);
+  padding: 0.75rem 1rem;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 0.5rem;
+  background-color: rgba(15, 23, 42, 0.8);
+  color: #e2e8f0;
   font-size: 1rem;
   transition: all 0.3s ease;
 }
 
-/* Ensure signup form inputs specifically have black text */
-.auth-modal-content form .form-group input,
-.auth-modal-content form .form-group select {
-  color: #333 !important;
+/* Add placeholder styling */
+.form-group input::placeholder,
+.form-group select::placeholder {
+  color: rgba(226, 232, 240, 0.5);
+  opacity: 1;
 }
 
+/* Style for select placeholder option */
+.form-group select option[value=""] {
+  color: rgba(226, 232, 240, 0.7);
+}
+
+/* Focus state for better visibility */
 .form-group input:focus,
 .form-group select:focus {
   outline: none;
-  border-color: #60a5fa;
-  box-shadow: 0 0 0 2px rgba(96, 165, 250, 0.3);
-  background-color: #fff;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
 }
 
-.form-group input[type="checkbox"] {
-  width: auto;
-  margin-right: 10px;
-  vertical-align: middle;
-  color: black;
-}
-
-/* Add styles for placeholder text */
-.form-group input::placeholder,
-.form-group select::placeholder {
-  color: #94a3b8;
-}
-
-/* Style for select dropdown */
-.form-group select {
-  appearance: none;
-  background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
-  background-repeat: no-repeat;
-  background-position: right 10px center;
-  background-size: 1em;
-  padding-right: 40px;
-  background-color: rgba(255, 255, 255, 0.9);
-}
-
-/* Style for select options */
+/* Ensure select dropdown text is visible */
 .form-group select option {
-  color: #333;
-  background-color: #fff;
-}
-
-/* Terms and Privacy Group */
-.terms-group {
-  display: flex;
-  align-items: center;
-  justify-content: flex-start;
-  font-size: 0.9rem;
-  margin-top: 5px;
-}
-
-.terms-group label {
-  display: flex;
-  align-items: center;
-  font-weight: normal;
+  background-color: #0f172a;
   color: #e2e8f0;
+}
+
+/* Checkbox Group */
+.checkbox-group {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 1rem 0;
+}
+
+.checkbox-group input[type="checkbox"] {
+  width: auto;
+  margin: 0;
+}
+
+.checkbox-group label {
+  font-size: 0.9rem;
+  color: #e2e8f0;
+}
+
+/* Toggle Password Button */
+.toggle-password {
+  position: absolute;
+  right: 1rem;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  color: #e2e8f0;
+  cursor: pointer;
+  padding: 0;
+  font-size: 0.9rem;
+}
+
+/* Form Validation */
+.form-group input:invalid,
+.form-group select:invalid {
+  border-color: #ef4444;
+}
+
+/* Required field indicator */
+.form-group label::after {
+  content: " *";
+  color: #ef4444;
 }
 
 /* Submit Button */
 .submit-button {
   width: 100%;
   padding: 14px 15px;
-  background: linear-gradient(90deg, #3b82f6 0%, #2563eb 100%);
+  background: linear-gradient(90deg, #1d4ed8 0%, #1e40af 100%);
   color: #fff;
   border: none;
   border-radius: 8px;
@@ -222,16 +227,16 @@
   letter-spacing: 0.5px;
   transition: all 0.3s ease;
   transform: translateZ(0);
-  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+  box-shadow: 0 4px 15px rgba(30, 64, 175, 0.3);
   margin-top: 10px;
   position: relative;
   overflow: hidden;
 }
 
 .submit-button:hover {
-  background: linear-gradient(90deg, #2563eb 0%, #1d4ed8 100%);
+  background: linear-gradient(90deg, #1e40af 0%, #1e3a8a 100%);
   transform: translateY(-2px);
-  box-shadow: 0 6px 15px rgba(37, 99, 235, 0.4);
+  box-shadow: 0 6px 20px rgba(30, 64, 175, 0.4);
 }
 
 .submit-button:active {
@@ -310,7 +315,7 @@
 .password-strength {
   margin: 15px 0;
   padding: 15px;
-  background-color: rgba(255, 255, 255, 0.05);
+  background-color: rgba(15, 23, 42, 0.8);
   border-radius: 8px;
   font-size: 0.9rem;
   border: 1px solid rgba(255, 255, 255, 0.1);
@@ -333,6 +338,7 @@
   padding-left: 25px;
   position: relative;
   transition: color 0.3s ease;
+  color: #94a3b8;
 }
 
 .password-strength li:before {
@@ -356,41 +362,6 @@
   color: #4ade80;
 }
 
-/* Password field with toggle button */
-.password-input-wrapper {
-  position: relative;
-  display: flex;
-  align-items: center;
-}
-
-.password-input-wrapper input {
-  padding-right: 45px; /* Make room for the button */
-}
-
-.toggle-password {
-  position: absolute;
-  right: 10px;
-  background: transparent;
-  border: none;
-  color: #60a5fa;
-  cursor: pointer;
-  font-size: 1.2rem;
-  padding: 5px;
-  height: 36px;
-  width: 36px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 2;
-}
-
-.toggle-password:hover {
-  color: #3b82f6;
-}
-
-.toggle-password:focus {
-  outline: none;
-}
 /* Loading spinner */
 .loading-spinner {
   display: inline-block;
@@ -462,4 +433,103 @@
     transparent 100%
   );
   transform: skewX(-20deg);
+}
+
+/* Add these new styles to your existing CSS file */
+
+/* Success message */
+.success-message {
+  color: #4ade80;
+  margin-bottom: 15px;
+  background-color: rgba(34, 197, 94, 0.1);
+  padding: 8px;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  border: 1px solid rgba(34, 197, 94, 0.2);
+}
+
+/* Social login buttons */
+.social-login {
+  margin-bottom: 20px;
+  width: 100%;
+}
+
+.google-signin-button {
+  width: 100%;
+  padding: 12px 15px;
+  background-color: rgba(15, 23, 42, 0.8);
+  color: #e2e8f0;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 1rem;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.google-signin-button:hover {
+  background-color: rgba(30, 41, 59, 0.8);
+  border-color: rgba(255, 255, 255, 0.2);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.google-signin-button i {
+  margin-right: 10px;
+  font-size: 1.2rem;
+  color: #4285F4;
+}
+
+/* Divider */
+.divider {
+  display: flex;
+  align-items: center;
+  text-align: center;
+  margin: 20px 0;
+}
+
+.divider::before,
+.divider::after {
+  content: '';
+  flex: 1;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.divider span {
+  padding: 0 10px;
+  color: #e2e8f0;
+  font-size: 0.9rem;
+}
+
+/* Remember me checkbox */
+.remember-me-group {
+  display: flex;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.remember-me-group input[type="checkbox"] {
+  margin-right: 10px;
+}
+
+.remember-me-group label {
+  margin-bottom: 0;
+  font-weight: normal;
+  font-size: 0.9rem;
+}
+
+/* Improve mobile experience */
+@media (max-width: 500px) {
+  .auth-modal-content {
+    max-width: 90%;
+    padding: 20px 15px;
+  }
+  
+  .google-signin-button {
+    font-size: 0.9rem;
+    padding: 10px;
+  }
 }

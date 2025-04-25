@@ -36,7 +36,7 @@ const ContactPage = () => {
     
     // Validate phone (if entered)
     if (formData.phonenumber.trim()) {
-      const phoneRegex = /^\+?[0-9\s\-\(\)]{8,20}$/;
+      const phoneRegex = /^\+?[0-9\s\-]{8,20}$/;
       if (!phoneRegex.test(formData.phonenumber)) {
         newErrors.phonenumber = 'Please enter a valid phone number';
       }
@@ -79,7 +79,6 @@ const ContactPage = () => {
   };
 
   const handleBlur = (e) => {
-    // Validate individual field on blur
     const { name, value } = e.target;
     
     if (name === 'email' && value.trim()) {
@@ -93,7 +92,7 @@ const ContactPage = () => {
     }
     
     if (name === 'phonenumber' && value.trim()) {
-      const phoneRegex = /^\+?[0-9\s\-\(\)]{8,20}$/;
+      const phoneRegex = /^\+?[0-9\s\-]{8,20}$/;
       if (!phoneRegex.test(value)) {
         setErrors({
           ...errors,
@@ -174,7 +173,7 @@ const ContactPage = () => {
               <MdEmail className="contact-icon" />
               <div>
                 <h3>Email</h3>
-                <p><a href="mailto:info@example.com">info@example.com</a></p>
+                <p><a href="mailto:engineeringhub24@gmail.com">engineeringhub24@gmail.com</a></p>
               </div>
             </div>
             
@@ -182,7 +181,7 @@ const ContactPage = () => {
               <MdPhone className="contact-icon" />
               <div>
                 <h3>Phone</h3>
-                <p><a href="tel:+1234567890">+1 (234) 567-890</a></p>
+                <p><a href="tel:+254799129637">+254799129637</a></p>
               </div>
             </div>
             
@@ -190,16 +189,33 @@ const ContactPage = () => {
               <MdLocationOn className="contact-icon" />
               <div>
                 <h3>Location</h3>
-                <p>Engineering Office, 123 Tech Street</p>
+                <p>Tassia, Embakasi, Nairobi</p>
               </div>
             </div>
           </div>
           
           <div className="social-links">
-            {/* You can add social media icons here */}
-            <a href="#" className="social-link">LinkedIn</a>
-            <a href="#" className="social-link">Twitter</a>
-            <a href="#" className="social-link">GitHub</a>
+            <button 
+              type="button" 
+              className="social-link"
+              onClick={() => window.open('https://linkedin.com', '_blank')}
+            >
+              LinkedIn
+            </button>
+            <button 
+              type="button" 
+              className="social-link"
+              onClick={() => window.open('https://twitter.com', '_blank')}
+            >
+              Twitter
+            </button>
+            <button 
+              type="button" 
+              className="social-link"
+              onClick={() => window.open('https://github.com', '_blank')}
+            >
+              GitHub
+            </button>
           </div>
         </div>
         
@@ -258,7 +274,7 @@ const ContactPage = () => {
                 value={formData.phonenumber}
                 onChange={handleChange}
                 onBlur={handleBlur}
-                placeholder="+1 (234) 567-890"
+                placeholder="+2547000000"
               />
               {errors.phonenumber && <div className="error-message">{errors.phonenumber}</div>}
             </div>

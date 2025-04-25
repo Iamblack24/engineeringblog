@@ -20,9 +20,18 @@ const DiagramRenderer = ({ beamConfig, loadConfig, analysisOptions, results, bea
   const xScale = (svgWidth - padding.left - padding.right) / beamLength;
   
   // Wrap drawing functions in useCallback to stabilize their references
+  const drawTrainLoad = useCallback((ctx, x, y, loadConfig, currentXScale) => {
+    const trainLoads = loadConfig.trainLoads || [];
+    
+    trainLoads.forEach((axle, index) => {
+      const axleX = x + axle.position * currentXScale;
+      drawPointLoad(ctx, axleX, y, axle.magnitude);
+    });
+  }, []); // Empty dependency array since it's a pure function
+
   const renderBeam = useCallback(() => {
     const canvas = beamRef.current;
-    if (!canvas) return; // Add guard clause
+    if (!canvas) return;
     const ctx = canvas.getContext('2d');
 
     // Clear the canvas
@@ -35,14 +44,13 @@ const DiagramRenderer = ({ beamConfig, loadConfig, analysisOptions, results, bea
     // Draw the beam centerline
     ctx.beginPath();
     ctx.moveTo(0, beamHeight / 2);
-    ctx.lineTo(beamConfig.length * xScale, beamHeight / 2); // Use beamConfig directly
+    ctx.lineTo(beamConfig.length * xScale, beamHeight / 2);
     ctx.strokeStyle = '#333';
     ctx.lineWidth = 2;
     ctx.stroke();
 
     // Draw supports based on support type
     switch(beamConfig.supportType) {
-      // ... (rest of switch cases using beamConfig directly) ...
       case 'simply-supported':
         drawTriangleSupport(ctx, 0, beamHeight / 2 + 10);
         drawRollerSupport(ctx, beamConfig.length * xScale, beamHeight / 2 + 10);
@@ -72,7 +80,7 @@ const DiagramRenderer = ({ beamConfig, loadConfig, analysisOptions, results, bea
     }
 
     // Draw the load
-    const loadX = loadConfig.position * beamConfig.length * xScale; // Use beamConfig directly
+    const loadX = loadConfig.position * beamConfig.length * xScale;
 
     if (loadConfig.type === 'point') {
       drawPointLoad(ctx, loadX, beamHeight / 2 - 20, loadConfig.magnitude);
@@ -81,15 +89,15 @@ const DiagramRenderer = ({ beamConfig, loadConfig, analysisOptions, results, bea
       const startX = loadX - width / 2;
       drawDistributedLoad(ctx, startX, beamHeight / 2 - 20, width, loadConfig.magnitude);
     } else if (loadConfig.type === 'train') {
-      drawTrainLoad(ctx, loadX, beamHeight / 2 - 20, loadConfig, xScale); // Pass xScale
+      drawTrainLoad(ctx, loadX, beamHeight / 2 - 20, loadConfig, xScale);
     }
 
     // Draw position markers
-    drawPositionMarkers(ctx, beamConfig.length, beamHeight, xScale); // Use beamConfig directly
+    drawPositionMarkers(ctx, beamConfig.length, beamHeight, xScale);
 
     // Draw influence line position indicator if showing
     if (analysisOptions.showInfluenceLine) {
-      const influenceX = analysisOptions.influenceLinePosition * beamConfig.length * xScale; // Use beamConfig directly
+      const influenceX = analysisOptions.influenceLinePosition * beamConfig.length * xScale;
       ctx.beginPath();
       ctx.moveTo(influenceX, beamHeight / 2 - 15);
       ctx.lineTo(influenceX, beamHeight / 2 + 15);
@@ -104,11 +112,11 @@ const DiagramRenderer = ({ beamConfig, loadConfig, analysisOptions, results, bea
     }
 
     ctx.restore();
-  }, [beamConfig, loadConfig, analysisOptions.showInfluenceLine, analysisOptions.influenceLinePosition, xScale]); // Add dependencies
+  }, [beamConfig, loadConfig, analysisOptions.showInfluenceLine, analysisOptions.influenceLinePosition, xScale, padding, drawTrainLoad]);
 
   const renderDiagrams = useCallback(() => {
     const canvas = diagramRef.current;
-    if (!canvas) return; // Add guard clause
+    if (!canvas) return;
     const ctx = canvas.getContext('2d');
 
     // Clear the canvas
@@ -255,7 +263,7 @@ const DiagramRenderer = ({ beamConfig, loadConfig, analysisOptions, results, bea
     }
 
     ctx.restore();
-  }, [results, analysisOptions, beamConfig.length, xScale, loadConfig.position]); // Add dependencies
+  }, [beamConfig, results, analysisOptions, loadConfig, xScale, padding]); // Added padding
 
   useEffect(() => {
     renderBeam();
@@ -386,48 +394,6 @@ const DiagramRenderer = ({ beamConfig, loadConfig, analysisOptions, results, bea
     ctx.font = '12px Arial';
     ctx.textAlign = 'center';
     ctx.fillText(`${magnitude} kN/m`, x + width / 2, y - 5);
-  };
-  
-  const drawTrainLoad = (ctx, x, y, loadConfig, currentXScale) => { // Accept xScale
-    // For train loads, draw series of vehicles
-    const { trainLoads = [] } = loadConfig; // Default to empty array
-
-    if (!trainLoads || trainLoads.length === 0) {
-      // Fallback to simple point load if no axle configuration
-      drawPointLoad(ctx, x, y, loadConfig.magnitude);
-      return;
-    }
-
-    // Position of the first axle is 'x'
-    let currentAxleX = x;
-
-    // Draw each axle load
-    trainLoads.forEach((axle, index) => {
-      const axlePositionOffset = (axle.position || 0) * currentXScale; // Use passed xScale
-      const absoluteAxleX = x + axlePositionOffset; // Position relative to train start 'x'
-
-      // Draw the axle load (smaller point loads)
-      drawPointLoad(ctx, absoluteAxleX, y, axle.magnitude);
-    });
-
-    // Optional: Draw vehicle body (simplified rectangle above the axles)
-    // Calculate total train length based on last axle position
-    const lastAxleRelativePos = trainLoads.length > 0 ? (trainLoads[trainLoads.length - 1].position || 0) : 0;
-    const trainDrawLength = Math.max(20, lastAxleRelativePos * currentXScale + 20); // Add some padding
-
-    ctx.beginPath();
-    ctx.rect(x - 10, y - 15, trainDrawLength, 10); // Adjust width based on axles
-    ctx.fillStyle = 'rgba(233, 30, 99, 0.3)';
-    ctx.fill();
-    ctx.strokeStyle = '#E91E63';
-    ctx.lineWidth = 1;
-    ctx.stroke();
-
-    // Add a label for the train load
-    ctx.fillStyle = '#E91E63';
-    ctx.font = '12px Arial';
-    ctx.textAlign = 'center';
-    ctx.fillText('Train Load', x + trainDrawLength / 2 - 10, y - 20);
   };
   
   const drawPositionMarkers = (ctx, beamLength, beamHeight, xScale) => {

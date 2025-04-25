@@ -48,8 +48,13 @@ const Navbar = () => {
   };
 
   useEffect(() => {
-    if (!currentUser) {
+    // Only show the modal automatically on first load if user is not logged in
+    // and there's no stored preference to hide it
+    const hasSeenModal = localStorage.getItem('hasSeenAuthModal');
+    if (!currentUser && !hasSeenModal) {
       setShowAuthModal(true);
+      // Set flag to prevent showing on every page load
+      localStorage.setItem('hasSeenAuthModal', 'true');
     }
   }, [currentUser]); 
 
@@ -104,6 +109,7 @@ const Navbar = () => {
               )}
             </div>
           ) : (
+            // Check the login/signup span element
             <span className="nav-links login-signup" onClick={openAuthModal}>
               Login / Signup
             </span>
@@ -111,7 +117,7 @@ const Navbar = () => {
         </div>
 
         {/* Navigation Links */}
-        <ul className={isMenuOpen ? 'nav-menu active' : 'nav-menu'}>
+        <ul className={`nav-menu ${isMenuOpen ? 'active' : ''}`}>
           {/* Home Link */}
           <li className="nav-item">
             <NavLink
@@ -230,6 +236,7 @@ const Navbar = () => {
         </ul>
       </div>
       {showAuthModal && <AuthModal onClose={closeAuthModal} />}
+      <AuthModal isOpen={showAuthModal} onClose={closeAuthModal} />
     </nav>
   );
 };

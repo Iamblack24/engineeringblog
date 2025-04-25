@@ -39,7 +39,7 @@ const tools = [
   {
     title: 'Moving load Analysis',
     description: 'Analyze the effects of moving loads on structures.',
-    link: '/moving-loads-analyzer',
+    link: '/moving-load-analyzer',
   },
   {
     title: 'Load, fluid simulation and analysis',

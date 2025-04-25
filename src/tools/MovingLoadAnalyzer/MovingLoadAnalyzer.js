@@ -38,7 +38,6 @@ const MovingLoadAnalyzer = () => {
   // Animation state
   const [isAnimating, setIsAnimating] = useState(false);
   const animationRef = useRef(null);
-  const [animationProgress, setAnimationProgress] = useState(0);
   
   // Results
   const [results, setResults] = useState({
@@ -80,7 +79,7 @@ const MovingLoadAnalyzer = () => {
       deflection: response.deflection,
       influenceLine: influenceLine
     }));
-  }, [beamConfig, loadConfig, analysisOptions.influenceLinePosition, isAnimating]);
+  }, [beamConfig, loadConfig, analysisOptions.showInfluenceLine, analysisOptions.influenceLinePosition, isAnimating]);
 
   // Calculate envelope of maximum effects if enabled
   useEffect(() => {
@@ -123,7 +122,7 @@ const MovingLoadAnalyzer = () => {
     // Only calculate envelope when explicitly requested to avoid performance issues
     const envelope = calculateEnvelope();
     setResults(prev => ({ ...prev, envelope }));
-  }, [analysisOptions.showEnvelope, beamConfig, loadConfig.magnitude, loadConfig.type, loadConfig.width]);
+  }, [analysisOptions.showEnvelope, beamConfig, loadConfig.magnitude, loadConfig.type, loadConfig.width, loadConfig]);
 
   // Animation logic
   useEffect(() => {
@@ -135,7 +134,6 @@ const MovingLoadAnalyzer = () => {
       const elapsed = timestamp - startTime;
       const progress = Math.min(elapsed / duration, 1);
       
-      setAnimationProgress(progress);
       setLoadConfig(prev => ({ ...prev, position: progress }));
       
       if (progress < 1) {

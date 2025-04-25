@@ -25,6 +25,7 @@ import {
   FacebookShareButton, TwitterShareButton, WhatsappShareButton,
   FacebookIcon, TwitterIcon, WhatsappIcon
 } from 'react-share';
+import { MdContentCopy } from 'react-icons/md'; // Add copy icon
 
 // Set worker source for pdfjs
 pdfjs.GlobalWorkerOptions.workerSrc = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.js`;
@@ -73,6 +74,7 @@ const SingleArticle = () => {
   const [replyingTo, setReplyingTo] = useState(null);
   const [replyText, setReplyText] = useState('');
   const [pdfPreviewText, setPdfPreviewText] = useState('');
+  const [copySuccess, setCopySuccess] = useState('');
 
   //function to extract username from email
   const getUsernameFromEmail = (email) => {
@@ -264,6 +266,23 @@ const SingleArticle = () => {
     return `📝 ${article.title}\n\n${words.slice(0, previewLength).join(' ')}...${callToAction}`;
   };
 
+  // Add copy to clipboard function
+  const copyToClipboard = () => {
+    const articleUrl = window.location.href;
+    const previewText = getArticlePreview();
+    const textToCopy = `${previewText}\n\n🔗 Read more: ${articleUrl}`;
+    
+    navigator.clipboard.writeText(textToCopy)
+      .then(() => {
+        setCopySuccess('Copied!');
+        setTimeout(() => setCopySuccess(''), 2000);
+      })
+      .catch(err => {
+        console.error('Failed to copy:', err);
+        setCopySuccess('Failed to copy');
+      });
+  };
+
   if (loading) {
     return <p>retrieving article...</p>;
   }
@@ -398,6 +417,15 @@ const SingleArticle = () => {
         >
           <WhatsappIcon size={32} round />
         </WhatsappShareButton>
+
+        <button 
+          onClick={copyToClipboard}
+          className="copy-button"
+          title="Copy article link"
+        >
+          <MdContentCopy size={32} />
+          {copySuccess && <span className="copy-success">{copySuccess}</span>}
+        </button>
       </div>
       
       {isPDF ? (
