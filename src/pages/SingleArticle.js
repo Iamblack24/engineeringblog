@@ -345,10 +345,10 @@ const SingleArticle = () => {
       
       const repliesRef = collection(db, 'articles', id, 'comments', parentId, 'replies');
       await addDoc(repliesRef, {
-        text: replyText,
+        content: replyText,  // Changed from 'text' to 'content'
         userId: currentUser.uid,
-        username: username,
-        date: serverTimestamp(),
+        user: username,      // Changed from 'username' to 'user'
+        createdAt: serverTimestamp(),  // Optional: consider renaming 'date' to match other parts of your app
         parentCommentId: parentId,
         level: 2
       });
