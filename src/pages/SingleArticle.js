@@ -134,7 +134,7 @@ const SingleArticle = () => {
   useEffect(() => {
     const unsubscribeFunctions = comments.map((comment) => {
       const repliesRef = collection(db, 'articles', id, 'comments', comment.id, 'replies');
-      const q = query(repliesRef, orderBy('date', 'asc'), limit(20));
+      const q = query(repliesRef, orderBy('createdAt', 'asc'), limit(20)); // Changed from 'date' to 'createdAt'
   
       const unsubscribe = onSnapshot(
         q,
@@ -315,9 +315,8 @@ const SingleArticle = () => {
         text: newComment,
         userId: currentUser.uid,
         username: username,
-        date: serverTimestamp(),
-        parentCommentId: null,
-        level: 1
+        date: serverTimestamp()
+        // Removed parentCommentId and level fields to match the security rules
       });
       setNewComment('');
       setError('');
@@ -489,42 +488,42 @@ const SingleArticle = () => {
                   {comment.replies.map((reply) => (
                     <li key={reply.id} className="reply-item">
                       <div className="reply-content">
-                        <p>{reply.text}</p>
+                        <p>{reply.content}</p> {/* Changed from reply.text */}
                         <div className="comment-meta">
-                          <span className="comment-username">{reply.username}</span>
-                          <span className="comment-date">{formatDate(reply.date)}</span>
+                          <span className="comment-username">{reply.user}</span> {/* Changed from reply.username */}
+                          <span className="comment-date">{formatDate(reply.createdAt)}</span> {/* Changed from reply.date */}
                         </div>
                       </div>
                     </li>
-                    ))}
-                  </ul>
-                )}
-              </li>
-            ))}
-          </ul>
-          {currentUser ? (
-            <form onSubmit={handleCommentSubmit} className="comment-form">
-              <textarea
-                value={newComment}
-                onChange={(e) => setNewComment(e.target.value)}
-                placeholder="Chip in..."
-              ></textarea>
-              <button type="submit">Submit</button>
-            </form>
-          ) : (
-            <p>You must be <Link to="/login">Logged in</Link> to comment. </p>
-          )}
-          {error && <p className="error-message">{error}</p>}
-        </div>
-        <div className="article-actions">
-          <button onClick={handleLike} className="like-button">
-            👍 {article.likes || 0}
-          </button>
-          <button onClick={handleDislike} className="dislike-button">
-            👎 {article.dislikes || 0}
-          </button>
-        </div>
+                  ))}
+                </ul>
+              )}
+            </li>
+          ))}
+        </ul>
+        {currentUser ? (
+          <form onSubmit={handleCommentSubmit} className="comment-form">
+            <textarea
+              value={newComment}
+              onChange={(e) => setNewComment(e.target.value)}
+              placeholder="Chip in..."
+            ></textarea>
+            <button type="submit">Submit</button>
+          </form>
+        ) : (
+          <p>You must be <Link to="/login">Logged in</Link> to comment. </p>
+        )}
+        {error && <p className="error-message">{error}</p>}
       </div>
+      <div className="article-actions">
+        <button onClick={handleLike} className="like-button">
+          👍 {article.likes || 0}
+        </button>
+        <button onClick={handleDislike} className="dislike-button">
+          👎 {article.dislikes || 0}
+        </button>
+      </div>
+    </div>
   );
 };
 
