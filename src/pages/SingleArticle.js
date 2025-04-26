@@ -56,10 +56,21 @@ const articlesData = [
 
 // Helper function to format date safely
 const formatDate = (timestamp) => {
-  if (!timestamp || !timestamp.seconds) {
+  if (!timestamp) {
     return 'Date not available';
   }
-  return new Date(timestamp.seconds * 1000).toLocaleDateString();
+  
+  // Handle Firestore timestamp
+  if (timestamp.seconds) {
+    return new Date(timestamp.seconds * 1000).toLocaleDateString();
+  }
+  
+  // Handle JavaScript Date object
+  if (timestamp instanceof Date) {
+    return timestamp.toLocaleDateString();
+  }
+  
+  return 'Date not available';
 };
 
 const SingleArticle = () => {
@@ -305,7 +316,7 @@ const SingleArticle = () => {
       return;
     }
     
-    //Extract username from email
+    // Extract username from email
     const email = currentUser.email || '';
     const username = getUsernameFromEmail(email);
 
@@ -315,7 +326,7 @@ const SingleArticle = () => {
         text: newComment,
         userId: currentUser.uid,
         username: username,
-        date: serverTimestamp()
+        date: new Date() // Changed from serverTimestamp() to regular Date object
         // Removed parentCommentId and level fields to match the security rules
       });
       setNewComment('');
@@ -344,10 +355,10 @@ const SingleArticle = () => {
       
       const repliesRef = collection(db, 'articles', id, 'comments', parentId, 'replies');
       await addDoc(repliesRef, {
-        content: replyText,  // Changed from 'text' to 'content'
+        content: replyText,
         userId: currentUser.uid,
-        user: username,      // Changed from 'username' to 'user'
-        createdAt: serverTimestamp(),  // Optional: consider renaming 'date' to match other parts of your app
+        user: username,
+        createdAt: new Date(), // Changed from serverTimestamp() to regular Date object
         parentCommentId: parentId,
         level: 2
       });
