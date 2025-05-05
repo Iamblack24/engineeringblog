@@ -143,3 +143,78 @@
       border-bottom: 1px solid #eee;
       padding-bottom: 5px;
   }
+
+  /* Standard description styling */
+  .standard-description {
+    margin: 15px 0;
+    padding: 10px 15px;
+    background-color: #f5f9ff;
+    border-left: 4px solid #4285f4;
+    border-radius: 3px;
+  }
+  
+  .standard-description h3 {
+    margin-top: 0;
+    color: #1a73e8;
+  }
+  
+  .standard-description ul,li {
+    margin-left: 20px;
+    color: black;
+  }
+  
+  /* Kenya-specific UI elements */
+  .input-help {
+    font-size: 0.8rem;
+    color: #666;
+    margin-top: 2px;
+    margin-bottom: 8px;
+  }
+  
+  .region-tooltip {
+    margin: 10px 0;
+    padding: 12px;
+    background-color: #f3fcf3;
+    border-left: 4px solid #34a853;
+    border-radius: 3px;
+  }
+  
+  .region-tooltip h4 {
+    margin-top: 0;
+    color: #188038;
+  }
+  .cement-note {
+    margin: 10px 0;
+    padding: 12px;
+    background-color: #fff3cd;
+    border-left: 4px solid #ffc107;
+    border-radius: 3px;
+    color: black;
+  }
+  .curing-note {
+    margin: 10px 0;
+    padding: 12px;
+    background-color: #d1ecf1;
+    border-left: 4px solid #0dcaf0;
+    border-radius: 3px;
+    color: black;
+  }
+  .region-note {
+    margin: 10px 0;
+    padding: 12px;
+    background-color: #d4edda;
+    border-left: 4px solid #28a745;
+    border-radius: 3px;
+    color: black;
+  }
+  
+  /* Add more visible highlighting for KS-specific inputs */
+  fieldset:has(legend:contains("Kenya-Specific Parameters")) {
+    border: 1px solid #34a853;
+    background-color: #f9fff9;
+  }
+  
+  fieldset:has(legend:contains("Kenya-Specific Parameters")) legend {
+    color: #188038;
+    font-weight: 500;
+  }

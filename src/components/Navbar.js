@@ -6,23 +6,26 @@ import { signOut } from 'firebase/auth';
 import { auth } from '../firebase';
 import AuthModal from './AuthModal';
 import { Link, NavLink } from 'react-router-dom'; // Use NavLink for active link styling
-import { FaBars, FaTimes, FaCaretDown, FaMale, FaFemale } from 'react-icons/fa'; // Import icons from react-icons library
+import { FaBars, FaTimes, FaCaretDown, FaMale, FaFemale, FaTools, FaBook, FaGraduationCap, FaBriefcase, FaUsers, FaInfo } from 'react-icons/fa'; // Import icons from react-icons library
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [openDropdown, setOpenDropdown] = useState(null);
   const { currentUser } = useContext(AuthContext);
   const dropdownRef = useRef(null);
+  const mobileNavRef = useRef(null);
 
   const handleMenuToggle = () => {
     setIsMenuOpen(!isMenuOpen);
-    // Add body overflow toggle to prevent background scrolling when menu is open
-    // document.body.style.overflow = isMenuOpen ? 'auto' : 'hidden';
+    // Reset open dropdowns when toggling menu
+    setOpenDropdown(null);
   };
 
   const handleCloseMenu = () => {
     setIsMenuOpen(false);
+    setOpenDropdown(null);
   };
 
   const handleLogout = async () => {
@@ -47,6 +50,33 @@ const Navbar = () => {
     setIsDropdownOpen(!isDropdownOpen);
   };
 
+  // Update the toggleMobileDropdown function to ensure only one dropdown is open at a time
+  const toggleMobileDropdown = (name) => {
+    if (openDropdown === name) {
+      setOpenDropdown(null);
+      // Announce to screen readers that menu is closed
+      const announcement = document.getElementById('dropdown-announcement');
+      if (announcement) announcement.textContent = `${name} menu closed`;
+    } else {
+      setOpenDropdown(name);
+      // Announce to screen readers that menu is open
+      const announcement = document.getElementById('dropdown-announcement');
+      if (announcement) announcement.textContent = `${name} menu opened`;
+    }
+  };
+
+  // Close navbar when clicking outside on mobile
+  const handleClickOutside = (event) => {
+    if (
+      isMenuOpen &&
+      mobileNavRef.current &&
+      !mobileNavRef.current.contains(event.target) &&
+      !event.target.closest(".menu-icon")
+    ) {
+      setIsMenuOpen(false);
+    }
+  };
+
   useEffect(() => {
     // Only show the modal automatically on first load if user is not logged in
     // and there's no stored preference to hide it
@@ -56,11 +86,11 @@ const Navbar = () => {
       // Set flag to prevent showing on every page load
       localStorage.setItem('hasSeenAuthModal', 'true');
     }
-  }, [currentUser]); 
+  }, [currentUser]);
 
   // Close dropdown when clicking outside
   useEffect(() => {
-    const handleClickOutside = (event) => {
+    const handleUserDropdownOutside = (event) => {
       if (
         dropdownRef.current &&
         !dropdownRef.current.contains(event.target)
@@ -68,11 +98,22 @@ const Navbar = () => {
         setIsDropdownOpen(false);
       }
     };
+
+    document.addEventListener('mousedown', handleUserDropdownOutside);
     document.addEventListener('mousedown', handleClickOutside);
+    
     return () => {
+      document.removeEventListener('mousedown', handleUserDropdownOutside);
       document.removeEventListener('mousedown', handleClickOutside);
     };
-  }, [dropdownRef]);
+  }, [isMenuOpen, dropdownRef, mobileNavRef]);
+
+  // Close menu on route change
+  useEffect(() => {
+    return () => {
+      setIsMenuOpen(false);
+    };
+  }, []);
 
   return (
     <nav className="navbar">
@@ -86,6 +127,178 @@ const Navbar = () => {
         <Link to="/" className="navbar-logo" onClick={handleCloseMenu}>
           Engineering Hub
         </Link>
+
+        {/* Navigation Links */}
+        <ul 
+          className={`nav-menu ${isMenuOpen ? 'active' : ''}`}
+          ref={mobileNavRef}
+        >
+          {/* Home Link */}
+          <li className="nav-item">
+            <NavLink
+              to="/"
+              className={({ isActive }) =>
+                isActive ? 'nav-links active' : 'nav-links'
+              }
+              onClick={handleCloseMenu}
+            >
+              Home
+            </NavLink>
+          </li>
+
+          {/* Learning Materials Group */}
+          <li className={`nav-item nav-item-dropdown ${openDropdown === 'learning' ? 'open' : ''}`}>
+            <div 
+              className="nav-links"
+              onClick={() => toggleMobileDropdown('learning')}
+            >
+              <FaBook /> Learning <span className="dropdown-indicator"><FaCaretDown /></span>
+            </div>
+            <div className="dropdown-content">
+              <NavLink
+                to="/design-materials"
+                className="dropdown-link"
+                onClick={handleCloseMenu}
+              >
+                Design Materials
+              </NavLink>
+              <NavLink
+                to="/articles"
+                className="dropdown-link"
+                onClick={handleCloseMenu}
+              >
+                Articles
+              </NavLink>
+              <NavLink
+                to="/case-studies"
+                className="dropdown-link"
+                onClick={handleCloseMenu}
+              >
+                Case Studies
+              </NavLink>
+              <NavLink
+                to="/revision-materials"
+                className="dropdown-link"
+                onClick={handleCloseMenu}
+              >
+                Revision Materials
+              </NavLink>
+              <NavLink
+                to="/educational-resources"
+                className="dropdown-link"
+                onClick={handleCloseMenu}
+              >
+                Educational Resources
+              </NavLink>
+            </div>
+          </li>
+
+          {/* Tools Group */}
+          <li className={`nav-item nav-item-dropdown ${openDropdown === 'tools' ? 'open' : ''}`}>
+            <div 
+              className="nav-links"
+              onClick={() => toggleMobileDropdown('tools')}
+            >
+              <FaTools /> Tools <span className="dropdown-indicator"><FaCaretDown /></span>
+            </div>
+            <div className="dropdown-content">
+              <NavLink
+                to="/tools"
+                className="dropdown-link"
+                onClick={handleCloseMenu}
+              >
+                Engineering Tools
+              </NavLink>
+              <NavLink
+                to="/interactive-ai"
+                className="dropdown-link"
+                onClick={handleCloseMenu}
+              >
+                AI Assistant
+              </NavLink>
+              <NavLink
+                to="/ai-design-optimizer"
+                className="dropdown-link"
+                onClick={handleCloseMenu}
+              >
+                AI Design Optimizer
+              </NavLink>
+              <NavLink
+                to="/moving-load-analyzer"
+                className="dropdown-link"
+                onClick={handleCloseMenu}
+              >
+                Moving Load Analysis
+              </NavLink>
+            </div>
+          </li>
+
+          {/* Career Group */}
+          <li className={`nav-item nav-item-dropdown ${openDropdown === 'career' ? 'open' : ''}`}>
+            <div 
+              className="nav-links"
+              onClick={() => toggleMobileDropdown('career')}
+            >
+              <FaBriefcase /> Career <span className="dropdown-indicator"><FaCaretDown /></span>
+            </div>
+            <div className="dropdown-content">
+              <NavLink
+                to="/career-guides"
+                className="dropdown-link"
+                onClick={handleCloseMenu}
+              >
+                Career Guides
+              </NavLink>
+              <NavLink
+                to="/events"
+                className="dropdown-link"
+                onClick={handleCloseMenu}
+              >
+                Events
+              </NavLink>
+              <NavLink
+                to="/webinars"
+                className="dropdown-link"
+                onClick={handleCloseMenu}
+              >
+                Webinars
+              </NavLink>
+              <NavLink
+                to="/workshops"
+                className="dropdown-link"
+                onClick={handleCloseMenu}
+              >
+                Workshops
+              </NavLink>
+            </div>
+          </li>
+
+          {/* About Link - Moved up in the order and made more compact */}
+          <li className={`nav-item nav-item-dropdown ${openDropdown === 'about' ? 'open' : ''}`}>
+            <div 
+              className="nav-links"
+              onClick={() => toggleMobileDropdown('about')}
+            >
+              <FaInfo /> About <span className="dropdown-indicator"><FaCaretDown /></span>
+            </div>
+            <div className="dropdown-content">
+              <NavLink
+                to="/about-us"
+                className="dropdown-link"
+                onClick={handleCloseMenu}
+              >
+                About Us
+              </NavLink>
+              <NavLink
+                to="/contact"
+                className="dropdown-link"
+                onClick={handleCloseMenu}
+              >
+                Contact
+              </NavLink>
+            </div>
+          </li>
+        </ul>
 
         {/* User Authentication */}
         <div className="user-auth">
@@ -109,134 +322,19 @@ const Navbar = () => {
               )}
             </div>
           ) : (
-            // Check the login/signup span element
             <span className="nav-links login-signup" onClick={openAuthModal}>
               Login / Signup
             </span>
           )}
         </div>
-
-        {/* Navigation Links */}
-        <ul className={`nav-menu ${isMenuOpen ? 'active' : ''}`}>
-          {/* Home Link */}
-          <li className="nav-item">
-            <NavLink
-              to="/"
-              className={({ isActive }) =>
-                isActive ? 'nav-links active' : 'nav-links'
-              }
-              onClick={handleCloseMenu}
-            >
-              Home
-            </NavLink>
-          </li>
-
-          {/* Design Materials Link */}
-          <li className="nav-item">
-            <NavLink
-              to="/design-materials"
-              className={({ isActive }) =>
-                isActive ? 'nav-links active' : 'nav-links'
-              }
-              onClick={handleCloseMenu}
-            >
-              Design Materials
-            </NavLink>
-          </li>
-
-          {/* Articles Link */}
-          <li className="nav-item">
-            <NavLink
-              to="/articles"
-              className={({ isActive }) =>
-                isActive ? 'nav-links active' : 'nav-links'
-              }
-              onClick={handleCloseMenu}
-            >
-              Articles
-            </NavLink>
-          </li>
-
-          {/* Case Studies Link */}
-          <li className="nav-item">
-            <NavLink
-              to="/case-studies"
-              className={({ isActive }) =>
-                isActive ? 'nav-links active' : 'nav-links'
-              }
-              onClick={handleCloseMenu}
-            >
-              Case Studies
-            </NavLink>
-          </li>
-
-          {/* Interactive Tools Link */}
-          <li className="nav-item">
-            <NavLink
-              to="/tools"
-              className={({ isActive }) =>
-                isActive ? 'nav-links active' : 'nav-links'
-              }
-              onClick={handleCloseMenu}
-            >
-              Engineering Tools
-            </NavLink>
-          </li>
-
-          {/* Revision Materials Link */}
-          <li className="nav-item">
-            <NavLink
-              to="/revision-materials"
-              className={({ isActive }) =>
-                isActive ? 'nav-links active' : 'nav-links'
-              }
-              onClick={handleCloseMenu}
-            >
-              Revision Materials
-            </NavLink>
-          </li>
-
-          {/* Career Guides Link */}
-          <li className="nav-item">
-            <NavLink
-              to="/career-guides"
-              className={({ isActive }) =>
-                isActive ? 'nav-links active' : 'nav-links'
-              }
-              onClick={handleCloseMenu}
-            >
-              Career Guides
-            </NavLink>
-          </li>
-
-          {/* Contact Link */}
-          <li className="nav-item">
-            <NavLink
-              to="/contact"
-              className={({ isActive }) =>
-                isActive ? 'nav-links active' : 'nav-links'
-              }
-              onClick={handleCloseMenu}
-            >
-              Contact
-            </NavLink>
-          </li>
-          {/* about us page */}
-          <li className="nav-item">
-            <NavLink
-              to="/about-us"
-              className={({ isActive }) =>
-                isActive ? 'nav-links active' : 'nav-links'
-              }
-              onClick={handleCloseMenu}
-            >
-              About Us
-            </NavLink>
-          </li>
-        </ul>
       </div>
+
+      {/* Mobile menu overlay */}
+      <div className={`mobile-menu-overlay ${isMenuOpen ? 'active' : ''}`} onClick={handleCloseMenu}></div>
+      
       {showAuthModal && <AuthModal onClose={closeAuthModal} />}
       <AuthModal isOpen={showAuthModal} onClose={closeAuthModal} />
+      <div aria-live="polite" id="dropdown-announcement" className="sr-only"></div>
     </nav>
   );
 };

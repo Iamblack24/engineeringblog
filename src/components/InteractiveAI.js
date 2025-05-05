@@ -10,7 +10,8 @@ import {
   query, 
   orderBy, 
   getDocs, 
-  limit 
+  limit,
+  endBefore
 } from 'firebase/firestore';
 import { db } from '../firebase';
 import ReactMarkdown from 'react-markdown';
@@ -108,6 +109,80 @@ const CopyFormulaButton = ({ formula }) => {
   );
 };
 
+// Typing Indicator Component
+const TypingIndicator = () => (
+  <div className="assistant-message">
+    <div className="typing-indicator">
+      <span></span>
+      <span></span>
+      <span></span>
+    </div>
+  </div>
+);
+
+// Add a debounce function to prevent double-tap issues on mobile
+const FileUploadButton = ({ onFileSelect, loading }) => {
+  const [lastClick, setLastClick] = useState(0);
+  const fileInputRef = useRef(null);
+  
+  const handleClick = (e) => {
+    // Prevent double-tap issues on mobile
+    const now = Date.now();
+    if (now - lastClick < 500) {
+      e.preventDefault();
+      return;
+    }
+    setLastClick(now);
+    
+    // Trigger the file input click
+    fileInputRef.current.click();
+  };
+  
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      // Check file size
+      if (file.size > 10 * 1024 * 1024) {
+        alert('Image is too large. Please select an image under 10MB.');
+        return;
+      }
+      
+      onFileSelect(file);
+      
+      // Reset the input value to allow selecting the same file again
+      e.target.value = '';
+    }
+  };
+  
+  return (
+    <motion.div
+      className="file-upload-container"
+      whileHover={{ scale: 1.05 }}
+    >
+      <input
+        ref={fileInputRef}
+        id="image-upload"
+        type="file"
+        accept="image/*"
+        onChange={handleFileChange}
+        style={{ display: 'none' }}
+      />
+      <motion.button
+        type="button"
+        onClick={handleClick}
+        className="image-upload-button"
+        whileTap={{ scale: 0.95 }}
+        disabled={loading}
+      >
+        <svg viewBox="0 0 24 24" width="100%" height="100%" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M19 5v14H5V5h14m0-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2z" fill="currentColor" />
+          <path d="M14.14 11.86l-3 3.87L9 13.14 6 17h12l-3.86-5.14z" fill="currentColor" />
+        </svg>
+      </motion.button>
+    </motion.div>
+  );
+};
+
 const InteractiveAI = () => {
   const { currentUser } = useContext(AuthContext);
   const [question, setQuestion] = useState('');
@@ -116,6 +191,10 @@ const InteractiveAI = () => {
   const [category, setCategory] = useState('');
   const [chatHistory, setChatHistory] = useState([]);
   const messagesEndRef = useRef(null);
+  
+  // New state variables for improved chat history loading
+  const [hasMoreHistory, setHasMoreHistory] = useState(false);
+  const [isLoadingMore, setIsLoadingMore] = useState(false);
 
   // Add auto resize functionality for textarea
   const textareaRef = useRef(null);
@@ -348,7 +427,7 @@ const InteractiveAI = () => {
     );
   };
 
-  const fetchChatHistory = useCallback(async () => {
+  const fetchChatHistory = useCallback(async (limitCount = 10) => {
     if (!currentUser) return;
     
     try {
@@ -356,21 +435,105 @@ const InteractiveAI = () => {
       const q = query(
         historyRef,
         orderBy('timestamp', 'desc'),
-        limit(50)
+        limit(limitCount)
       );
 
       const querySnapshot = await getDocs(q);
       const history = [];
       querySnapshot.forEach((doc) => {
-        history.push({ id: doc.id, ...doc.data() });
+        // Get data from doc
+        const data = doc.data();
+        
+        // Ensure each item has an id, use doc.id if none exists
+        if (!data.id) {
+          data.id = `doc_${doc.id}`;
+        }
+        
+        history.push({ ...data });
       });
 
       setChatHistory(history.reverse());
+      
+      // If user scrolls to top, we can implement a load more function
+      setHasMoreHistory(querySnapshot.size === limitCount);
     } catch (err) {
       console.error('Error fetching chat history:', err);
       setError('Failed to load chat history');
     }
   }, [currentUser]);
+
+  // Add this function to load more history when user scrolls to top
+  const loadMoreHistory = async () => {
+    if (!hasMoreHistory || isLoadingMore || !currentUser) return;
+    
+    setIsLoadingMore(true);
+    try {
+      const oldestMessage = chatHistory[0]; // Get the oldest message currently displayed
+      const historyRef = collection(db, 'users', currentUser.uid, 'history');
+      const q = query(
+        historyRef,
+        orderBy('timestamp', 'desc'),
+        limit(10), // Using the limit function directly with a number
+        endBefore(oldestMessage.timestamp)
+      );
+
+      const querySnapshot = await getDocs(q);
+      const moreHistory = [];
+      querySnapshot.forEach((doc) => {
+        // Get data from doc
+        const data = doc.data();
+        
+        // Ensure each item has an id, use doc.id if none exists
+        if (!data.id) {
+          data.id = `doc_${doc.id}`;
+        }
+        
+        moreHistory.push({ ...data });
+      });
+
+      setChatHistory([...moreHistory.reverse(), ...chatHistory]);
+      setHasMoreHistory(querySnapshot.size === 10);
+    } catch (err) {
+      console.error('Error loading more history:', err);
+    } finally {
+      setIsLoadingMore(false);
+    }
+  };
+
+  // Add this function to handle scroll events
+  const handleScroll = (e) => {
+    const { scrollTop } = e.currentTarget;
+    if (scrollTop < 50 && hasMoreHistory && !isLoadingMore) {
+      loadMoreHistory();
+    }
+  };
+
+  // Add this function to render date dividers
+  const renderDateDivider = (timestamp) => {
+    const date = new Date(timestamp);
+    const today = new Date();
+    const yesterday = new Date(today);
+    yesterday.setDate(yesterday.getDate() - 1);
+    
+    let dateText = '';
+    if (date.toDateString() === today.toDateString()) {
+      dateText = 'Today';
+    } else if (date.toDateString() === yesterday.toDateString()) {
+      dateText = 'Yesterday';
+    } else {
+      dateText = date.toLocaleDateString('en-US', { 
+        month: 'short', 
+        day: 'numeric',
+        year: date.getFullYear() !== today.getFullYear() ? 'numeric' : undefined
+      });
+    }
+    
+    return (
+      <div className="date-divider">
+        <span>{dateText}</span>
+      </div>
+    );
+  };
 
   // Update the saveToHistory function signature and implementation
 const saveToHistory = async (
@@ -387,8 +550,9 @@ const saveToHistory = async (
     const timestamp = new Date().toISOString();
     const historyRef = doc(db, 'users', currentUser.uid, 'history', timestamp);
     
-    // Create base history item
+    // Create base history item with a unique ID
     const historyItem = {
+      id: `msg_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`, // Add a unique ID
       question,
       answer,
       category,
@@ -578,14 +742,50 @@ useEffect(() => {
   return (
     <div className="chat-container">
       <div className="chat-main">
-        <div className="chat-messages" ref={messagesEndRef}>
+        <div className="chat-messages" ref={messagesEndRef} onScroll={handleScroll}>
+          {isLoadingMore && (
+            <div className="loading-more">
+              <div className="loading-dots">
+                <span></span><span></span><span></span>
+              </div>
+              <p>Loading previous messages...</p>
+            </div>
+          )}
           <AnimatePresence>
-            {chatHistory.map((item, index) => (
-              <motion.div key={index}>
-                {renderMessage(item, index)}
-              </motion.div>
-            ))}
+            {(() => {
+              // Track date changes to show dividers
+              let currentDate = '';
+              
+              return chatHistory.map((item, index) => {
+                const messageDate = new Date(item.timestamp).toDateString();
+                const showDateDivider = messageDate !== currentDate;
+                currentDate = messageDate;
+                
+                // Create a unique key by combining the id/timestamp with the index
+                const uniqueKey = item.id ? 
+                  `${item.id}-${index}` : 
+                  `${item.timestamp}-${index}`;
+                
+                return (
+                  <React.Fragment key={uniqueKey}>
+                    {showDateDivider && renderDateDivider(item.timestamp)}
+                    <motion.div
+                      variants={messageVariants}
+                      initial="initial"
+                      animate="animate"
+                      exit="exit"
+                      transition={{ duration: 0.3, delay: index * 0.1 }}
+                    >
+                      {renderMessage(item, index)}
+                    </motion.div>
+                  </React.Fragment>
+                );
+              });
+            })()}
           </AnimatePresence>
+          
+          {/* Show typing indicator while loading */}
+          {loading && <TypingIndicator />}
         </div>
 
         <div className="chat-input-container">
@@ -619,43 +819,16 @@ useEffect(() => {
                 rows={1}
               />
 
-              {/* Add Image Upload Button */}
-              <motion.div
-                className="file-upload-container"
-                whileHover={{ scale: 1.05 }}
-              >
-                <input
-                  id="image-upload"
-                  type="file"
-                  accept="image/*"
-                  onChange={(e) => {
-                    const file = e.target.files[0];
-                    if (file) {
-                      // Check if file is too large (more than 10MB)
-                      if (file.size > 10 * 1024 * 1024) {
-                        setError('Image is too large. Please select an image under 10MB.');
-                        return;
-                      }
-                      
-                      setImageFile(file);
-                      // Create preview URL
-                      const previewUrl = URL.createObjectURL(file);
-                      setImagePreview(previewUrl);
-                    }
-                  }}
-                  style={{ display: 'none' }}
-                />
-                <motion.label
-                  htmlFor="image-upload"
-                  className="image-upload-button"
-                  whileTap={{ scale: 0.95 }}
-                >
-                  <svg viewBox="0 0 24 24" width="24" height="24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M19 5v14H5V5h14m0-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2z" fill="currentColor" />
-                    <path d="M14.14 11.86l-3 3.87L9 13.14 6 17h12l-3.86-5.14z" fill="currentColor" />
-                  </svg>
-                </motion.label>
-              </motion.div>
+              {/* Replace the image upload section in the form with this: */}
+              <FileUploadButton 
+                onFileSelect={(file) => {
+                  setImageFile(file);
+                  // Create preview URL
+                  const previewUrl = URL.createObjectURL(file);
+                  setImagePreview(previewUrl);
+                }}
+                loading={loading}
+              />
 
               <motion.button 
                 type="submit" 
@@ -666,7 +839,7 @@ useEffect(() => {
               >
                 {loading ? (
                   <div className="loading-dots">
-                    <span>.</span><span>.</span><span>.</span>
+                    <span></span><span></span><span></span>
                   </div>
                 ) : (
                   <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">

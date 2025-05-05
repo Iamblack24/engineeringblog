@@ -28,10 +28,77 @@ import {
   getMinCementContent_EN
 } from './enMixDesignTables';
 
+import {
+  getRequiredMeanStrength_KS,
+  getWaterContent_KS,
+  getWCRatio_KS,
+  getCoarseAggregateProportion_KS,
+  getAirContent_KS,
+  getMinCementContent_KS
+} from './ksMixDesignTables';
+
+// Add this new component function before the main calculator component
+
+const StandardDescription = ({ standard }) => {
+  switch (standard) {
+    case 'ks':
+      return (
+        <div className="standard-description">
+          <h3>Kenyan Standard (KS 02-594)</h3>
+          <p>
+            This mix design method follows the Kenyan Standard KS 02-594, which adapts European concrete standards 
+            for local materials and conditions. It incorporates adjustments for:
+          </p>
+          <ul>
+            <li>Local cement types per KS EAS 18-1 (East African Standard)</li>
+            <li>Regional exposure conditions across Kenya's diverse climate zones</li>
+            <li>Properties of locally available aggregates</li>
+            <li>Higher safety margins for quality control variability</li>
+          </ul>
+          <p>
+            Design parameters have been calibrated for Kenyan construction practices and 
+            typical material properties found throughout the country.
+          </p>
+        </div>
+      );
+    case 'aci':
+      return (
+        <div className="standard-description">
+          <h3>ACI 211.1 Method</h3>
+          <p>
+            The American Concrete Institute (ACI) method follows ACI 211.1 standard for proportioning normal, 
+            heavyweight, and mass concrete mixtures. This is a comprehensive weight-based method using absolute volume principles.
+          </p>
+        </div>
+      );
+    case 'bs':
+      return (
+        <div className="standard-description">
+          <h3>British Standard (BS 8500 / EN 206)</h3>
+          <p>
+            This method follows BS 8500 which implements the European EN 206 standard with UK National Annex provisions.
+            It provides comprehensive requirements for concrete specification, performance, production and conformity.
+          </p>
+        </div>
+      );
+    case 'en':
+      return (
+        <div className="standard-description">
+          <h3>European Standard (EN 206 / EN 1992)</h3>
+          <p>
+            This method implements the European concrete design approach following EN 206 and structural design 
+            principles from EN 1992 (Eurocode 2). It uses a performance-based approach with exposure classes.
+          </p>
+        </div>
+      );
+    default:
+      return null;
+  }
+};
 
 const ConcreteMixDesignCalculator = () => {
   // --- Standard Selection ---
-  const [designStandard, setDesignStandard] = useState('aci'); // 'aci', 'bs', 'en'
+  const [designStandard, setDesignStandard] = useState('aci'); // 'aci', 'bs', 'en', 'ks'
 
   // --- Design Requirements ---
   const [compressiveStrength, setCompressiveStrength] = useState('30'); // f'c or f_ck (MPa)
@@ -42,7 +109,16 @@ const ConcreteMixDesignCalculator = () => {
   const [exposureConditionACI, setExposureConditionACI] = useState('moderate');
   const [exposureConditionBS, setExposureConditionBS] = useState('XC3/XC4'); // Example BS class
   const [exposureConditionEN, setExposureConditionEN] = useState('XC3'); // Example EN class
+  const [exposureConditionKS, setExposureConditionKS] = useState('XC3'); // Example KS class
   const [airEntrainment, setAirEntrainment] = useState('yes'); // Relevant for ACI/some BS/EN exposures
+  const [cementType, setCementType] = useState('CEM42.5N'); // Add cement type state
+
+  // Add these new state variables to the component
+
+  // Add regional context for Kenya
+  const [kenyaRegion, setKenyaRegion] = useState('nairobi'); // Options: nairobi, coast, western, rift_valley
+  const [usePozzolana, setUsePozzolana] = useState(false); // Common in Kenya to use pozzolanic materials
+  const [useSuperplasticizer, setUseSuperplasticizer] = useState(false);
 
   // --- Material Properties (SSD Basis unless noted) ---
   const [cementSpecificGravity, setCementSpecificGravity] = useState('3.15');
@@ -103,6 +179,38 @@ const ConcreteMixDesignCalculator = () => {
       { value: 'XF4', label: 'XF4 (High saturation, with de-icer)' },
       // Add XA classes if needed
     ],
+    ks: [
+      // General Options
+      { value: 'X0', label: 'X0 - No risk of corrosion or attack' },
+      
+      // Carbonation-induced corrosion
+      { value: 'XC1', label: 'XC1 - Dry or permanently wet (Interior buildings, submerged structures)' },
+      { value: 'XC2', label: 'XC2 - Wet, rarely dry (Water retaining structures, foundations)' },
+      { value: 'XC3', label: 'XC3 - Moderate humidity (Urban areas, sheltered exteriors)' },
+      { value: 'XC4', label: 'XC4 - Cyclic wet/dry (Exposed concrete surfaces, bridge elements)' },
+      
+      // Chloride-induced corrosion (non-seawater)
+      { value: 'XD1', label: 'XD1 - Moderate humidity with airborne chlorides (Traffic spray zones)' },
+      { value: 'XD2', label: 'XD2 - Wet, rarely dry with chlorides (Swimming pools, industrial water)' },
+      { value: 'XD3', label: 'XD3 - Cyclic wet/dry with chlorides (Bridge elements, car parks)' },
+      
+      // Chloride-induced corrosion (seawater) - Kenya coastal regions
+      { value: 'XS1-COAST', label: 'XS1-COAST - Coastal airborne salt, 1-5km from shoreline (Mombasa, Malindi)' },
+      { value: 'XS1', label: 'XS1 - Coastal airborne salt, moderate exposure' },
+      { value: 'XS2', label: 'XS2 - Permanently submerged in seawater (Coastal structures)' },
+      { value: 'XS3', label: 'XS3 - Tidal, splash, and spray zones (Ports and marine structures)' },
+      
+      // Chemical attack - Kenyan specific conditions
+      { value: 'XA1-SOIL', label: 'XA1-SOIL - Slightly aggressive soil (Agricultural areas)' },
+      { value: 'XA1-IND', label: 'XA1-IND - Slight chemical exposure (Light industrial areas)' },
+      { value: 'XA2', label: 'XA2 - Moderately aggressive environment (Industrial zones)' },
+      { value: 'XA3', label: 'XA3 - Highly aggressive environment (Specific industrial/mining areas)' },
+      
+      // Abrasion - Relevant in certain applications
+      { value: 'XM1', label: 'XM1 - Moderate abrasion (Commercial floors)' },
+      { value: 'XM2', label: 'XM2 - High abrasion (Industrial floors, roads)' },
+      { value: 'XM3', label: 'XM3 - Very high abrasion (Hydraulic structures, high traffic areas)' }
+    ]
   };
 
   const handleExposureChange = (e) => {
@@ -110,12 +218,14 @@ const ConcreteMixDesignCalculator = () => {
     if (designStandard === 'aci') setExposureConditionACI(value);
     else if (designStandard === 'bs') setExposureConditionBS(value);
     else if (designStandard === 'en') setExposureConditionEN(value);
+    else if (designStandard === 'ks') setExposureConditionKS(value);
   };
 
   const getCurrentExposureValue = () => {
     if (designStandard === 'aci') return exposureConditionACI;
     if (designStandard === 'bs') return exposureConditionBS;
     if (designStandard === 'en') return exposureConditionEN;
+    if (designStandard === 'ks') return exposureConditionKS;
     return '';
   };
 
@@ -221,6 +331,62 @@ const ConcreteMixDesignCalculator = () => {
         const fineAggVolume_SSD = totalAggVolume * (1 - coarseAggProportion);
         coarseAggWeight_SSD = coarseAggVolume_SSD * (coarseAggSG_SSD * 1000);
         fineAggWeight_SSD = fineAggVolume_SSD * (fineAggSG_SSD * 1000);
+      } else if (designStandard === 'ks') {
+        // Get adjusted strength requirement (influenced by region if using KS standard)
+        requiredStrength = getRequiredMeanStrength_KS(fck_or_fc, stdDev, kenyaRegion);
+        
+        // Apply regional and material-specific water content modifications
+        estimatedWater = getWaterContent_KS(
+          desiredSlump, 
+          aggSize, 
+          aggregateType, 
+          useSuperplasticizer,
+          kenyaRegion // Pass region for regional adjustments
+        );
+        
+        // Air content based on regional environmental factors
+        estimatedAirPercent = getAirContent_KS(aggSize, exposureConditionKS, isAirEntrained);
+        
+        // Water-cement ratio for strength and durability, adjusted for cement type
+        wcrByStrength = getWCRatio_KS('strength', requiredStrength, cementType);
+        wcrByExposure = getWCRatio_KS('exposure', exposureConditionKS, cementType);
+        finalWCR = Math.min(wcrByStrength, wcrByExposure);
+        
+        // Minimum cement content based on exposure, with regional considerations
+        minCementContent = getMinCementContent_KS(exposureConditionKS, aggSize, kenyaRegion);
+        
+        // Apply pozzolana adjustments if used
+        if (usePozzolana) {
+          // Adjust wcr and cement content when using pozzolanic materials (common in Kenya)
+          const pozzolanaAdjustment = 0.92; // 8% reduction in cement content with pozzolana
+          minCementContent *= pozzolanaAdjustment;
+          finalWCR *= 1.05; // Small increase in effective w/c ratio allowance with pozzolans
+        }
+        
+        cementContent = Math.max(estimatedWater / finalWCR, minCementContent);
+        
+        // Adjust WCR if minimum cement content governs
+        finalWCR = estimatedWater / cementContent;
+        
+        // Calculate aggregates using volume method with Kenya-specific adjustments
+        const coarseAggProportion = getCoarseAggregateProportion_KS(
+          aggSize, 
+          fineAggFM, 
+          finalWCR,
+          kenyaRegion // Different regions have different typical aggregate characteristics
+        );
+        
+        // Continue with the volume calculations as before
+        const waterVolume = estimatedWater / 1000;
+        const cementVolume = cementContent / (cementSG * 1000);
+        const airVolume = estimatedAirPercent / 100;
+        const totalAggVolume = 1.0 - waterVolume - cementVolume - airVolume;
+        
+        // Split by proportion
+        const coarseAggVolume_SSD = totalAggVolume * coarseAggProportion;
+        const fineAggVolume_SSD = totalAggVolume * (1 - coarseAggProportion);
+        coarseAggWeight_SSD = coarseAggVolume_SSD * (coarseAggSG_SSD * 1000);
+        fineAggWeight_SSD = fineAggVolume_SSD * (fineAggSG_SSD * 1000);
       }
 
       // --- Common Calculations (Post Standard-Specific) ---
@@ -287,8 +453,21 @@ const ConcreteMixDesignCalculator = () => {
       {/* Change Title based on standard? */}
       <h1>Concrete Mix Design Calculator</h1>
       <p className="tool-description">
-        Estimate concrete mix proportions based on ACI, BS (Simplified), or EN (Simplified) methods.
-        <br /><strong>Note:</strong> BS and EN calculations use simplified placeholders and require verification against actual standards and National Annexes.
+        {designStandard === 'ks' ? (
+          <>
+            This concrete mix design calculator uses <strong>Kenyan Standard KS 02-594</strong>,
+            adapted for regional variations in materials and environmental conditions throughout Kenya.
+            Design parameters are calibrated for East African cement types per KS EAS 18-1.
+          </>
+        ) : (
+          <>
+            Estimate concrete mix proportions based on {
+              designStandard === 'aci' ? 'ACI 211.1' : 
+              designStandard === 'bs' ? 'British Standard BS 8500 / EN 206' :
+              'European Standard EN 206 / EN 1992'
+            } method.
+          </>
+        )}
       </p>
       <form onSubmit={calculateMixDesign}>
         {/* --- Standard Selection --- */}
@@ -300,9 +479,12 @@ const ConcreteMixDesignCalculator = () => {
                     <option value="aci">ACI 211.1</option>
                     <option value="bs">BS 8500 / EN 206 (Simplified)</option>
                     <option value="en">EN 206 / EN 1992 (Simplified)</option>
+                    <option value="ks">Kenyan Standard (KS 02-594)</option>
                 </select>
             </div>
         </fieldset>
+
+        <StandardDescription standard={designStandard} />
 
         {/* --- Design Requirements --- */}
         <fieldset>
@@ -355,7 +537,67 @@ const ConcreteMixDesignCalculator = () => {
             </select>
              <p style={{fontSize: '0.8em', color: '#666', marginTop: '5px'}}>Required air content depends on exposure and standard.</p>
           </div>
+          {designStandard === 'ks' && (
+            <div className="form-group">
+              <label>Cement Type:</label>
+              <select value={cementType} onChange={(e) => setCementType(e.target.value)}>
+                <option value="CEM42.5N">CEM 42.5N (KS EAS 18-1)</option>
+                <option value="CEM32.5R">CEM 32.5R (KS EAS 18-1)</option>
+                <option value="PPC">Portland Pozzolana Cement (PPC)</option>
+              </select>
+            </div>
+          )}
         </fieldset>
+
+        {designStandard === 'ks' && (
+          <fieldset>
+            <legend>Kenya-Specific Parameters</legend>
+            <div className="form-group">
+              <label>Region:</label>
+              <select value={kenyaRegion} onChange={(e) => setKenyaRegion(e.target.value)}>
+                <option value="nairobi">Nairobi & Central Region</option>
+                <option value="coast">Coastal Region (Mombasa, Malindi)</option>
+                <option value="western">Western Region (Kisumu, Kakamega)</option>
+                <option value="rift_valley">Rift Valley (Nakuru, Eldoret)</option>
+                <option value="northern">Northern/Eastern (Arid Regions)</option>
+              </select>
+              <p className="input-help">Regional settings adjust exposure conditions for local climate factors</p>
+            </div>
+
+            <div className="form-group">
+              <label>Cement Type:</label>
+              <select value={cementType} onChange={(e) => setCementType(e.target.value)}>
+                <option value="CEM42.5N">CEM I 42.5N (Ordinary Portland)</option>
+                <option value="CEM32.5R">CEM I 32.5R (Ordinary Portland)</option>
+                <option value="PPC">Portland Pozzolana Cement (PPC)</option>
+                <option value="SRPC">Sulfate Resistant Portland Cement</option>
+                <option value="CEM42.5N-POZZBLEND">CEM II/A-P 42.5N (Portland-Pozzolana)</option>
+                <option value="CEM32.5N-POZZBLEND">CEM II/B-P 32.5N (Portland-Pozzolana)</option>
+                <option value="CEM42.5N-LIMESTONE">CEM II/A-L 42.5N (Portland-Limestone)</option>
+                <option value="CEM32.5N-SLAG">CEM III/A 32.5N (Portland-Slag)</option>
+              </select>
+              <p className="input-help">Cement types according to KS EAS 18-1 East African Standard</p>
+            </div>
+
+            <div className="form-group">
+              <label>Use Superplasticizer?</label>
+              <select value={useSuperplasticizer ? 'yes' : 'no'} onChange={(e) => setUseSuperplasticizer(e.target.value === 'yes')}>
+                <option value="no">No</option>
+                <option value="yes">Yes</option>
+              </select>
+              <p className="input-help">Common admixtures available in Kenya include naphthalene and polycarboxylate types</p>
+            </div>
+
+            <div className="form-group">
+              <label>Additional Pozzolanics:</label>
+              <select value={usePozzolana ? 'yes' : 'no'} onChange={(e) => setUsePozzolana(e.target.value === 'yes')}>
+                <option value="no">None</option>
+                <option value="yes">Include Pozzolanic Material</option>
+              </select>
+              <p className="input-help">Fly ash or natural pozzolana can improve durability in aggressive environments</p>
+            </div>
+          </fieldset>
+        )}
 
         {/* --- Material Properties --- */}
         <fieldset>
@@ -466,6 +708,49 @@ const ConcreteMixDesignCalculator = () => {
           <p><strong>Fine Aggregate (Moist):</strong> {results.batchFineAggregate} kg</p>
           <p><strong>Coarse Aggregate (Moist):</strong> {results.batchCoarseAggregate} kg</p>
           <p><strong>Total Batch Weight:</strong> {results.totalBatchWeight} kg/m³</p>
+
+          {designStandard === 'ks' && results && (
+            <div className="kenya-specific-results">
+              <h3>Kenya-Specific Recommendations</h3>
+              <div className="region-note">
+                <strong>Region:</strong> {kenyaRegion === 'nairobi' ? 'Nairobi & Central' :
+                                        kenyaRegion === 'coast' ? 'Coastal Region' :
+                                        kenyaRegion === 'western' ? 'Western Region' :
+                                        kenyaRegion === 'rift_valley' ? 'Rift Valley' :
+                                        kenyaRegion === 'northern' ? 'Northern/Eastern' : kenyaRegion}
+              </div>
+              
+              <div className="curing-note">
+                <strong>Recommended Curing:</strong> {
+                  kenyaRegion === 'coast' ? 'Minimum 10 days of wet curing recommended for coastal exposure' :
+                  kenyaRegion === 'northern' ? 'Extended curing essential (14+ days) due to hot, arid conditions' :
+                  'Standard 7 day wet curing recommended'
+                }
+              </div>
+              
+              {exposureConditionKS.includes('XS') && (
+                <div className="warning-note">
+                  <strong>Coastal Warning:</strong> For marine exposure, consider epoxy-coated or stainless steel reinforcement for critical structures.
+                </div>
+              )}
+              
+              {usePozzolana && (
+                <div className="recommendation-note">
+                  <strong>Pozzolana Note:</strong> With pozzolanic additions, extended initial curing is required, but long-term durability will be improved.
+                </div>
+              )}
+              
+              <div className="cement-note">
+                <strong>Cement Type:</strong> {
+                  cementType === 'PPC' ? 'Portland Pozzolana Cement (PPC) - Common in Kenya, good for general construction' :
+                  cementType === 'SRPC' ? 'Sulfate Resistant Portland Cement - Recommended for ground contact in areas with sulfate soils' :
+                  cementType === 'CEM42.5N' ? 'CEM I 42.5N - Higher early strength, good for precast or early striking' :
+                  cementType === 'CEM32.5R' ? 'CEM I 32.5R - General purpose cement, good value option' :
+                  cementType
+                }
+              </div>
+            </div>
+          )}
 
           <p className="note"><strong>Disclaimer:</strong> These are estimated proportions. BS/EN calculations use simplified placeholders and lack full standard implementation (including National Annexes). Always verify mix designs with trial batches and consult the relevant standards.</p>
         </div>

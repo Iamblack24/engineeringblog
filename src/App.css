@@ -26,10 +26,21 @@
 }
 
 .content {
-  padding-top: 60px; /* Adjust this value based on the height of your navbar */
+  padding-top: 70px; /* Match navbar height */
+  min-height: calc(100vh - 70px);
 }
 
 .faded-text {
   opacity: 1;
+}
+
+.extension-mode {
+  padding-top: 0;
+}
+
+/* Utility classes for whitespace control */
+.no-whitespace {
+  margin: 0;
+  padding: 0;
 }
 

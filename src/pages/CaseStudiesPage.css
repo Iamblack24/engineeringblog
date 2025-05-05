@@ -11,6 +11,20 @@
   margin-bottom: 30px;
 }
 
+.case-studies-page h2 {
+  text-align: center;
+  color: var(--text-color);
+  margin: 40px 0 20px;
+}
+
+.ai-generator-section {
+  margin-bottom: 40px;
+  padding: 20px;
+  background-color: var(--secondary-color);
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
 .case-studies-list {
   display: flex;
   flex-wrap: wrap;
@@ -61,5 +75,10 @@
 
   .case-study-card {
     width: 100%;
+  }
+
+  .ai-generator-section {
+    padding: 15px;
+    margin-bottom: 30px;
   }
 }
