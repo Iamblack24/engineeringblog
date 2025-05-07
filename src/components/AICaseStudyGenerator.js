@@ -407,7 +407,7 @@ const AICaseStudyGenerator = () => {
     return (
         <div className="ai-case-study-generator-v2">
             <header className="csg-header">
-                <h1><FaBookOpen /> AI Engineering Case Study Generator</h1>
+                <h1><FaBookOpen /> Case Study Generator</h1>
                 <div className="header-actions">
                     {generatedCaseStudy && (
                         <button onClick={handleClearAll} className="clear-button" title="Clear current study and start new">

@@ -1560,6 +1560,18 @@
 .csg-display-container {
     padding: 24px;
 }
+.csg-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+.csg-header h1 {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: var(--csg-primary-blue);
+    margin: 0;
+}
 
 .display-header {
     border-bottom: 1px solid var(--csg-border-light);

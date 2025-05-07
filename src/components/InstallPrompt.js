@@ -9,7 +9,7 @@ const InstallPrompt = () => {
   const [isVisible, setIsVisible] = useState(false);
   
   // Set a fixed number instead of fetching from database
-  const INSTALL_COUNT = 1074; // You can change this number as needed
+  const INSTALL_COUNT = 521; // You can change this number as needed
 
   useEffect(() => {
     const handler = (e) => {
