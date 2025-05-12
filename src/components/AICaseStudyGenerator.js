@@ -326,75 +326,130 @@ const AICaseStudyGenerator = () => {
     const exportToPDF = () => {
         if (!generatedCaseStudy) return;
         const doc = new jsPDF();
-        // ... (jsPDF setup remains the same) ...
-        let y = 20; // Start position
 
-         // Title
-        doc.setFontSize(18);
-        doc.setFont(undefined, 'bold');
-        doc.setTextColor(40, 40, 40);
-        const titleLines = doc.splitTextToSize(generatedCaseStudy.title || "Engineering Case Study", 170);
-        doc.text(titleLines, 20, y);
-        y += titleLines.length * 7 + 8;
+        // --- Styling Constants ---
+        const PAGE_MARGIN = 20;
+        const CONTENT_WIDTH = doc.internal.pageSize.getWidth() - 2 * PAGE_MARGIN;
+        const FONT_FAMILY = 'helvetica'; // Standard PDF font
+
+        const TITLE_FONT_SIZE = 20;
+        const META_FONT_SIZE = 10;
+        const SECTION_TITLE_FONT_SIZE = 15;
+        const BODY_FONT_SIZE = 11;
+        const FOOTER_FONT_SIZE = 9;
+
+        const PRIMARY_TEXT_COLOR = [30, 30, 30];     // Very dark gray for body
+        const TITLE_COLOR = [0, 0, 0];               // Black for main title
+        const SECTION_TITLE_COLOR = [50, 80, 130];   // A professional blue for section titles
+        const META_COLOR = [100, 100, 100];          // Lighter gray for metadata
+        const FOOTER_COLOR = [120, 120, 120];        // Gray for footer
+
+        const LINE_SPACING_TITLE = 1.2;
+        const LINE_SPACING_BODY = 1.4;
+        const SECTION_SPACING_TOP = 10;
+        const SECTION_SPACING_BOTTOM = 8;
+        const PARAGRAPH_SPACING = 3; // Additional space after a block of text
+
+        let y = PAGE_MARGIN;
+
+        // Helper function to add text, handle wrapping, and manage y position
+        const addTextAndAdvanceY = (text, x, currentY, options) => {
+            doc.setFont(options.fontFamily || FONT_FAMILY, options.fontStyle || 'normal');
+            doc.setFontSize(options.fontSize || BODY_FONT_SIZE);
+            doc.setTextColor(...(options.color || PRIMARY_TEXT_COLOR));
+
+            const lines = doc.splitTextToSize(text, options.maxWidth || CONTENT_WIDTH);
+            // Calculate line height in user units (mm by default for jsPDF)
+            const lineHeight = (doc.getFontSize() / doc.internal.scaleFactor) * (options.lineSpacingMultiplier || LINE_SPACING_BODY);
+
+            lines.forEach(line => {
+                if (currentY + lineHeight > doc.internal.pageSize.getHeight() - PAGE_MARGIN) {
+                    doc.addPage();
+                    currentY = PAGE_MARGIN;
+                    // If you have headers to repeat on each page, add them here
+                }
+                doc.text(line, x, currentY);
+                currentY += lineHeight;
+            });
+            return currentY;
+        };
+
+        // --- Document Content ---
+
+        // Document Title
+        y = addTextAndAdvanceY(generatedCaseStudy.title || "Engineering Case Study", PAGE_MARGIN, y, {
+            fontSize: TITLE_FONT_SIZE,
+            fontStyle: 'bold',
+            color: TITLE_COLOR,
+            lineSpacingMultiplier: LINE_SPACING_TITLE
+        });
+        y += PARAGRAPH_SPACING * 2; // More space after the main title
 
         // Metadata
-        doc.setFontSize(10);
-        doc.setFont(undefined, 'normal');
-        doc.setTextColor(100, 100, 100);
-        doc.text(`Industry: ${industryTemplates[generatedCaseStudy.industry]?.name || 'N/A'} | Audience: ${audienceProfiles[generatedCaseStudy.audience]?.name || 'N/A'} | Detail: ${generatedCaseStudy.detailLevel}`, 20, y);
-        y += 5;
-        doc.text(`Generated: ${new Date(generatedCaseStudy.generatedAt).toLocaleString()}`, 20, y);
-        y += 10;
+        const metaStyle = { fontSize: META_FONT_SIZE, color: META_COLOR, fontStyle: 'italic', lineSpacingMultiplier: 1.2 };
+        const metaText1 = `Industry: ${industryTemplates[generatedCaseStudy.industry]?.name || 'N/A'} | Audience: ${audienceProfiles[generatedCaseStudy.audience]?.name || 'N/A'}`;
+        y = addTextAndAdvanceY(metaText1, PAGE_MARGIN, y, metaStyle);
+        const metaText2 = `Detail Level: ${generatedCaseStudy.detailLevel} | Generated: ${new Date(generatedCaseStudy.generatedAt).toLocaleDateString()}`;
+        y = addTextAndAdvanceY(metaText2, PAGE_MARGIN, y, metaStyle);
+        y += PARAGRAPH_SPACING * 3; // More space before sections start
 
-
+        // Sections
         Object.entries(generatedCaseStudy.sections).forEach(([key, rawContent]) => {
             const sectionTitle = formatSectionName(key);
-            // Clean the raw content for PDF export
-            const cleanedContent = cleanMarkdownForPlainText(rawContent);
+            const cleanedContent = cleanMarkdownForPlainText(rawContent) || "(No content generated for this section)";
 
-            const titleHeight = 8;
-            const contentLinesEstimate = doc.splitTextToSize(cleanedContent || " ", 170).length;
-            const contentHeightEstimate = contentLinesEstimate * 5; // Approximate height
+            y += SECTION_SPACING_TOP; // Space before a new section title
 
-            if (y + titleHeight + contentHeightEstimate > doc.internal.pageSize.getHeight() - 20) {
+            // Check if there's enough space for the title and a bit of content
+            const estTitleHeight = (SECTION_TITLE_FONT_SIZE / doc.internal.scaleFactor) * LINE_SPACING_TITLE;
+            const estMinContentHeight = (BODY_FONT_SIZE / doc.internal.scaleFactor) * LINE_SPACING_BODY * 2; // Estimate for 2 lines
+            if (y + estTitleHeight + estMinContentHeight > doc.internal.pageSize.getHeight() - PAGE_MARGIN) {
                 doc.addPage();
-                y = 20; // Reset y on new page
+                y = PAGE_MARGIN;
             }
 
             // Section Header
-            doc.setFontSize(14);
-            doc.setFont(undefined, 'bold');
-            doc.setTextColor(60, 100, 150);
-            doc.text(sectionTitle, 20, y);
-            y += 8;
-
-            // Section Content (Cleaned)
-            doc.setFontSize(11);
-            doc.setFont(undefined, 'normal');
-            doc.setTextColor(50, 50, 50);
-            const contentLines = doc.splitTextToSize(cleanedContent || "(No content generated)", 170);
-
-            contentLines.forEach(line => {
-                if (y > doc.internal.pageSize.getHeight() - 20) { // Check before printing each line
-                    doc.addPage();
-                    y = 20;
-                }
-                doc.text(line, 20, y);
-                y += 5; // Line height
+            y = addTextAndAdvanceY(sectionTitle, PAGE_MARGIN, y, {
+                fontSize: SECTION_TITLE_FONT_SIZE,
+                fontStyle: 'bold',
+                color: SECTION_TITLE_COLOR,
+                lineSpacingMultiplier: LINE_SPACING_TITLE
             });
-            y += 8; // Space after section
+            
+            // Horizontal line under section title for visual separation
+            const lineY = y + 1; // Small offset after text
+             if (lineY < doc.internal.pageSize.getHeight() - PAGE_MARGIN) {
+                doc.setDrawColor(...SECTION_TITLE_COLOR); // Use a slightly muted or same color as title
+                doc.setLineWidth(0.3);
+                doc.line(PAGE_MARGIN, lineY, PAGE_MARGIN + CONTENT_WIDTH, lineY);
+                y = lineY + PARAGRAPH_SPACING; // Space after the line
+            }
+
+
+            // Section Content
+            y = addTextAndAdvanceY(cleanedContent, PAGE_MARGIN, y, {
+                fontSize: BODY_FONT_SIZE,
+                color: PRIMARY_TEXT_COLOR, // Ensure body text uses primary text color
+                lineSpacingMultiplier: LINE_SPACING_BODY
+            });
+            y += SECTION_SPACING_BOTTOM; // Space after section content
         });
 
-        // Footer
+        // Footer on all pages
         const pageCount = doc.internal.getNumberOfPages();
-        doc.setFontSize(9);
-        doc.setTextColor(150, 150, 150);
         for (let i = 1; i <= pageCount; i++) {
-            doc.setPage(i);
-            doc.text(`Page ${i} of ${pageCount} | Engineering Hub AI Case Study`, 20, doc.internal.pageSize.getHeight() - 10);
+            doc.setPage(i); // Set current page
+            doc.setFont(FONT_FAMILY, 'italic');
+            doc.setFontSize(FOOTER_FONT_SIZE);
+            doc.setTextColor(...FOOTER_COLOR);
+            doc.text(
+                `Page ${i} of ${pageCount} | Generated by Engineering Hub AI`,
+                PAGE_MARGIN,
+                doc.internal.pageSize.getHeight() - (PAGE_MARGIN / 2.5) // Position footer lower
+            );
         }
 
-        doc.save(`${generatedCaseStudy.title.replace(/\s+/g, '_')}_Case_Study.pdf`);
+        doc.save(`${generatedCaseStudy.title.replace(/[^\w\s]/gi, '').replace(/\s+/g, '_')}_Case_Study.pdf`);
     };
 
     const formatSectionName = (sectionKey) => {

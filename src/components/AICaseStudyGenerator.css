@@ -1569,8 +1569,11 @@
 .csg-header h1 {
     font-size: 1.5rem;
     font-weight: 600;
-    color: var(--csg-primary-blue);
+    color: blue;
     margin: 0;
+}
+.ai-case-study-generator-v2 .csg-header h1 {
+    color: var(--csg-primary-blue);
 }
 
 .display-header {

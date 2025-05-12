@@ -6,6 +6,7 @@ import {
   signInWithEmailAndPassword,
   GoogleAuthProvider,
   signInWithPopup,
+  sendPasswordResetEmail, // Add this import
 } from 'firebase/auth';
 import { auth, db } from '../firebase';
 import { doc, setDoc } from 'firebase/firestore';
@@ -258,6 +259,33 @@ const AuthModal = ({ isOpen, onClose }) => {
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
+  const handleForgotPassword = async () => {
+    setError(''); // Clear previous errors
+    setSuccessMessage(''); // Clear previous success messages
+
+    if (!formData.email) {
+      setError('Please enter your email address to reset your password.');
+      return;
+    }
+
+    setIsLoading(true);
+    try {
+      await sendPasswordResetEmail(auth, formData.email);
+      setSuccessMessage(`Password reset email sent to ${formData.email}. Please check your inbox (and spam folder).`);
+    } catch (error) {
+      // Handle common Firebase errors for sendPasswordResetEmail
+      if (error.code === 'auth/user-not-found') {
+        setError('No user found with this email address.');
+      } else if (error.code === 'auth/invalid-email') {
+        setError('The email address is not valid.');
+      } else {
+        setError(error.message);
+      }
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
     <AnimatePresence>
       {isOpen && (
@@ -399,8 +427,29 @@ const AuthModal = ({ isOpen, onClose }) => {
                   </button>
                 </div>
 
+                {!isSignup && (
+                  <div className="form-options">
+                    <div className="remember-me-group guide-checkbox-group">
+                      <input
+                        type="checkbox"
+                        id="rememberMe"
+                        checked={rememberMe}
+                        onChange={handleRememberMeChange}
+                      />
+                      <label htmlFor="rememberMe">Remember me</label>
+                    </div>
+                    <button 
+                      type="button" 
+                      className="forgot-password-link guide-link" 
+                      onClick={handleForgotPassword}
+                    >
+                      Forgot Password?
+                    </button>
+                  </div>
+                )}
+
                 {isSignup && (
-                  <div className="form-group checkbox-group">
+                  <div className="form-group checkbox-group guide-checkbox-group">
                     <input
                       type="checkbox"
                       id="acceptTerms"
@@ -414,15 +463,15 @@ const AuthModal = ({ isOpen, onClose }) => {
                   </div>
                 )}
 
-                <button type="submit" className="submit-button" disabled={isLoading}>
+                <button type="submit" className="submit-button guide-sign-button" disabled={isLoading}>
                   {isLoading ? "Loading..." : isSignup ? "Create Account" : "Sign In"}
                 </button>
               </form>
 
               <button
                 type="button"
-                className="toggle-link"
-                onClick={() => setIsSignup(!isSignup)}
+                className="toggle-link guide-link"
+                onClick={toggleAuthMode}
               >
                 {isSignup
                   ? "Already have an account? Sign in"
