@@ -1,8 +1,7 @@
-import React, { useState, useContext } from 'react';
+import React, { useContext } from 'react';
 import DesignMaterialCard from '../components/DesignMaterialCard';
 import AffiliateMarketingCard from '../components/AffiliateMarketingcard';
 import ExtensionCard from '../components/ExtensionCard'; // New component for extensions
-import AuthModal from '../components/AuthModal';
 import './DesignMaterialsPage.css';
 import { AuthContext } from '../contexts/AuthContext';
 import { Link } from 'react-router-dom';
@@ -351,25 +350,9 @@ const SectionHeader = ({ title, subtitle }) => (
 
 const DesignMaterialsPage = () => {
   const { currentUser } = useContext(AuthContext);
-  const [showAuthModal, setShowAuthModal] = useState(false);
-
-  const handleInteraction = () => {
-    if (!currentUser) {
-      setShowAuthModal(true);
-      return false;
-    }
-    return true;
-  };
-
-  const handleAuthRequired = () => {
-    setShowAuthModal(true);
-  };
 
   return (
     <div className="design-materials-page">
-      {showAuthModal && (
-        <AuthModal onClose={() => setShowAuthModal(false)} />
-      )}
       
       {/* AI Optimizer Preview Section */}
       <section className="ai-optimizer-preview">
@@ -407,7 +390,7 @@ const DesignMaterialsPage = () => {
               className="try-optimizer-button"
               onClick={() => {
                 if (!currentUser) {
-                  handleAuthRequired();
+                  // handleAuthRequired();
                   return false;
                 }
               }}
@@ -423,7 +406,7 @@ const DesignMaterialsPage = () => {
         </motion.div>
       </section>
 
-      {/* New Engineering Hub Extensions Section */}
+      {/* Engineering Hub Extensions Section */}
       <section className="engineering-hub-section">
         <SectionHeader 
           title="Engineering Hub Extensions" 
@@ -441,7 +424,7 @@ const DesignMaterialsPage = () => {
               key={extension.id}
               extension={extension}
               index={index}
-              onInteraction={handleInteraction}
+              // onInteraction={handleInteraction}
             />
           ))}
         </motion.div>

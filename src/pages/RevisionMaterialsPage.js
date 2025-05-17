@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import EducationalResourcesCard from '../components/EducationalResourcesCard';
-import AuthModal from '../components/AuthModal';
+// import AuthModal from '../components/AuthModal'; // Removed AuthModal
 import RevisionMaterialCard from '../components/RevisionMaterialCard';
 import AIFlashcardGenerator from '../components/AIFlashcardGenerator';
 import './RevisionMaterialsPage.css'; // Import the CSS file for styling
@@ -111,18 +111,18 @@ const revisionMaterials = [
 ];
 
 const RevisionMaterialsPage = () => {
-  const [showAuthModal, setShowAuthModal] = useState(false);
+  // const [showAuthModal, setShowAuthModal] = useState(false); // Removed showAuthModal state
   const [showFlashcardGenerator, setShowFlashcardGenerator] = useState(false);
 
-  const handleAuthRequired = () => {
-    setShowAuthModal(true);
-  };
+  // const handleAuthRequired = () => { // Removed handleAuthRequired function
+  //   setShowAuthModal(true);
+  // };
 
   return (
     <div className="revision-materials-page">
-      {showAuthModal && (
+      {/* {showAuthModal && ( // Removed AuthModal component usage
         <AuthModal onClose={() => setShowAuthModal(false)} />
-      )}
+      )} */}
       
       {/* AI Flashcard Generator Button */}
       <div className="ai-flashcard-section">
@@ -203,7 +203,7 @@ const RevisionMaterialsPage = () => {
       </div>
 
       {/* New Educational Resources Card */}
-      <EducationalResourcesCard onAuthRequired={handleAuthRequired} />
+      <EducationalResourcesCard /> {/* Removed onAuthRequired={handleAuthRequired} */}
       <div className="materials-list">
         {revisionMaterials.map((material, index) => (
           <Link to={material.link} key={index} className="material-link">

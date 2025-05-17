@@ -1,20 +1,16 @@
 // src/pages/AboutUsPage.js
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import AuthModal from '../components/AuthModal';
+import { useNavigate } from 'react-router-dom'; // Import useNavigate
 import './AboutUsPage.css';
 
 const AboutUsPage = () => {
-  const [showAuthModal, setShowAuthModal] = useState(false);
+  const navigate = useNavigate(); // Initialize useNavigate
 
   const handleJoinClick = () => {
-    setShowAuthModal(true);
+    navigate('/auth'); // Navigate to AuthPage
   };
-
-  const handleCloseModal = () => {
-    setShowAuthModal(false);
-  };
-
+  
   const fadeInUp = {
     initial: { opacity: 0, y: 20 },
     whileInView: { opacity: 1, y: 0 },
@@ -247,7 +243,7 @@ const AboutUsPage = () => {
         </div>
       </motion.section>
 
-      {showAuthModal && <AuthModal onClose={handleCloseModal} />}
+      
     </div>
   );
 };

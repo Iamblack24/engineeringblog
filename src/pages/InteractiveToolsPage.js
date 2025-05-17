@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useState, useRef } from 'react';
 import InteractiveToolCard from '../components/InteractiveToolCard';
-import AuthModal from '../components/AuthModal';
+// import AuthModal from '../components/AuthModal'; // Removed
 import './InteractiveToolsPage.css';
 import { AuthContext } from '../contexts/AuthContext';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -626,9 +626,7 @@ const InteractiveToolsPage = () => {
 
   return (
     <div className="interactive-tools-page">
-      {showAuthModal && (
-        <AuthModal onClose={() => setShowAuthModal(false)} />
-      )}
+      
       
       <div className="ai-environment-section">
         <h2>Built Environment AI Assistant</h2>
