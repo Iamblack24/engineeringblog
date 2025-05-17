@@ -1,0 +1,331 @@
+.auth-page {
+  min-height: 100vh;
+  background: linear-gradient(120deg, #0f172a 0%, #1e293b 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem 1rem;
+  animation: fadeIn 0.5s;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.auth-card {
+  background: rgba(17, 24, 39, 0.98);
+  border-radius: 1.25rem;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.25);
+  padding: 2.5rem 2rem;
+  width: 100%;
+  max-width: 400px;
+  color: #f3f4f6;
+  position: relative;
+  animation: fadeInUp 0.7s cubic-bezier(.23,1.01,.32,1) both;
+  transition: box-shadow 0.2s, transform 0.2s;
+}
+
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(40px);}
+  to { opacity: 1; transform: translateY(0);}
+}
+
+.auth-card:focus-within, .auth-card:hover {
+  box-shadow: 0 12px 36px rgba(80, 80, 180, 0.18);
+  transform: translateY(-2px) scale(1.01);
+}
+
+.auth-card h2 {
+  margin-bottom: 1.5rem;
+  font-size: 2rem;
+  font-weight: 700;
+  text-align: center;
+}
+
+.form-group {
+  margin-bottom: 1.1rem;
+  position: relative;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 0.3rem;
+  color: #a1a1aa;
+  font-size: 0.97rem;
+  font-weight: 500;
+}
+
+.form-group input,
+.form-group select {
+  width: 100%;
+  padding: 0.7rem 1rem;
+  border: 1px solid #374151;
+  border-radius: 0.5rem;
+  background: #111827;
+  color: #f3f4f6;
+  font-size: 1.08rem;
+  min-height: 44px;
+  transition: border 0.2s;
+}
+
+.form-group input::placeholder,
+.form-group select:invalid {
+  color: #64748b;
+  opacity: 1;
+}
+
+.form-group select:invalid {
+  color: #64748b;
+}
+
+.form-group input:focus,
+.form-group select:focus {
+  border-color: #a78bfa;
+  outline: none;
+}
+
+.password-group {
+  display: flex;
+  align-items: center;
+  position: relative;
+}
+
+.toggle-password {
+  position: absolute;
+  right: 0.5rem;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  color: #a1a1aa;
+  font-size: 1.25rem;
+  cursor: pointer;
+  padding: 0;
+  width: 2.2rem;
+  height: 2.2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+  overflow: hidden;
+  z-index: 2;
+}
+
+@media (max-width: 600px) {
+  .toggle-password {
+    font-size: 1.1rem;
+    width: 2rem;
+    height: 2rem;
+    right: 0.2rem;
+  }
+  .form-group input,
+  .form-group select {
+    padding-right: 2.5rem; /* Ensure space for the button */
+  }
+}
+
+.checkbox-group {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 0.7rem 0;
+}
+
+.checkbox-group input[type="checkbox"] {
+  accent-color: #a78bfa;
+}
+
+.checkbox-group label {
+  font-size: 0.95rem;
+  color: #e2e8f0;
+  margin-bottom: 0;
+}
+
+.form-options {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.forgot-password-link {
+  background: none;
+  border: none;
+  color: #60a5fa;
+  font-size: 0.97rem;
+  cursor: pointer;
+  text-decoration: underline;
+  padding: 0;
+}
+
+.forgot-password-link:hover {
+  color: #a78bfa;
+}
+
+.submit-button {
+  width: 100%;
+  padding: 0.85rem;
+  background: linear-gradient(90deg, #6366f1 0%, #a78bfa 100%);
+  color: #fff;
+  border: none;
+  border-radius: 0.5rem;
+  font-size: 1.08rem;
+  font-weight: 600;
+  cursor: pointer;
+  margin-top: 0.5rem;
+  transition: background 0.2s, transform 0.1s;
+  min-height: 44px;
+  letter-spacing: 0.01em;
+}
+
+.submit-button:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.submit-button:hover:not(:disabled) {
+  background: linear-gradient(90deg, #a78bfa 0%, #6366f1 100%);
+  transform: translateY(-2px) scale(1.02);
+}
+
+.divider {
+  display: flex;
+  align-items: center;
+  text-align: center;
+  margin: 1.2rem 0;
+  color: #a1a1aa;
+  font-size: 0.97rem;
+}
+
+.divider::before,
+.divider::after {
+  content: '';
+  flex: 1;
+  border-bottom: 1px solid #374151;
+  margin: 0 0.7em;
+}
+
+.google-signin-button {
+  width: 100%;
+  padding: 0.7rem;
+  background: #fff;
+  color: #1e293b;
+  border: none;
+  border-radius: 0.5rem;
+  font-size: 1.05rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.7rem;
+  margin-bottom: 0.7rem;
+  transition: background 0.2s, color 0.2s;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+  min-height: 44px;
+}
+
+.google-signin-button:hover {
+  background: #f3f4f6;
+  color: #6366f1;
+}
+
+.google-signin-button i {
+  font-size: 1.2rem;
+}
+
+.toggle-link {
+  margin-top: 1.2rem;
+  text-align: center;
+  color: #a1a1aa;
+  font-size: 0.98rem;
+}
+
+.toggle-link button {
+  background: none;
+  border: none;
+  color: #a78bfa;
+  font-weight: 600;
+  cursor: pointer;
+  font-size: 1rem;
+  text-decoration: underline;
+  margin-left: 0.2rem;
+}
+
+.toggle-link button:hover {
+  color: #6366f1;
+}
+
+.error-message {
+  background: rgba(220, 38, 38, 0.13);
+  color: #f87171;
+  border: 1px solid rgba(220, 38, 38, 0.25);
+  border-radius: 0.4rem;
+  padding: 0.7rem 1rem;
+  margin-bottom: 1rem;
+  font-size: 0.97rem;
+}
+
+.success-message {
+  background: rgba(34,197,94,0.13);
+  color: #22c55e;
+  border: 1px solid rgba(34,197,94,0.25);
+  border-radius: 0.4rem;
+  padding: 0.7rem 1rem;
+  margin-bottom: 1rem;
+  font-size: 0.97rem;
+}
+
+@media (max-width: 600px) {
+  .auth-card {
+    padding: 1rem 0.3rem;
+    border-radius: 0.7rem;
+    max-width: 100vw;
+    min-width: 0;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.18);
+  }
+  .auth-page {
+    padding: 0.5rem 0.1rem;
+  }
+  .form-group input,
+  .form-group select,
+  .google-signin-button,
+  .submit-button {
+    font-size: 1rem;
+    min-height: 40px;
+    padding: 0.6rem 0.7rem;
+  }
+  .auth-card h2 {
+    font-size: 1.3rem;
+  }
+  .divider {
+    font-size: 0.93rem;
+  }
+}
+
+@media (max-width: 400px) {
+  .auth-card {
+    padding: 0.5rem 0.1rem;
+  }
+  .auth-card h2 {
+    font-size: 1.1rem;
+  }
+}
+
+/* Add a little spacing for touch targets */
+.form-group,
+.checkbox-group,
+.form-options,
+.toggle-link {
+  margin-bottom: 0.7rem;
+}
+
+/* Make error/success messages more readable on small screens */
+@media (max-width: 400px) {
+  .error-message,
+  .success-message {
+    font-size: 0.9rem;
+    padding: 0.5rem 0.5rem;
+  }
+}

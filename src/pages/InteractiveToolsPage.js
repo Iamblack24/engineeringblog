@@ -220,6 +220,46 @@ const tools = [
     title: 'Area & Volume Calculator',
     description: 'Calculate areas and volumes from survey data.',
     link: '/tools/area-volume-calculator',
+  },
+  {
+    title: 'Circuit simulator',
+    description: 'Simulate and analyze electrical circuits using various components.',
+    link: '/tools/circuit-simulator', // Replace with the actual link to the tool
+  },
+  {
+    title: 'Culvert Design Assistant',
+    description: 'Assist with the design and analysis of culverts using various methods and standards.',
+    link: '/tools/culvert-design-assistant',
+  },
+  {
+    title: 'Geotechnical Data Visualizer',
+    description: 'Visualize and analyze geotechnical data such as borehole logs and soil profiles.',
+    link: '/tools/geotechnical-data-visualizer',
+  },
+  {
+    title: 'Lighting Design Calculator',
+    description: 'Calculate required lux levels, number of fixtures, and basic placement for indoor and outdoor lighting.',
+    link: '/tools/lighting-design-calculator',
+  },
+  {
+    title: 'IoT device Network Planner',
+    description: 'Plan and optimize the network layout for IoT devices in various environments.',
+    link: '/tools/iot-device-network-planner',
+  },
+  {
+    title: 'Open Channel Flow Calculator',
+    description: 'Calculate flow rates, velocities, and cross-sectional areas for open channel flow.',
+    link: '/tools/open-channel-flow-calculator',
+  },
+  {
+    title: 'Power system Load Flow Analysis',
+    description: 'Analyze power system load flow using various methods such as Gauss-Seidel and Newton-Raphson.',
+    link: '/tools/power-system-load-flow-analyzer',
+  },
+  {
+    title: 'Short Circuit Current Calculator',
+    description: 'Calculate short circuit currents in electrical systems using various methods.',
+    link: '/tools/short-circuit-current-calculator',
   }
 ];
 

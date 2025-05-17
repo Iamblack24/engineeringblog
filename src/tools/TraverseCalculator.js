@@ -1,295 +1,338 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './TraverseCalculator.css';
 
 const TraverseCalculator = () => {
   const [traverseData, setTraverseData] = useState({
-    stations: [
-      {
-        id: 1,
-        stationName: 'A',
-        northing: 1000.000,
-        easting: 1000.000,
-        angle: 0,         // degrees
-        distance: 0,      // meters
-        bearing: 0        // degrees
-      }
+    startPoint: { stationName: 'A', northing: 1000.000, easting: 1000.000 },
+    initialBearing: 0.000,
+    courses: [
+      { id: 1, fromStationName: 'A', toStationName: 'B', angle: 90.0, distance: 100.000 },
+      { id: 2, fromStationName: 'B', toStationName: 'C', angle: 270.0, distance: 150.000 },
+      { id: 3, fromStationName: 'C', toStationName: 'A', angle: 270.0, distance: 120.000 },
     ],
-    closingPoint: {
-      northing: 0,
-      easting: 0
-    },
-    traverseType: 'closed', // closed or open
-    angleUnit: 'degrees',   // degrees or radians
-    distanceUnit: 'meters', // meters or feet
-    bearingFormat: 'decimal' // decimal or dms
+    closingPoint: { stationName: 'A', northing: 1000.000, easting: 1000.000 },
+    traverseType: 'closedLoop',
+    angleConvention: 'anglesRight', // 'anglesRight' or 'interiorAngles'
+    angleUnit: 'degrees',
+    distanceUnit: 'meters',
+    bearingFormat: 'decimal',
+    adjustmentRule: 'bowditch',
   });
 
   const [results, setResults] = useState(null);
   const [errors, setErrors] = useState({});
 
-  // Constants for calculations
   const CONSTANTS = {
-    radiansToGrades: 63.662,
-    gradesToRadians: 0.015708,
-    degreesToRadians: 0.017453,
-    radiansToDegrees: 57.296
+    degreesToRadians: Math.PI / 180,
+    radiansToDegrees: 180 / Math.PI,
+  };
+
+  useEffect(() => {
+    if (traverseData.traverseType === 'closedLoop') {
+      setTraverseData(prev => ({
+        ...prev,
+        closingPoint: {
+          stationName: prev.startPoint.stationName,
+          northing: prev.startPoint.northing,
+          easting: prev.startPoint.easting,
+        }
+      }));
+    }
+  }, [traverseData.startPoint, traverseData.traverseType]);
+
+  const handleInputChange = (e, path, index, field) => {
+    const { value, type } = e.target;
+    const parsedValue = type === 'number' && value !== '' ? parseFloat(value) : value;
+
+    setTraverseData(prev => {
+      const newData = JSON.parse(JSON.stringify(prev));
+      if (path === 'startPoint') {
+        newData.startPoint[field] = parsedValue;
+      } else if (path === 'courses' && index !== undefined) {
+        newData.courses[index][field] = parsedValue;
+      } else if (path === 'closingPoint') {
+        newData.closingPoint[field] = parsedValue;
+      } else {
+        newData[field] = parsedValue;
+      }
+      return newData;
+    });
   };
 
   const validateInputs = () => {
     const newErrors = {};
-    
-    // Validate station data
-    traverseData.stations.forEach((station, index) => {
-      if (station.distance < 0) {
-        newErrors[`distance_${index}`] = `Distance at station ${station.stationName} must be positive`;
+    if (traverseData.courses.length === 0) {
+      newErrors.courses = "At least one course is required.";
+    }
+    traverseData.courses.forEach((course, index) => {
+      if (isNaN(course.angle) || course.angle < 0 || course.angle >= 360) {
+        newErrors[`course_angle_${index}`] = `Angle for course ${index + 1} must be 0-360.`;
       }
-      if (station.angle < 0 || station.angle >= 360) {
-        newErrors[`angle_${index}`] = `Angle at station ${station.stationName} must be between 0 and 360 degrees`;
+      if (isNaN(course.distance) || course.distance <= 0) {
+        newErrors[`course_distance_${index}`] = `Distance for course ${index + 1} must be positive.`;
       }
     });
-
-    // Validate closing point for closed traverse
-    if (traverseData.traverseType === 'closed') {
-      if (!traverseData.closingPoint.northing || !traverseData.closingPoint.easting) {
-        newErrors.closingPoint = 'Closing point coordinates required for closed traverse';
-      }
+    if (isNaN(traverseData.initialBearing) || traverseData.initialBearing < 0 || traverseData.initialBearing >= 360) {
+      newErrors.initialBearing = "Initial bearing must be 0-360.";
     }
-
+    if (isNaN(traverseData.startPoint.northing) || isNaN(traverseData.startPoint.easting)) {
+      newErrors.startPoint = "Start point coordinates must be numbers.";
+    }
+    if (traverseData.traverseType !== 'open' && (isNaN(traverseData.closingPoint.northing) || isNaN(traverseData.closingPoint.easting))) {
+      newErrors.closingPoint = "Closing point coordinates must be numbers for closed traverses.";
+    }
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
+  const normalizeAngle = (angle) => {
+    let normalized = angle % 360;
+    if (normalized < 0) normalized += 360;
+    return normalized;
+  };
+
   const calculateTraverse = () => {
-    if (!validateInputs()) return;
-
-    try {
-      // Calculate bearings and coordinates
-      const coordinates = calculateCoordinates();
-      
-      // Calculate traverse closure
-      const closure = calculateClosure(coordinates);
-      
-      // Calculate angular error
-      const angularError = calculateAngularError();
-      
-      // Adjust coordinates if necessary
-      const adjustedCoordinates = adjustCoordinates(coordinates, closure);
-      
-      // Calculate area if closed traverse
-      const area = traverseData.traverseType === 'closed' ? 
-        calculateArea(adjustedCoordinates) : null;
-
-      setResults({
-        stations: adjustedCoordinates,
-        closure: {
-          linear: closure.linear,
-          relative: closure.relative,
-          angular: angularError
-        },
-        area: area,
-        precision: calculatePrecision(closure.linear, coordinates),
-        adjustments: closure.adjustments
-      });
-
-    } catch (error) {
-      setErrors({ calculation: 'Error calculating traverse' });
+    if (!validateInputs()) {
+      setResults(null);
+      return;
     }
-  };
+    setErrors({});
 
-  const calculateCoordinates = () => {
-    const coordinates = [];
-    let currentNorthing = traverseData.stations[0].northing;
-    let currentEasting = traverseData.stations[0].easting;
-    
-    traverseData.stations.forEach((station, index) => {
-      if (index === 0) {
-        coordinates.push({
-          ...station,
-          adjustedNorthing: currentNorthing,
-          adjustedEasting: currentEasting
-        });
-        return;
+    const N = traverseData.courses.length;
+    if (N === 0) return;
+
+    let currentBearing = traverseData.initialBearing;
+    let workingAngles = traverseData.courses.map(c => c.angle);
+    let angularMisclosure = 0;
+    let angleCorrectionPerStation = 0;
+
+    if ((traverseData.traverseType === 'closedLoop' || traverseData.traverseType === 'closedLink') && N > 1) {
+      const sumObservedAngles = traverseData.courses.reduce((sum, course) => sum + course.angle, 0);
+      let expectedSumAngles;
+
+      if (traverseData.angleConvention === 'anglesRight') {
+        // For angles to the right in a closed loop, sum should be (N±2)*180
+        // Determine if (N-2)*180 or (N+2)*180 is closer to sumObservedAngles
+        const targetSumNMinus2 = (N - 2) * 180;
+        const targetSumNPlus2 = (N + 2) * 180;
+        if (Math.abs(sumObservedAngles - targetSumNMinus2) < Math.abs(sumObservedAngles - targetSumNPlus2)) {
+          expectedSumAngles = targetSumNMinus2;
+        } else {
+          expectedSumAngles = targetSumNPlus2;
+        }
+      } else if (traverseData.angleConvention === 'interiorAngles') {
+         expectedSumAngles = (N - 2) * 180; // Standard for interior angles of a polygon
+      } else {
+        expectedSumAngles = sumObservedAngles; // No adjustment if convention is unknown/not applicable
       }
+      
+      // This angular adjustment is primarily for closedLoop. ClosedLink might need known closing bearing.
+      if (traverseData.traverseType === 'closedLoop' && traverseData.angleConvention !== 'none') {
+        angularMisclosure = sumObservedAngles - expectedSumAngles;
+        angleCorrectionPerStation = (N > 0) ? -angularMisclosure / N : 0;
+        workingAngles = traverseData.courses.map(course => normalizeAngle(course.angle + angleCorrectionPerStation));
+      }
+    }
 
-      const bearing = calculateBearing(station.angle);
-      const departure = station.distance * Math.sin(bearing * CONSTANTS.degreesToRadians);
-      const latitude = station.distance * Math.cos(bearing * CONSTANTS.degreesToRadians);
-      
-      currentNorthing += latitude;
-      currentEasting += departure;
-      
-      coordinates.push({
-        ...station,
-        bearing,
-        departure,
+    let totalDistance = 0;
+    let sumLatitudes = 0;
+    let sumDepartures = 0;
+    
+    let legData = traverseData.courses.map((course, index) => {
+      const bearingRad = currentBearing * CONSTANTS.degreesToRadians;
+      const latitude = course.distance * Math.cos(bearingRad);
+      const departure = course.distance * Math.sin(bearingRad);
+
+      sumLatitudes += latitude;
+      sumDepartures += departure;
+      totalDistance += course.distance;
+
+      const leg = {
+        ...course,
+        originalAngle: course.angle, // Store original angle
+        adjustedAngle: workingAngles[index], // Use adjusted or original
+        bearing: currentBearing,
         latitude,
-        adjustedNorthing: currentNorthing,
-        adjustedEasting: currentEasting
+        departure,
+      };
+
+      if (index < N - 1) {
+        currentBearing = normalizeAngle(currentBearing + 180 + workingAngles[index + 1]);
+      } else if (N > 0 && traverseData.traverseType === 'closedLoop' && N > 1) {
+        // For the last leg in a closed loop, the next angle to "turn" would be at the start point
+        // using the first angle in the `workingAngles` array to check closure.
+        // currentBearing is bearing of last leg. Next bearing would be back to start.
+        // This is implicitly handled by linear misclosure check.
+      }
+      return leg;
+    });
+
+    let misclosureN = 0;
+    let misclosureE = 0;
+    let linearMisclosure = 0;
+    let relativePrecision = Infinity;
+
+    if (traverseData.traverseType === 'closedLoop' || traverseData.traverseType === 'closedLink') {
+      const finalCalcNorthing = traverseData.startPoint.northing + sumLatitudes;
+      const finalCalcEasting = traverseData.startPoint.easting + sumDepartures;
+      misclosureN = traverseData.closingPoint.northing - finalCalcNorthing;
+      misclosureE = traverseData.closingPoint.easting - finalCalcEasting;
+      linearMisclosure = Math.sqrt(misclosureN ** 2 + misclosureE ** 2);
+      if (totalDistance > 0 && linearMisclosure > 1e-9) { // Avoid division by zero or near-zero
+        relativePrecision = totalDistance / linearMisclosure;
+      } else if (linearMisclosure <= 1e-9) {
+        relativePrecision = Infinity; // Consider perfect closure
+      }
+    }
+
+    let adjustedLegData = legData.map(leg => {
+      let latCorrection = 0;
+      let depCorrection = 0;
+      if ((traverseData.traverseType === 'closedLoop' || traverseData.traverseType === 'closedLink') && totalDistance > 0 && linearMisclosure > 1e-9) {
+        if (traverseData.adjustmentRule === 'bowditch') {
+          latCorrection = misclosureN * (leg.distance / totalDistance);
+          depCorrection = misclosureE * (leg.distance / totalDistance);
+        } else if (traverseData.adjustmentRule === 'transit') {
+          const sumAbsLat = legData.reduce((sum, l) => sum + Math.abs(l.latitude), 0);
+          const sumAbsDep = legData.reduce((sum, l) => sum + Math.abs(l.departure), 0);
+          if (sumAbsLat > 1e-9) latCorrection = misclosureN * (Math.abs(leg.latitude) / sumAbsLat);
+          if (sumAbsDep > 1e-9) depCorrection = misclosureE * (Math.abs(leg.departure) / sumAbsDep);
+        }
+      }
+      return {
+        ...leg,
+        latCorrection,
+        depCorrection,
+        adjustedLatitude: leg.latitude + latCorrection,
+        adjustedDeparture: leg.departure + depCorrection,
+      };
+    });
+
+    let finalStations = [];
+    let currentNorthing = traverseData.startPoint.northing;
+    let currentEasting = traverseData.startPoint.easting;
+
+    finalStations.push({
+      stationName: traverseData.startPoint.stationName,
+      angle: '-',
+      distance: '-',
+      bearing: '-',
+      latitude: '-', departure: '-',
+      adjNorthing: currentNorthing.toFixed(3),
+      adjEasting: currentEasting.toFixed(3),
+    });
+
+    adjustedLegData.forEach((leg) => {
+      currentNorthing += leg.adjustedLatitude;
+      currentEasting += leg.adjustedDeparture;
+      finalStations.push({
+        stationName: leg.toStationName,
+        angle: leg.originalAngle.toFixed(2), // Show original observed angle
+        adjustedAngleDisplay: leg.adjustedAngle.toFixed(4), // Show adjusted angle used
+        distance: leg.distance.toFixed(3),
+        bearing: leg.bearing.toFixed(4),
+        latitude: leg.latitude.toFixed(3),
+        departure: leg.departure.toFixed(3),
+        latCorrection: leg.latCorrection.toFixed(3),
+        depCorrection: leg.depCorrection.toFixed(3),
+        adjLatitude: leg.adjustedLatitude.toFixed(3),
+        adjDeparture: leg.adjustedDeparture.toFixed(3),
+        adjNorthing: currentNorthing.toFixed(3),
+        adjEasting: currentEasting.toFixed(3),
       });
     });
-
-    return coordinates;
-  };
-
-  const calculateClosure = (coordinates) => {
-    if (traverseData.traverseType !== 'closed') {
-      return { linear: 0, relative: 0, adjustments: [] };
-    }
-
-    const lastPoint = coordinates[coordinates.length - 1];
-    const closingPoint = traverseData.closingPoint;
     
-    const northingError = closingPoint.northing - lastPoint.adjustedNorthing;
-    const eastingError = closingPoint.easting - lastPoint.adjustedEasting;
-    
-    const linearClosure = Math.sqrt(
-      Math.pow(northingError, 2) + Math.pow(eastingError, 2)
-    );
-    
-    const totalDistance = coordinates.reduce(
-      (sum, station) => sum + station.distance, 0
-    );
-    
-    const relativeClosure = 1 / (totalDistance / linearClosure);
-
-    return {
-      linear: linearClosure,
-      relative: relativeClosure,
-      adjustments: calculateAdjustments(coordinates, northingError, eastingError)
-    };
-  };
-
-  const calculateAngularError = () => {
-    if (traverseData.traverseType !== 'closed') return 0;
-    
-    const totalAngles = traverseData.stations.reduce(
-      (sum, station) => sum + station.angle, 0
-    );
-    
-    const expectedSum = (traverseData.stations.length - 2) * 180;
-    return totalAngles - expectedSum;
-  };
-
-  const adjustCoordinates = (coordinates, closure) => {
-    const totalDistance = coordinates.reduce((sum, station) => sum + (station.distance || 0), 0);
-    
-    return coordinates.map(station => {
-      if (!station.distance) return station;
-      
-      const proportion = station.distance / totalDistance;
-      return {
-        ...station,
-        adjustedNorthing: station.adjustedNorthing + (closure.northingError * proportion),
-        adjustedEasting: station.adjustedEasting + (closure.eastingError * proportion)
-      };
-    });
-  };
-
-  const calculateArea = (coordinates) => {
     let area = 0;
-    
-    for (let i = 0; i < coordinates.length; i++) {
-      const j = (i + 1) % coordinates.length;
-      area += coordinates[i].adjustedNorthing * coordinates[j].adjustedEasting - 
-              coordinates[j].adjustedNorthing * coordinates[i].adjustedEasting;
+    if ((traverseData.traverseType === 'closedLoop' || traverseData.traverseType === 'closedLink') && finalStations.length > 2) {
+        let polygonPoints = finalStations.map(s => ({easting: parseFloat(s.adjEasting), northing: parseFloat(s.adjNorthing)}));
+        for (let i = 0; i < polygonPoints.length; i++) {
+            const p1 = polygonPoints[i];
+            const p2 = polygonPoints[(i + 1) % polygonPoints.length];
+            area += (p1.easting * p2.northing - p2.easting * p1.northing);
+        }
+        area = Math.abs(area) / 2;
     }
-    
-    return Math.abs(area) / 2;
-  };
 
-  const calculatePrecision = (linearClosure, coordinates) => {
-    const totalDistance = coordinates.reduce(
-      (sum, station) => sum + (station.distance || 0), 0
-    );
-    return totalDistance / linearClosure;
-  };
-
-  const calculateBearing = (angle) => {
-    // Convert internal angle to bearing
-    let bearing = angle;
-    while (bearing >= 360) bearing -= 360;
-    while (bearing < 0) bearing += 360;
-    return bearing;
-  };
-
-  const calculateAdjustments = (coordinates, northingError, eastingError) => {
-    const totalDistance = coordinates.reduce(
-      (sum, station) => sum + (station.distance || 0), 0
-    );
-    
-    return coordinates.map(station => {
-      if (!station.distance) return { northing: 0, easting: 0 };
-      
-      const proportion = station.distance / totalDistance;
-      return {
-        northing: northingError * proportion,
-        easting: eastingError * proportion
-      };
+    setResults({
+      stations: finalStations,
+      legs: adjustedLegData,
+      closure: {
+        misclosureN: misclosureN.toFixed(4),
+        misclosureE: misclosureE.toFixed(4),
+        linear: linearMisclosure.toFixed(4),
+        relative: relativePrecision === Infinity ? 'Perfect' : Math.round(relativePrecision).toString(),
+        angular: angularMisclosure.toFixed(4),
+        angleCorrectionPerStation: angleCorrectionPerStation.toFixed(5),
+        totalDistance: totalDistance.toFixed(3),
+      },
+      area: area.toFixed(3),
     });
   };
 
-  const addStation = () => {
-    const newStation = {
-      id: Date.now(),
-      stationName: `S${traverseData.stations.length + 1}`,
-      northing: 0,
-      easting: 0,
-      angle: 0,
-      distance: 0,
-      bearing: 0
-    };
-    
-    setTraverseData({
-      ...traverseData,
-      stations: [...traverseData.stations, newStation]
-    });
+  const addCourse = () => {
+    const lastCourse = traverseData.courses[traverseData.courses.length - 1];
+    const newFromStation = lastCourse ? lastCourse.toStationName : traverseData.startPoint.stationName;
+    // Generate a somewhat unique default name for the next station
+    const existingToNames = new Set(traverseData.courses.map(c => c.toStationName));
+    let nextCharSuffix = traverseData.courses.length + 1;
+    let newToStationName = String.fromCharCode(65 + (traverseData.courses.length % 26)) + (nextCharSuffix > 26 ? Math.floor(nextCharSuffix/26) : '');
+    while(existingToNames.has(newToStationName) || newToStationName === newFromStation) {
+        nextCharSuffix++;
+        newToStationName = String.fromCharCode(65 + (nextCharSuffix % 26)) + (nextCharSuffix > 26 ? Math.floor(nextCharSuffix/26) : '');
+    }
+
+
+    setTraverseData(prev => ({
+      ...prev,
+      courses: [
+        ...prev.courses,
+        { id: Date.now(), fromStationName: newFromStation, toStationName: newToStationName, angle: 0, distance: 0 }
+      ]
+    }));
   };
 
-  const removeStation = (index) => {
-    const newStations = [...traverseData.stations];
-    newStations.splice(index, 1);
-    
-    setTraverseData({
-      ...traverseData,
-      stations: newStations
-    });
+  const removeCourse = (index) => {
+    setTraverseData(prev => ({
+      ...prev,
+      courses: prev.courses.filter((_, i) => i !== index)
+    }));
   };
 
   const formatBearing = (bearing) => {
-    if (!bearing && bearing !== 0) return '-';
-    
-    // Format as degrees, minutes, seconds if using DMS format
+    if (bearing === '-' || isNaN(parseFloat(bearing))) return '-';
+    const b = parseFloat(bearing);
     if (traverseData.bearingFormat === 'dms') {
-      const degrees = Math.floor(bearing);
-      const minutes = Math.floor((bearing - degrees) * 60);
-      const seconds = Math.round(((bearing - degrees) * 60 - minutes) * 60);
+      const degrees = Math.floor(b);
+      const minutesDecimal = (b - degrees) * 60;
+      const minutes = Math.floor(minutesDecimal);
+      const seconds = ((minutesDecimal - minutes) * 60).toFixed(1);
       return `${degrees}° ${minutes}' ${seconds}"`;
     }
-    
-    // Format as decimal degrees
-    return `${bearing.toFixed(4)}°`;
+    return `${b.toFixed(4)}°`;
   };
-
-  const getPrecisionClass = (precision) => {
-    if (precision >= 10000) return 'excellent';
-    if (precision >= 5000) return 'good';
-    if (precision >= 1000) return 'fair';
+  
+  const getPrecisionClass = (precisionRatioString) => {
+    if (precisionRatioString === 'Perfect') return 'excellent';
+    const precisionRatio = parseFloat(precisionRatioString);
+    if (isNaN(precisionRatio)) return 'poor';
+    if (precisionRatio >= 10000) return 'excellent';
+    if (precisionRatio >= 5000) return 'good';
+    if (precisionRatio >= 1000) return 'fair';
     return 'poor';
   };
 
-  const getPrecisionPercentage = (precision) => {
-    // Convert precision ratio to percentage for gauge display
-    const maxPrecision = 10000; // 1:10000 is considered excellent
-    const percentage = (precision / maxPrecision) * 100;
-    return Math.min(percentage, 100); // Cap at 100%
+  const getPrecisionPercentage = (precisionRatioString) => {
+    if (precisionRatioString === 'Perfect') return 100;
+    const precisionRatio = parseFloat(precisionRatioString);
+    if (isNaN(precisionRatio)) return 0;
+    const maxPrecisionForGauge = 15000;
+    const percentage = (precisionRatio / maxPrecisionForGauge) * 100;
+    return Math.min(Math.max(percentage,0), 100); 
   };
 
-  const formatPrecision = (precision) => {
-    if (!precision) return 'N/A';
-    
-    // Format as ratio (e.g., "1:5000")
-    const ratio = Math.round(precision);
-    return `1:${ratio}`;
+  const formatPrecision = (precisionRatioString) => {
+    if (precisionRatioString === 'Perfect' || isNaN(parseFloat(precisionRatioString)) || parseFloat(precisionRatioString) === 0) return 'Perfect or N/A';
+    return `1:${Math.round(parseFloat(precisionRatioString))}`;
   };
 
   return (
@@ -298,106 +341,160 @@ const TraverseCalculator = () => {
       
       <div className="calculator-controls">
         <div className="input-sections">
-          {/* Traverse Settings */}
           <div className="input-section">
             <h3>Traverse Settings</h3>
             <div className="input-group">
               <label>Traverse Type:</label>
-              <select
-                value={traverseData.traverseType}
-                onChange={(e) => setTraverseData({
-                  ...traverseData,
-                  traverseType: e.target.value
-                })}
-              >
-                <option value="closed">Closed Traverse</option>
+              <select name="traverseType" value={traverseData.traverseType} onChange={(e) => handleInputChange(e, null, null, 'traverseType')}>
+                <option value="closedLoop">Closed Loop (ends on start point)</option>
+                <option value="closedLink">Closed Link (ends on known point)</option>
                 <option value="open">Open Traverse</option>
               </select>
             </div>
-            {/* Additional settings inputs */}
-          </div>
-
-          {/* Station Data */}
-          <div className="input-section stations-section">
-            <h3>Station Data</h3>
-            <div className="stations-grid">
-              {traverseData.stations.map((station, index) => (
-                <div key={station.id} className="station-inputs">
-                  <div className="station-header">
-                    <span>Station {station.stationName}</span>
-                    {index > 0 && (
-                      <button 
-                        className="remove-station"
-                        onClick={() => removeStation(index)}
-                      >
-                        ×
-                      </button>
-                    )}
-                  </div>
-                  {/* Station input fields */}
-                </div>
-              ))}
+            <div className="input-group">
+              <label>Angle Convention:</label>
+              <select name="angleConvention" value={traverseData.angleConvention} onChange={(e) => handleInputChange(e, null, null, 'angleConvention')}>
+                <option value="anglesRight">Angles to the Right (Field Angles)</option>
+                <option value="interiorAngles">Interior Angles (Calculated)</option>
+                {/* <option value="none">No Angular Adjustment</option> */}
+              </select>
             </div>
-            <button 
-              className="add-station"
-              onClick={addStation}
-            >
-              Add Station
-            </button>
+            <div className="input-group">
+              <label>Adjustment Rule:</label>
+              <select name="adjustmentRule" value={traverseData.adjustmentRule} onChange={(e) => handleInputChange(e, null, null, 'adjustmentRule')}
+                disabled={traverseData.traverseType === 'open'}>
+                <option value="bowditch">Bowditch (Compass)</option>
+                <option value="transit">Transit</option>
+              </select>
+            </div>
+             <div className="input-group">
+                <label>Bearing Format:</label>
+                <select name="bearingFormat" value={traverseData.bearingFormat} onChange={(e) => handleInputChange(e, null, null, 'bearingFormat')}>
+                    <option value="decimal">Decimal Degrees</option>
+                    <option value="dms">DD° MM' SS.s"</option>
+                </select>
+            </div>
           </div>
 
-          {/* Closing Point (for closed traverse) */}
-          {traverseData.traverseType === 'closed' && (
+          <div className="input-section">
+            <h3>Start Point & Initial Bearing</h3>
+            <div className="input-group">
+              <label>Start Station Name:</label>
+              <input type="text" value={traverseData.startPoint.stationName} onChange={(e) => handleInputChange(e, 'startPoint', null, 'stationName')} />
+            </div>
+            <div className="input-group">
+              <label>Start Northing (N):</label>
+              <input type="number" step="any" value={traverseData.startPoint.northing} onChange={(e) => handleInputChange(e, 'startPoint', null, 'northing')} />
+            </div>
+            <div className="input-group">
+              <label>Start Easting (E):</label>
+              <input type="number" step="any" value={traverseData.startPoint.easting} onChange={(e) => handleInputChange(e, 'startPoint', null, 'easting')} />
+            </div>
+            <div className="input-group">
+              <label>Initial Bearing of First Leg (°):</label>
+              <input type="number" step="any" value={traverseData.initialBearing} onChange={(e) => handleInputChange(e, null, null, 'initialBearing')} />
+              {errors.initialBearing && <small className="error-text">{errors.initialBearing}</small>}
+            </div>
+          </div>
+
+          {(traverseData.traverseType === 'closedLink') && (
             <div className="input-section">
-              <h3>Closing Point</h3>
-              {/* Closing point inputs */}
+              <h3>Closing Point (Known Coordinates)</h3>
+               <div className="input-group">
+                <label>Closing Station Name:</label>
+                <input type="text" value={traverseData.closingPoint.stationName} onChange={(e) => handleInputChange(e, 'closingPoint', null, 'stationName')} />
+              </div>
+              <div className="input-group">
+                <label>Closing Northing (N):</label>
+                <input type="number" step="any" value={traverseData.closingPoint.northing} onChange={(e) => handleInputChange(e, 'closingPoint', null, 'northing')} />
+              </div>
+              <div className="input-group">
+                <label>Closing Easting (E):</label>
+                <input type="number" step="any" value={traverseData.closingPoint.easting} onChange={(e) => handleInputChange(e, 'closingPoint', null, 'easting')} />
+              </div>
+              {errors.closingPoint && <small className="error-text">{errors.closingPoint}</small>}
             </div>
           )}
         </div>
 
-        <button 
-          className="calculate-button"
-          onClick={calculateTraverse}
-        >
-          Calculate Traverse
-        </button>
+        <div className="input-section stations-section">
+          <h3>Courses / Legs</h3>
+          <p className="input-hint">Angle is clockwise from backsight to foresight (as per selected convention). Distance is for the leg to 'To Station'.</p>
+          {errors.courses && <p className="error-text">{errors.courses}</p>}
+          <div className="stations-grid">
+            {traverseData.courses.map((course, index) => (
+              <div key={course.id} className="station-inputs">
+                <div className="station-header">
+                  <span>Course {index + 1} (From: {course.fromStationName} To: {course.toStationName})</span>
+                  <button type="button" className="remove-station" onClick={() => removeCourse(index)}>×</button>
+                </div>
+                <div className="input-group">
+                  <label>From Station:</label>
+                  <input type="text" value={course.fromStationName} onChange={e => handleInputChange(e, 'courses', index, 'fromStationName')} placeholder="e.g., A"/>
+                </div>
+                <div className="input-group">
+                  <label>To Station:</label>
+                  <input type="text" value={course.toStationName} onChange={e => handleInputChange(e, 'courses', index, 'toStationName')} placeholder="e.g., B"/>
+                </div>
+                <div className="input-group">
+                  <label>Angle at '{course.fromStationName}' (°):</label>
+                  <input type="number" step="any" value={course.angle} onChange={e => handleInputChange(e, 'courses', index, 'angle')} />
+                  {errors[`course_angle_${index}`] && <small className="error-text">{errors[`course_angle_${index}`]}</small>}
+                </div>
+                <div className="input-group">
+                  <label>Distance to '{course.toStationName}':</label>
+                  <input type="number" step="any" value={course.distance} onChange={e => handleInputChange(e, 'courses', index, 'distance')} />
+                  {errors[`course_distance_${index}`] && <small className="error-text">{errors[`course_distance_${index}`]}</small>}
+                </div>
+              </div>
+            ))}
+          </div>
+          <button type="button" className="add-station" onClick={addCourse}>Add Course</button>
+        </div>
 
-        {/* Results Display */}
+        <button type="button" className="calculate-button" onClick={calculateTraverse}>Calculate Traverse</button>
+
         {results && (
           <div className="results-section">
             <h3>Traverse Results</h3>
-            
             <div className="results-grid">
-              {/* Traverse Diagram */}
-              <div className="result-item">
-                <h4>Traverse Diagram</h4>
-                <div className="traverse-diagram">
-                  {/* SVG visualization of traverse */}
-                </div>
-              </div>
-
-              {/* Coordinate Table */}
-              <div className="result-item">
-                <h4>Adjusted Coordinates</h4>
+              <div className="result-item coordinate-table-item">
+                <h4>Adjusted Station Coordinates & Leg Data</h4>
                 <div className="coordinate-table">
                   <table>
                     <thead>
                       <tr>
                         <th>Station</th>
-                        <th>Northing</th>
-                        <th>Easting</th>
-                        <th>Bearing</th>
+                        <th>Obs Angle</th>
+                        <th>Adj Angle</th>
                         <th>Distance</th>
+                        <th>Bearing</th>
+                        <th>Latitude</th>
+                        <th>Departure</th>
+                        <th>N Corr</th>
+                        <th>E Corr</th>
+                        <th>Adj Lat</th>
+                        <th>Adj Dep</th>
+                        <th>Adj Northing</th>
+                        <th>Adj Easting</th>
                       </tr>
                     </thead>
                     <tbody>
-                      {results.stations.map((station) => (
-                        <tr key={station.id}>
+                      {results.stations.map((station, index) => (
+                        <tr key={station.stationName + "-" + index}>
                           <td>{station.stationName}</td>
-                          <td>{station.adjustedNorthing.toFixed(3)}</td>
-                          <td>{station.adjustedEasting.toFixed(3)}</td>
+                          <td>{station.angle !== '-' ? parseFloat(station.angle).toFixed(2) + '°' : '-'}</td>
+                          <td>{station.adjustedAngleDisplay ? parseFloat(station.adjustedAngleDisplay).toFixed(4) + '°' : '-'}</td>
+                          <td>{station.distance !== '-' ? parseFloat(station.distance).toFixed(3) : '-'}</td>
                           <td>{formatBearing(station.bearing)}</td>
-                          <td>{station.distance.toFixed(3)}</td>
+                          <td>{station.latitude !== '-' ? parseFloat(station.latitude).toFixed(3) : '-'}</td>
+                          <td>{station.departure !== '-' ? parseFloat(station.departure).toFixed(3) : '-'}</td>
+                          <td>{station.latCorrection !== undefined ? parseFloat(station.latCorrection).toFixed(3) : '-'}</td>
+                          <td>{station.depCorrection !== undefined ? parseFloat(station.depCorrection).toFixed(3) : '-'}</td>
+                          <td>{station.adjLatitude !== undefined ? parseFloat(station.adjLatitude).toFixed(3) : '-'}</td>
+                          <td>{station.adjDeparture !== undefined ? parseFloat(station.adjDeparture).toFixed(3) : '-'}</td>
+                          <td>{station.adjNorthing}</td>
+                          <td>{station.adjEasting}</td>
                         </tr>
                       ))}
                     </tbody>
@@ -405,69 +502,53 @@ const TraverseCalculator = () => {
                 </div>
               </div>
 
-              {/* Closure Information */}
-              <div className="result-item">
-                <h4>Closure Information</h4>
-                <div className="closure-metrics">
-                  <div className="metric">
-                    <span className="metric-label">Linear Closure:</span>
-                    <span className="metric-value">
-                      {results.closure.linear.toFixed(3)} m
-                    </span>
-                  </div>
-                  <div className="metric">
-                    <span className="metric-label">Relative Closure:</span>
-                    <span className="metric-value">
-                      1:{Math.abs(results.closure.relative).toFixed(0)}
-                    </span>
-                  </div>
-                  <div className="metric">
-                    <span className="metric-label">Angular Error:</span>
-                    <span className="metric-value">
-                      {results.closure.angular.toFixed(2)}°
-                    </span>
+              {(traverseData.traverseType === 'closedLoop' || traverseData.traverseType === 'closedLink') && (
+                <div className="result-item">
+                  <h4>Closure Information</h4>
+                  <div className="closure-metrics">
+                    <div className="metric"><span className="metric-label">Total Distance:</span><span className="metric-value">{results.closure.totalDistance}</span></div>
+                    <div className="metric"><span className="metric-label">Angular Misclosure:</span><span className="metric-value">{results.closure.angular}°</span></div>
+                    <div className="metric"><span className="metric-label">Angle Correction/Station:</span><span className="metric-value">{results.closure.angleCorrectionPerStation}°</span></div>
+                    <div className="metric"><span className="metric-label">Northing Misclosure (dN):</span><span className="metric-value">{results.closure.misclosureN}</span></div>
+                    <div className="metric"><span className="metric-label">Easting Misclosure (dE):</span><span className="metric-value">{results.closure.misclosureE}</span></div>
+                    <div className="metric"><span className="metric-label">Linear Misclosure:</span><span className="metric-value">{results.closure.linear}</span></div>
+                    <div className="metric"><span className="metric-label">Relative Precision:</span><span className="metric-value">{formatPrecision(results.closure.relative)}</span></div>
                   </div>
                 </div>
-              </div>
-
-              {/* Area Calculation (for closed traverse) */}
-              {results.area && (
+              )}
+              
+              {(traverseData.traverseType === 'closedLoop' || traverseData.traverseType === 'closedLink') && results.area > 0 && (
                 <div className="result-item">
                   <h4>Area Calculation</h4>
                   <div className="area-metric">
-                    <span className="area-value">
-                      {results.area.toFixed(2)} m²
-                    </span>
-                    <span className="area-hectares">
-                      ({(results.area / 10000).toFixed(4)} hectares)
-                    </span>
+                    <span className="area-value">{results.area} {traverseData.distanceUnit}²</span>
+                    <span className="area-hectares">({(parseFloat(results.area) / 10000).toFixed(4)} hectares, if meters)</span>
                   </div>
                 </div>
               )}
 
-              {/* Precision Analysis */}
-              <div className="result-item">
-                <h4>Precision Analysis</h4>
-                <div className="precision-gauge">
-                  <div 
-                    className={`gauge-fill ${getPrecisionClass(results.precision)}`}
-                    style={{ width: `${getPrecisionPercentage(results.precision)}%` }}
-                  />
-                  <span className="precision-label">
-                    {formatPrecision(results.precision)}
-                  </span>
+               {(traverseData.traverseType === 'closedLoop' || traverseData.traverseType === 'closedLink') && (
+                <div className="result-item">
+                  <h4>Precision Analysis</h4>
+                  <div className="precision-gauge">
+                    <div 
+                      className={`gauge-fill ${getPrecisionClass(results.closure.relative)}`}
+                      style={{ width: `${getPrecisionPercentage(results.closure.relative)}%` }}
+                    />
+                    <span className="precision-label">
+                      {formatPrecision(results.closure.relative)}
+                    </span>
+                  </div>
                 </div>
-              </div>
+              )}
             </div>
           </div>
         )}
-
-        {Object.keys(errors).length > 0 && (
+        {Object.keys(errors).length > 0 && !results && (
           <div className="errors-section">
-            {Object.values(errors).map((error, index) => (
-              <div key={index} className="error-message">
-                {error}
-              </div>
+            <h4>Input Errors:</h4>
+            {Object.entries(errors).map(([key, errorMsg]) => (
+              <div key={key} className="error-message">{key.startsWith('course_') ? `Course ${parseInt(key.split('_')[2])+1}` : key}: {errorMsg}</div>
             ))}
           </div>
         )}

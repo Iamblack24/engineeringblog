@@ -1,403 +1,487 @@
 .traverse-calculator {
-    max-width: 1200px;
-    margin: 2rem auto;
-    padding: 2rem;
-    background: var(--primary-color);
-    border-radius: 12px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  }
-  
-  .traverse-calculator h2 {
-    color: var(--accent-color);
-    text-align: center;
-    margin-bottom: 2rem;
-    font-size: 1.8rem;
-  }
-  
-  .calculator-controls {
-    display: flex;
-    flex-direction: column;
-    gap: 2rem;
-  }
-  
-  .input-sections {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 2rem;
-  }
-  
-  .input-section {
-    background: rgba(23, 42, 69, 0.5);
-    padding: 1.5rem;
-    border-radius: 8px;
-    border: 1px solid rgba(100, 255, 218, 0.1);
-  }
-  
-  .input-section h3 {
-    color: var(--accent-color);
-    margin-bottom: 1.5rem;
-    font-size: 1.2rem;
-  }
-  
-  /* Station Inputs Styling */
-  .stations-section {
-    grid-column: 1 / -1;
-  }
-  
-  .stations-grid {
-    display: grid;
-    gap: 1.5rem;
-    margin-bottom: 1.5rem;
-  }
-  
-  .station-inputs {
-    background: rgba(255, 255, 255, 0.05);
-    padding: 1.2rem;
-    border-radius: 6px;
-    position: relative;
-  }
-  
-  .station-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 1rem;
-    color: var(--accent-color);
-    font-weight: 500;
-  }
-  
-  .remove-station {
-    background: rgba(255, 107, 107, 0.2);
-    color: #ff6b6b;
-    border: none;
-    width: 24px;
-    height: 24px;
-    border-radius: 12px;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: all 0.3s ease;
-  }
-  
-  .remove-station:hover {
-    background: rgba(255, 107, 107, 0.4);
-    transform: scale(1.1);
-  }
-  
-  .add-station {
-    background: rgba(100, 255, 218, 0.1);
-    color: var(--accent-color);
-    border: 1px dashed var(--accent-color);
-    padding: 0.8rem;
-    border-radius: 6px;
-    width: 100%;
-    cursor: pointer;
-    transition: all 0.3s ease;
-  }
-  
-  .add-station:hover {
-    background: rgba(100, 255, 218, 0.2);
-    transform: translateY(-2px);
-  }
-  
-  /* Input Groups */
-  .input-group {
-    margin-bottom: 1.2rem;
-  }
-  
-  .input-group label {
-    display: block;
-    color: var(--text-color);
-    margin-bottom: 0.5rem;
-    font-size: 0.9rem;
-  }
-  
-  .input-group input[type="number"],
-  .input-group input[type="text"],
-  .input-group select {
-    width: 100%;
-    padding: 0.8rem;
-    border-radius: 4px;
-    border: 1px solid var(--accent-color);
-    background: var(--secondary-color);
-    color: var(--text-color);
-    font-size: 1rem;
-  }
-  
-  .input-group input:focus,
-  .input-group select:focus {
-    outline: none;
-    box-shadow: 0 0 0 2px rgba(100, 255, 218, 0.2);
-  }
-  
-  /* Calculate Button */
-  .calculate-button {
-    background: var(--accent-color);
-    color: var(--primary-color);
-    border: none;
-    padding: 1rem 2rem;
-    border-radius: 6px;
-    font-size: 1rem;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    display: block;
-    margin: 2rem auto;
-    min-width: 200px;
-  }
-  
-  .calculate-button:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(100, 255, 218, 0.2);
-  }
-  
-  /* Results Section */
-  .results-section {
-    background: rgba(23, 42, 69, 0.5);
-    padding: 2rem;
-    border-radius: 8px;
-    margin-top: 2rem;
-    border: 1px solid rgba(100, 255, 218, 0.1);
-    animation: fadeIn 0.5s ease-out;
-  }
-  
+  max-width: 1200px;
+  margin: 2rem auto;
+  padding: 2rem;
+  background: var(--primary-color, #0a192f); /* Fallback color */
+  border-radius: 12px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  color: var(--text-color, #ccd6f6); /* Fallback text color */
+}
+
+.traverse-calculator h2 {
+  color: var(--accent-color, #64ffda); /* Fallback accent color */
+  text-align: center;
+  margin-bottom: 2rem;
+  font-size: 1.8rem;
+}
+
+.calculator-controls {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.input-sections {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); /* Slightly wider min for better spacing */
+  gap: 2rem;
+}
+
+.input-section {
+  background: var(--secondary-color-transparent, rgba(23, 42, 69, 0.7)); /* Fallback */
+  padding: 1.5rem;
+  border-radius: 8px;
+  border: 1px solid var(--accent-color-transparent, rgba(100, 255, 218, 0.1)); /* Fallback */
+}
+
+.input-section h3 {
+  color: var(--accent-color, #64ffda);
+  margin-top: 0; /* Remove default top margin for h3 */
+  margin-bottom: 1.5rem;
+  font-size: 1.2rem;
+  border-bottom: 1px solid var(--accent-color-transparent, rgba(100, 255, 218, 0.2));
+  padding-bottom: 0.5rem;
+}
+
+/* Station Inputs Styling */
+.stations-section {
+  grid-column: 1 / -1; /* Span full width */
+}
+
+.stations-grid {
+  display: grid;
+  /* grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); */ /* Can be 1fr for simpler stacking */
+  gap: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.station-inputs {
+  background: var(--input-bg-light, rgba(255, 255, 255, 0.05)); /* Fallback */
+  padding: 1.2rem;
+  border-radius: 6px;
+  position: relative;
+  border: 1px solid var(--border-color-light, rgba(255,255,255,0.1)); /* Fallback */
+}
+
+.station-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+  color: var(--accent-color, #64ffda);
+  font-weight: 500;
+}
+
+.remove-station {
+  background: rgba(255, 107, 107, 0.2);
+  color: #ff6b6b;
+  border: none;
+  width: 28px; /* Slightly larger */
+  height: 28px; /* Slightly larger */
+  border-radius: 50%; /* Circular */
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem; /* Make X larger */
+  transition: all 0.3s ease;
+}
+
+.remove-station:hover {
+  background: rgba(255, 107, 107, 0.4);
+  transform: scale(1.1);
+}
+
+.add-station {
+  background: var(--accent-color-transparent-more, rgba(100, 255, 218, 0.15)); /* Fallback */
+  color: var(--accent-color, #64ffda);
+  border: 1px dashed var(--accent-color, #64ffda);
+  padding: 0.8rem 1rem;
+  border-radius: 6px;
+  width: 100%;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-weight: 500;
+}
+
+.add-station:hover {
+  background: var(--accent-color-transparent-hover, rgba(100, 255, 218, 0.25)); /* Fallback */
+  transform: translateY(-2px);
+}
+
+/* Input Groups */
+.input-group {
+  margin-bottom: 1.2rem;
+}
+
+.input-group label {
+  display: block;
+  color: var(--text-color-secondary, #8892b0); /* Fallback */
+  margin-bottom: 0.5rem;
+  font-size: 0.9rem;
+}
+
+.input-group input[type="number"],
+.input-group input[type="text"],
+.input-group select {
+  width: 100%;
+  padding: 0.8rem;
+  border-radius: 4px;
+  border: 1px solid var(--border-color, #233554); /* Fallback */
+  background: var(--input-bg, #112240); /* Fallback */
+  color: var(--text-color, #ccd6f6);
+  font-size: 1rem;
+  box-sizing: border-box; /* Ensure padding doesn't expand width */
+}
+
+.input-group input:focus,
+.input-group select:focus {
+  outline: none;
+  border-color: var(--accent-color, #64ffda);
+  box-shadow: 0 0 0 2px var(--accent-color-transparent-focus, rgba(100, 255, 218, 0.2)); /* Fallback */
+}
+
+.input-group select {
+  appearance: none; /* For custom arrow if desired */
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%2364ffda' viewBox='0 0 16 16'%3E%3Cpath fill-rule='evenodd' d='M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.7rem center;
+  background-size: 1em;
+  padding-right: 2.5rem; /* Make space for arrow */
+}
+
+.input-hint {
+  font-size: 0.85rem;
+  color: var(--text-color-secondary, #8892b0);
+  margin-bottom: 1rem;
+  font-style: italic;
+}
+
+/* Calculate Button */
+.calculate-button {
+  background: var(--accent-color, #64ffda);
+  color: var(--button-text-color, #0a192f); /* Fallback */
+  border: none;
+  padding: 1rem 2rem;
+  border-radius: 6px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: block;
+  margin: 2rem auto; /* Center button */
+  min-width: 200px;
+}
+
+.calculate-button:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px var(--accent-color-transparent-shadow, rgba(100, 255, 218, 0.2)); /* Fallback */
+}
+.calculate-button:disabled {
+  background-color: #555;
+  cursor: not-allowed;
+}
+
+
+/* Results Section */
+.results-section {
+  background: var(--secondary-color-transparent, rgba(23, 42, 69, 0.7));
+  padding: 2rem;
+  border-radius: 8px;
+  margin-top: 2rem;
+  border: 1px solid var(--accent-color-transparent, rgba(100, 255, 218, 0.1));
+  animation: fadeIn 0.5s ease-out;
+}
+
+.results-section h3 {
+  color: var(--accent-color, #64ffda);
+  text-align: center;
+  margin-bottom: 1.5rem;
+}
+
+.results-grid {
+  display: grid;
+  grid-template-columns: 1fr; /* Default to single column */
+  gap: 1.5rem;
+}
+
+@media (min-width: 992px) { /* For larger screens, allow two columns for results */
   .results-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 1.5rem;
+    grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
   }
-  
-  .result-item {
-    background: rgba(255, 255, 255, 0.05);
-    padding: 1.5rem;
-    border-radius: 8px;
-    border: 1px solid rgba(100, 255, 218, 0.1);
+}
+
+
+.result-item {
+  background: var(--input-bg-light, rgba(255, 255, 255, 0.05));
+  padding: 1.5rem;
+  border-radius: 8px;
+  border: 1px solid var(--border-color-light, rgba(255,255,255,0.1));
+}
+
+.result-item h4 {
+  color: var(--accent-color, #64ffda);
+  margin-top: 0;
+  margin-bottom: 1rem;
+  font-size: 1.1rem;
+  border-bottom: 1px solid var(--accent-color-transparent, rgba(100, 255, 218, 0.2));
+  padding-bottom: 0.5rem;
+}
+
+.coordinate-table-item {
+ grid-column: 1 / -1; /* Make table span full width if in grid */
+}
+
+/* Coordinate Table */
+.coordinate-table {
+  overflow-x: auto; /* Essential for wide tables */
+  -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
+}
+
+.coordinate-table table {
+  width: 100%;
+  min-width: 800px; /* Ensure table has a minimum width to show columns */
+  border-collapse: collapse;
+  margin: 1rem 0;
+  font-size: 0.9rem; /* Slightly smaller for more data */
+}
+
+.coordinate-table th,
+.coordinate-table td {
+  padding: 0.7rem 0.5rem; /* Adjust padding */
+  text-align: right;
+  border-bottom: 1px solid var(--border-color, #233554);
+  white-space: nowrap; /* Prevent wrapping in cells */
+}
+
+.coordinate-table th {
+  background: var(--accent-color-transparent-more, rgba(100, 255, 218, 0.15));
+  color: var(--accent-color, #64ffda);
+  font-weight: 600; /* Bolder headers */
+  position: sticky; /* Sticky headers for scrolling */
+  top: 0;
+  z-index: 1;
+}
+.coordinate-table td:first-child, .coordinate-table th:first-child {
+  text-align: left; /* Align station names to left */
+}
+
+
+.coordinate-table tr:hover td { /* Hover effect on td for clarity */
+  background: var(--hover-bg-light, rgba(255, 255, 255, 0.03)); /* Fallback */
+}
+
+/* Closure Metrics */
+.closure-metrics {
+  display: grid;
+  gap: 0.8rem; /* Tighter gap */
+}
+
+.metric {
+  background: var(--input-bg-very-light, rgba(255, 255, 255, 0.02)); /* Fallback */
+  padding: 0.8rem 1rem;
+  border-radius: 4px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.95rem;
+}
+
+.metric-label {
+  color: var(--text-color-secondary, #8892b0);
+}
+
+.metric-value {
+  color: var(--accent-color, #64ffda);
+  font-weight: 500;
+}
+
+/* Area Display */
+.area-metric {
+  text-align: center;
+  padding: 1.5rem;
+  background: var(--input-bg-very-light, rgba(255, 255, 255, 0.02));
+  border-radius: 6px;
+}
+
+.area-value {
+  display: block;
+  color: var(--accent-color, #64ffda);
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+.area-hectares {
+  color: var(--text-color-secondary, #8892b0);
+  font-size: 0.9rem;
+}
+
+/* Precision Gauge */
+.precision-gauge {
+  background: var(--input-bg, #112240); /* Darker background for gauge */
+  border-radius: 12px;
+  height: 24px;
+  position: relative;
+  overflow: hidden;
+  margin: 1rem 0;
+  border: 1px solid var(--border-color, #233554);
+}
+
+.gauge-fill {
+  height: 100%;
+  transition: width 1s ease-out;
+  border-radius: 10px 0 0 10px; /* Rounded fill start */
+}
+.gauge-fill.excellent { background: linear-gradient(90deg, #4CAF50, #8BC34A); }
+.gauge-fill.good { background: linear-gradient(90deg, #8BC34A, #FFC107); }
+.gauge-fill.fair { background: linear-gradient(90deg, #FFC107, #FF9800); }
+.gauge-fill.poor { background: linear-gradient(90deg, #FF9800, #F44336); }
+
+
+.precision-label {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: white;
+  font-size: 0.9rem;
+  font-weight: 500;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.7); /* Stronger shadow for readability */
+}
+
+/* Error Styles */
+.errors-section {
+  background: rgba(255, 107, 107, 0.1);
+  padding: 1rem;
+  border-radius: 6px;
+  margin: 1rem 0;
+  border: 1px solid rgba(255, 107, 107, 0.3);
+}
+.errors-section h4 {
+  color: #ff6b6b;
+  margin-top: 0;
+  margin-bottom: 0.5rem;
+}
+.error-message {
+  color: #ff8a8a; /* Lighter red for better readability on dark bg */
+  font-size: 0.9rem;
+  margin: 0.3rem 0;
+}
+.input-group .error-text {
+  color: #ff8a8a;
+  font-size: 0.8rem;
+  margin-top: 0.25rem;
+}
+
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .traverse-calculator {
+    margin: 1rem;
+    padding: 1rem;
   }
-  
-  .result-item h4 {
-    color: var(--accent-color);
-    margin-bottom: 1rem;
-    font-size: 1.1rem;
-    border-bottom: 1px solid rgba(100, 255, 218, 0.2);
-    padding-bottom: 0.5rem;
+
+  .input-sections {
+    grid-template-columns: 1fr; /* Stack sections on smaller screens */
   }
-  
-  /* Traverse Diagram */
-  .traverse-diagram {
-    background: rgba(0, 0, 0, 0.2);
-    border-radius: 6px;
-    margin: 1rem 0;
-    min-height: 300px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    overflow: hidden;
+
+  .results-grid {
+    grid-template-columns: 1fr; /* Stack result items */
   }
-  
-  /* Coordinate Table */
-  .coordinate-table {
-    overflow-x: auto;
-  }
-  
+
   .coordinate-table table {
-    width: 100%;
-    border-collapse: collapse;
-    margin: 1rem 0;
+    font-size: 0.85rem; /* Even smaller for mobile */
+    min-width: 600px; /* Adjust min-width for mobile if necessary */
+  }
+  .coordinate-table th, .coordinate-table td {
+    padding: 0.5rem 0.3rem;
+  }
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Fallback CSS Variables (if not defined globally) */
+:root {
+  --primary-color: #0a192f;
+  --secondary-color: #112240;
+  --secondary-color-transparent: rgba(17, 34, 64, 0.7);
+  --accent-color: #64ffda;
+  --accent-color-transparent: rgba(100, 255, 218, 0.1);
+  --accent-color-transparent-more: rgba(100, 255, 218, 0.15);
+  --accent-color-transparent-hover: rgba(100, 255, 218, 0.25);
+  --accent-color-transparent-focus: rgba(100, 255, 218, 0.2);
+  --accent-color-transparent-shadow: rgba(100, 255, 218, 0.2);
+  --text-color: #ccd6f6;
+  --text-color-secondary: #8892b0;
+  --button-text-color: #0a192f;
+  --input-bg: #112240;
+  --input-bg-light: rgba(255, 255, 255, 0.05);
+  --input-bg-very-light: rgba(255, 255, 255, 0.02);
+  --border-color: #233554;
+  --border-color-light: rgba(255,255,255,0.1);
+  --hover-bg-light: rgba(255, 255, 255, 0.03);
+}
+
+/* Print styles */
+@media print {
+  body {
+    background-color: white;
+    color: black;
+  }
+  .traverse-calculator {
+    margin: 0;
+    padding: 0.5rem;
+    box-shadow: none;
+    border: 1px solid #ccc;
+  }
+
+  .calculator-controls .input-sections,
+  .calculator-controls .stations-section .add-station,
+  .calculator-controls .stations-section .remove-station,
+  .calculator-controls .calculate-button,
+  .errors-section {
+    display: none !important;
   }
   
-  .coordinate-table th,
-  .coordinate-table td {
-    padding: 0.8rem;
-    text-align: right;
-    border-bottom: 1px solid rgba(100, 255, 218, 0.1);
+  .input-section h3, .results-section h3, .result-item h4 {
+    color: black;
+    border-bottom-color: #ccc;
   }
-  
+
+  .results-section {
+    margin-top: 1rem;
+    padding: 0.5rem;
+    border: none;
+  }
+  .result-item {
+    border: 1px solid #eee;
+    padding: 0.5rem;
+    break-inside: avoid;
+  }
+  .coordinate-table table {
+    font-size: 9pt;
+  }
+  .coordinate-table th, .coordinate-table td {
+    color: black;
+    border-bottom: 1px solid #ccc;
+    padding: 4px;
+  }
   .coordinate-table th {
-    background: rgba(100, 255, 218, 0.1);
-    color: var(--accent-color);
-    font-weight: 500;
+    background-color: #f0f0f0;
   }
-  
-  .coordinate-table tr:hover {
-    background: rgba(255, 255, 255, 0.02);
+  .metric-label, .metric-value, .area-value, .area-hectares, .precision-label {
+    color: black;
   }
-  
-  /* Closure Metrics */
-  .closure-metrics {
-    display: grid;
-    gap: 1rem;
-  }
-  
-  .metric {
-    background: rgba(255, 255, 255, 0.02);
-    padding: 1rem;
-    border-radius: 4px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
-  
-  .metric-label {
-    color: var(--text-color);
-    font-size: 0.9rem;
-  }
-  
-  .metric-value {
-    color: var(--accent-color);
-    font-weight: 500;
-  }
-  
-  /* Area Display */
-  .area-metric {
-    text-align: center;
-    padding: 1.5rem;
-    background: rgba(255, 255, 255, 0.02);
-    border-radius: 6px;
-  }
-  
-  .area-value {
-    display: block;
-    color: var(--accent-color);
-    font-size: 1.5rem;
-    font-weight: 600;
-    margin-bottom: 0.5rem;
-  }
-  
-  .area-hectares {
-    color: var(--text-color);
-    font-size: 0.9rem;
-  }
-  
-  /* Precision Gauge */
-  .precision-gauge {
-    background: rgba(0, 0, 0, 0.2);
-    border-radius: 12px;
-    height: 24px;
-    position: relative;
-    overflow: hidden;
-    margin: 1rem 0;
-  }
-  
-  .gauge-fill {
-    height: 100%;
-    transition: width 1s ease-out;
-  }
-  
-  .gauge-fill.excellent { background: #4CAF50; }
-  .gauge-fill.good { background: #8BC34A; }
-  .gauge-fill.fair { background: #FFC107; }
-  .gauge-fill.poor { background: #FF5722; }
-  
-  .precision-label {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    color: white;
-    font-size: 0.9rem;
-    font-weight: 500;
-    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
-  }
-  
-  /* Error Styles */
-  .errors {
-    background: rgba(255, 107, 107, 0.1);
-    padding: 1rem;
-    border-radius: 6px;
-    margin: 1rem 0;
-    border: 1px solid rgba(255, 107, 107, 0.3);
-  }
-  
-  .error {
-    color: #ff6b6b;
-    font-size: 0.9rem;
-    margin: 0.3rem 0;
-  }
-  
-  /* Responsive Design */
-  @media (max-width: 768px) {
-    .traverse-calculator {
-      margin: 1rem;
-      padding: 1rem;
-    }
-  
-    .input-sections {
-      grid-template-columns: 1fr;
-    }
-  
-    .results-grid {
-      grid-template-columns: 1fr;
-    }
-  
-    .coordinate-table {
-      font-size: 0.9rem;
-    }
-  }
-  
-  /* Dark mode support */
-  @media (prefers-color-scheme: dark) {
-    .input-group input,
-    .input-group select {
-      background: var(--secondary-color);
-      color: var(--text-color);
-    }
-  
-    .result-item {
-      background: rgba(0, 0, 0, 0.2);
-    }
-  }
-  
-  /* Animations */
-  @keyframes fadeIn {
-    from {
-      opacity: 0;
-      transform: translateY(10px);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
-  }
-  
-  @keyframes diagramFade {
-    from {
-      opacity: 0;
-      transform: scale(0.95);
-    }
-    to {
-      opacity: 1;
-      transform: scale(1);
-    }
-  }
-  
-  .traverse-diagram {
-    animation: diagramFade 0.5s ease-out;
-  }
-  
-  /* Print styles */
-  @media print {
-    .traverse-calculator {
-      margin: 0;
-      padding: 1rem;
-      box-shadow: none;
-    }
-  
-    .input-sections,
-    .calculate-button {
-      display: none;
-    }
-  
-    .results-section {
-      break-inside: avoid;
-    }
-  
-    .result-item {
-      break-inside: avoid;
-      page-break-inside: avoid;
-    }
-  
-    .traverse-diagram {
-      border: 1px solid #000;
-    }
-  }
+  .precision-gauge { display: none; } /* Gauge not suitable for print */
+}

@@ -1,0 +1,286 @@
+/* Root variables for theming */
+:root {
+  --primary-color: #172a45;
+  --secondary-color: #233554;
+  --accent-color: #64ffda;
+  --text-color: #ccd6f6;
+  --warning-color: #ff6b6b;
+}
+
+/* Root container */
+.iot-network-planner {
+  max-width: 1280px;
+  margin: 2rem auto;
+  padding: 2rem;
+  background: var(--primary-color);
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* Main heading */
+.iot-network-planner h2 {
+  color: var(--accent-color);
+  text-align: center;
+  margin-bottom: 1.5rem;
+  font-size: 2rem;
+  font-weight: 600;
+}
+
+/* Description */
+.iot-network-planner p {
+  color: var(--text-color);
+  text-align: center;
+  margin-bottom: 2.5rem;
+  font-size: 1.1rem;
+  opacity: 0.9;
+}
+
+/* Controls section */
+.controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+  justify-content: center;
+  margin-bottom: 2rem;
+}
+
+/* Input section */
+.input-section {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 2.5rem;
+}
+
+/* Input group */
+.input-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+/* Labels */
+.input-group label {
+  color: var(--text-color);
+  font-size: 0.95rem;
+  font-weight: 500;
+}
+
+/* Inputs */
+.input-group input {
+  padding: 0.9rem 1rem;
+  border-radius: 5px;
+  border: 1px solid var(--accent-color);
+  background: var(--secondary-color);
+  color: var(--text-color);
+  font-size: 1rem;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+/* Input focus */
+.input-group input:focus {
+  outline: none;
+  border-color: var(--accent-color);
+  box-shadow: 0 0 8px rgba(100, 255, 218, 0.3);
+}
+
+/* Selects */
+.input-group select {
+  appearance: none;
+  background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" fill="%2364ffda"><polygon points="0,0 10,0 5,5"/></svg>');
+  background-repeat: no-repeat;
+  background-position: right 1rem top 50%;
+  padding: 0.9rem 2.5rem 0.9rem 1rem;
+  border-radius: 5px;
+  border: 1px solid var(--accent-color);
+  background-color: var(--secondary-color);
+  color: var(--text-color);
+  font-size: 1rem;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+  cursor: pointer;
+}
+
+/* Select focus */
+.input-group select:focus {
+  outline: none;
+  border-color: var(--accent-color);
+  box-shadow: 0 0 8px rgba(100, 255, 218, 0.3);
+}
+
+/* Button group */
+.button-group {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  margin-bottom: 2rem;
+}
+
+/* Calculate button */
+.calculate-btn {
+  background: var(--accent-color);
+  color: var(--primary-color);
+  border: none;
+  padding: 0.9rem 2rem;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 1.1rem;
+  font-weight: 600;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+/* Export button */
+.export-btn {
+  background: var(--secondary-color);
+  color: var(--accent-color);
+  border: 1px solid var(--accent-color);
+  padding: 0.9rem 2rem;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 1.1rem;
+  font-weight: 600;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+/* Button hover */
+.calculate-btn:hover,
+.export-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(100, 255, 218, 0.3);
+}
+
+/* Result section */
+.result-section {
+  background: rgba(23, 42, 69, 0.6);
+  border: 1px solid rgba(100, 255, 218, 0.15);
+  border-radius: 10px;
+  padding: 2rem;
+  margin-top: 2.5rem;
+}
+
+/* Result heading */
+.result-section h3 {
+  color: var(--accent-color);
+  text-align: center;
+  margin-bottom: 1.5rem;
+  font-size: 1.5rem;
+}
+
+/* Results grid */
+.results-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+/* Result item */
+.result-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: var(--secondary-color);
+  padding: 1rem;
+  border-radius: 5px;
+}
+
+/* Result labels */
+.result-label {
+  color: var(--text-color);
+  font-size: 0.95rem;
+  opacity: 0.9;
+}
+
+/* Result values */
+.result-value {
+  color: var(--accent-color);
+  font-size: 1.2rem;
+  font-weight: 600;
+}
+
+/* Warning text */
+.warning {
+  color: var(--warning-color);
+  font-size: 1rem;
+  margin-top: 1rem;
+  font-style: italic;
+}
+
+/* Network diagram */
+.network-diagram {
+  text-align: center;
+  margin-top: 2rem;
+}
+
+/* Diagram heading */
+.network-diagram h4 {
+  color: var(--accent-color);
+  margin-bottom: 1rem;
+  font-size: 1.2rem;
+}
+
+/* SVG styling */
+.network-diagram svg {
+  max-width: 100%;
+  height: auto;
+  background: rgba(255, 255, 255, 0.06);
+  border-radius: 6px;
+  padding: 1rem;
+}
+
+/* Responsive: Tablets */
+@media (max-width: 1024px) {
+  .iot-network-planner {
+    margin: 1.5rem;
+    padding: 1.5rem;
+  }
+  .input-section {
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  }
+}
+
+/* Responsive: Mobile */
+@media (max-width: 768px) {
+  .iot-network-planner {
+    margin: 1rem;
+    padding: 1rem;
+  }
+  .iot-network-planner h2 {
+    font-size: 1.6rem;
+  }
+  .iot-network-planner p {
+    font-size: 1rem;
+  }
+  .input-section {
+    grid-template-columns: 1fr;
+  }
+  .controls {
+    flex-direction: column;
+    align-items: center;
+  }
+  .button-group {
+    flex-direction: column;
+  }
+  .calculate-btn,
+  .export-btn {
+    width: 100%;
+    padding: 0.8rem;
+  }
+}
+
+/* Responsive: Small devices */
+@media (max-width: 480px) {
+  .iot-network-planner h2 {
+    font-size: 1.4rem;
+  }
+  .input-group input,
+  .input-group select {
+    font-size: 0.9rem;
+    padding: 0.8rem;
+  }
+}
+
+/* Accessibility */
+:focus-visible {
+  outline: 2px solid var(--accent-color);
+  outline-offset: 2px;
+}

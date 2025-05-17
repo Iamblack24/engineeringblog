@@ -1,0 +1,501 @@
+/* Root container for the Open Channel Flow Calculator */
+.open-channel-flow-calculator {
+  max-width: 1280px; /* Slightly wider for engineering data density */
+  margin: 2rem auto;
+  padding: 2rem;
+  background: var(--primary-color, #172a45); /* Dark background for focus */
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15); /* Stronger shadow for depth */
+}
+
+/* Main heading */
+.open-channel-flow-calculator h2 {
+  color: var(--accent-color, #64ffda); /* Bright accent for visibility */
+  text-align: center;
+  margin-bottom: 2.5rem;
+  font-size: 2rem; /* Larger for emphasis */
+  font-weight: 600;
+  letter-spacing: 0.5px;
+}
+
+/* Controls section (dropdowns, search) */
+.controls {
+  display: flex;
+  gap: 2rem;
+  margin-bottom: 2.5rem;
+  flex-wrap: wrap; /* Wrap for smaller screens */
+  align-items: flex-start;
+}
+
+/* Individual control containers */
+.channel-type-select,
+.equation-type-select,
+.search-box {
+  flex: 1;
+  min-width: 280px; /* Wider for engineering inputs */
+  max-width: 400px; /* Prevent over-stretching */
+}
+
+/* Labels for inputs */
+.channel-type-select label,
+.equation-type-select label,
+.search-box label {
+  display: block;
+  margin-bottom: 0.6rem;
+  color: var(--text-color, #ccd6f6);
+  font-size: 1rem;
+  font-weight: 500;
+}
+
+/* Styling for select and input elements */
+.channel-type-select select,
+.equation-type-select select,
+.search-box input {
+  width: 100%;
+  padding: 0.9rem 1rem;
+  border-radius: 6px;
+  border: 1px solid var(--accent-color, #64ffda);
+  background: var(--secondary-color, #233554);
+  color: var(--text-color, #ccd6f6);
+  font-size: 1rem;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+/* Focus state for inputs */
+.channel-type-select select:focus,
+.equation-type-select select:focus,
+.search-box input:focus {
+  outline: none;
+  border-color: var(--accent-color, #64ffda);
+  box-shadow: 0 0 8px rgba(100, 255, 218, 0.3);
+}
+
+/* Table container */
+.channels-table-container {
+  overflow-x: auto;
+  margin-bottom: 2.5rem;
+  border-radius: 8px;
+  border: 1px solid rgba(100, 255, 218, 0.2);
+  background: var(--secondary-color, #233554);
+}
+
+/* Table styling */
+.channels-table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 700px; /* Ensure table is wide enough for data */
+}
+
+/* Table headers */
+.channels-table th {
+  background: var(--secondary-color, #233554);
+  color: var(--accent-color, #64ffda);
+  padding: 1.2rem 1rem;
+  text-align: left;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  user-select: none;
+  transition: background 0.3s ease;
+}
+
+/* Hover effect for headers */
+.channels-table th:hover {
+  background: rgba(100, 255, 218, 0.15);
+}
+
+/* Table cells */
+.channels-table td {
+  padding: 1rem;
+  color: var(--text-color, #ccd6f6);
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  font-size: 0.95rem;
+}
+
+/* Hover effect for table rows */
+.channels-table tbody tr:hover {
+  background: rgba(100, 255, 218, 0.07);
+}
+
+/* Selected row styling */
+.channels-table tr.selected {
+  background: rgba(100, 255, 218, 0.12);
+}
+
+/* View details button */
+.view-details-btn {
+  background: var(--accent-color, #64ffda);
+  color: var(--primary-color, #172a45);
+  border: none;
+  padding: 0.6rem 1.2rem;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 0.95rem;
+  font-weight: 500;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+/* Button hover effect */
+.view-details-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 3px 10px rgba(100, 255, 218, 0.25);
+}
+
+/* Channel details section */
+.channel-details {
+  background: rgba(23, 42, 69, 0.6); /* Semi-transparent for layering */
+  border: 1px solid rgba(100, 255, 218, 0.15);
+  border-radius: 10px;
+  padding: 2rem;
+  margin-top: 2.5rem;
+}
+
+/* Details heading */
+.channel-details h3 {
+  color: var(--accent-color, #64ffda);
+  margin-bottom: 1.8rem;
+  font-size: 1.5rem;
+  font-weight: 600;
+}
+
+/* Properties grid for channel details */
+.properties-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.2rem;
+  margin-bottom: 2.5rem;
+}
+
+/* Individual property item */
+.property-item {
+  display: flex;
+  justify-content: space-between;
+  padding: 0.6rem 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+  font-size: 0.95rem;
+}
+
+/* Property label */
+.property-label {
+  color: var(--text-color, #ccd6f6);
+  opacity: 0.85;
+  font-weight: 500;
+}
+
+/* Property value */
+.property-value {
+  color: var(--accent-color, #64ffda);
+  font-family: 'Roboto Mono', monospace; /* Monospace for engineering precision */
+  font-weight: 500;
+}
+
+/* Calculation section */
+.calculation-section {
+  background: rgba(23, 42, 69, 0.4);
+  border: 1px solid rgba(100, 255, 218, 0.15);
+  border-radius: 10px;
+  padding: 2rem;
+  margin-top: 2.5rem;
+}
+
+/* Calculation heading */
+.calculation-section h4 {
+  color: var(--accent-color, #64ffda);
+  margin-bottom: 1.8rem;
+  font-size: 1.4rem;
+  font-weight: 600;
+}
+
+/* Calculation inputs grid */
+.calculation-inputs {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+/* Input group styling */
+.input-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+/* Input labels */
+.input-group label {
+  color: var(--text-color, #ccd6f6);
+  font-size: 0.95rem;
+  font-weight: 500;
+}
+
+/* Input and select styling */
+.input-group input,
+.input-group select {
+  padding: 0.9rem 1rem;
+  border-radius: 5px;
+  border: 1px solid var(--accent-color, #64ffda);
+  background: var(--secondary-color, #233554);
+  color: var(--text-color, #ccd6f6);
+  font-size: 1rem;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+/* Disabled input styling */
+.input-group input:disabled,
+.input-group select:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  background: rgba(35, 53, 84, 0.8);
+}
+
+/* Focus state for inputs */
+.input-group input:focus,
+.input-group select:focus {
+  outline: none;
+  border-color: var(--accent-color, #64ffda);
+  box-shadow: 0 0 8px rgba(100, 255, 218, 0.3);
+}
+
+/* Calculate button */
+.calculate-btn {
+  background: var(--accent-color, #64ffda);
+  color: var(--primary-color, #172a45);
+  border: none;
+  padding: 0.9rem 2rem;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 1.1rem;
+  font-weight: 600;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  margin-bottom: 2rem;
+}
+
+/* Button hover effect */
+.calculate-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(100, 255, 218, 0.3);
+}
+
+/* Disabled button styling */
+.calculate-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+/* Calculation results section */
+.calculation-results {
+  background: rgba(23, 42, 69, 0.4);
+  border: 1px solid rgba(100, 255, 218, 0.15);
+  border-radius: 10px;
+  padding: 2rem;
+}
+
+/* Results heading */
+.calculation-results h5 {
+  color: var(--accent-color, #64ffda);
+  margin-bottom: 1.5rem;
+  font-size: 1.3rem;
+  font-weight: 600;
+}
+
+/* Error message styling */
+.error-message {
+  color: #ff6b6b; /* Red for errors */
+  font-size: 1rem;
+  padding: 1rem;
+  background: rgba(255, 107, 107, 0.1);
+  border-radius: 5px;
+  text-align: center;
+}
+
+/* Results grid */
+.results-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+/* Individual result item */
+.result-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  padding: 1rem;
+  background: rgba(255, 255, 255, 0.06);
+  border-radius: 6px;
+  transition: background 0.3s ease;
+}
+
+/* Hover effect for result items */
+.result-item:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+/* Result label */
+.result-label {
+  color: var(--text-color, #ccd6f6);
+  opacity: 0.85;
+  font-size: 0.95rem;
+  font-weight: 500;
+}
+
+/* Result value */
+.result-value {
+  color: var(--accent-color, #64ffda);
+  font-family: 'Roboto Mono', monospace;
+  font-size: 1.2rem;
+  font-weight: 500;
+}
+
+/* Visualization chart container */
+.visualization-chart {
+  background: rgba(255, 255, 255, 0.06);
+  border-radius: 6px;
+  padding: 1.5rem;
+  margin-top: 2rem;
+}
+
+/* Chart heading */
+.visualization-chart h5 {
+  color: var(--accent-color, #64ffda);
+  margin-bottom: 1.5rem;
+  font-size: 1.2rem;
+  font-weight: 600;
+}
+
+/* Sort indicator */
+.sort-indicator {
+  margin-left: 0.6rem;
+  font-size: 0.85rem;
+  color: var(--accent-color, #64ffda);
+}
+
+/* Responsive Design for Tablets and Smaller Devices */
+@media (max-width: 1024px) {
+  .open-channel-flow-calculator {
+    margin: 1.5rem;
+    padding: 1.5rem;
+  }
+
+  .controls {
+    gap: 1.5rem;
+  }
+
+  .calculation-inputs {
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  }
+
+  .results-grid {
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  }
+}
+
+/* Responsive Design for Mobile Devices */
+@media (max-width: 768px) {
+  .open-channel-flow-calculator {
+    margin: 1rem;
+    padding: 1rem;
+  }
+
+  .open-channel-flow-calculator h2 {
+    font-size: 1.6rem;
+  }
+
+  .controls {
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .channel-type-select,
+  .equation-type-select,
+  .search-box {
+    min-width: 100%;
+    max-width: 100%;
+  }
+
+  .channels-table-container {
+    margin-bottom: 1.5rem;
+  }
+
+  .channels-table th,
+  .channels-table td {
+    padding: 0.8rem;
+    font-size: 0.9rem;
+  }
+
+  .channel-details {
+    padding: 1.5rem;
+  }
+
+  .calculation-section {
+    padding: 1.5rem;
+  }
+
+  .calculation-inputs {
+    grid-template-columns: 1fr;
+  }
+
+  .results-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .visualization-chart {
+    padding: 1rem;
+  }
+}
+
+/* Extra Small Devices */
+@media (max-width: 480px) {
+  .open-channel-flow-calculator h2 {
+    font-size: 1.4rem;
+  }
+
+  .view-details-btn,
+  .calculate-btn {
+    width: 100%;
+    padding: 0.8rem;
+    font-size: 1rem;
+  }
+
+  .properties-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Dark Mode Support */
+@media (prefers-color-scheme: dark) {
+  .channel-type-select select,
+  .equation-type-select select,
+  .search-box input,
+  .input-group input,
+  .input-group select {
+    background: var(--secondary-color, #233554);
+    color: var(--text-color, #ccd6f6);
+    border-color: var(--accent-color, #64ffda);
+  }
+
+  .channel-type-select select:focus,
+  .equation-type-select select:focus,
+  .search-box input:focus,
+  .input-group input:focus,
+  .input-group select:focus {
+    box-shadow: 0 0 8px rgba(100, 255, 218, 0.3);
+  }
+}
+
+/* Accessibility Enhancements */
+:focus-visible {
+  outline: 2px solid var(--accent-color, #64ffda);
+  outline-offset: 2px;
+}
+
+/* Ensure high contrast for readability */
+:root {
+  --primary-color: #172a45;
+  --secondary-color: #233554;
+  --accent-color: #64ffda;
+  --text-color: #ccd6f6;
+}

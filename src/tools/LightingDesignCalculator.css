@@ -1,0 +1,342 @@
+/* Root variables for theming */
+:root {
+  --primary-color: #172a45;
+  --secondary-color: #233554;
+  --accent-color: #64ffda;
+  --text-color: #ccd6f6;
+}
+
+/* Root container for the Lighting Design Calculator */
+.lighting-design-calculator {
+  max-width: 1280px;
+  margin: 2rem auto;
+  padding: 2rem;
+  background: var(--primary-color);
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* Main heading */
+.lighting-design-calculator h2 {
+  color: var(--accent-color);
+  text-align: center;
+  margin-bottom: 1.5rem;
+  font-size: 2rem;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+}
+
+/* Description paragraph */
+.lighting-design-calculator p {
+  color: var(--text-color);
+  text-align: center;
+  margin-bottom: 2.5rem;
+  font-size: 1.1rem;
+  opacity: 0.9;
+}
+
+/* Controls section (environment selector) */
+.controls {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 2rem;
+}
+
+/* Environment select container */
+.environment-select {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  min-width: 280px;
+  max-width: 400px;
+}
+
+/* Labels for selects */
+.environment-select label {
+  color: var(--text-color);
+  font-size: 1rem;
+  font-weight: 500;
+}
+
+/* Styling for select elements */
+.environment-select select {
+  appearance: none;
+  background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" fill="%2364ffda"><polygon points="0,0 10,0 5,5"/></svg>');
+  background-repeat: no-repeat;
+  background-position: right 1rem top 50%;
+  padding: 0.9rem 2.5rem 0.9rem 1rem;
+  border-radius: 5px;
+  border: 1px solid var(--accent-color);
+  background-color: var(--secondary-color);
+  color: var(--text-color);
+  font-size: 1rem;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+  cursor: pointer;
+}
+
+/* Focus state for selects */
+.environment-select select:focus {
+  outline: none;
+  border-color: var(--accent-color);
+  box-shadow: 0 0 8px rgba(100, 255, 218, 0.3);
+}
+
+/* Input section */
+.input-section {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 2.5rem;
+}
+
+/* Input group styling */
+.input-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+/* Input labels */
+.input-group label {
+  color: var(--text-color);
+  font-size: 0.95rem;
+  font-weight: 500;
+}
+
+/* Input styling */
+.input-group input {
+  padding: 0.9rem 1rem;
+  border-radius: 5px;
+  border: 1px solid var(--accent-color);
+  background: var(--secondary-color);
+  color: var(--text-color);
+  font-size: 1rem;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+/* Focus state for inputs */
+.input-group input:focus {
+  outline: none;
+  border-color: var(--accent-color);
+  box-shadow: 0 0 8px rgba(100, 255, 218, 0.3);
+}
+
+/* Calculate button */
+.calculate-btn {
+  background: var(--accent-color);
+  color: var(--primary-color);
+  border: none;
+  padding: 0.9rem 2rem;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 1.1rem;
+  font-weight: 600;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  display: block;
+  margin: 0 auto 2rem;
+}
+
+/* Button hover effect */
+.calculate-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(100, 255, 218, 0.3);
+}
+
+/* Result section */
+.result-section {
+  background: rgba(23, 42, 69, 0.6);
+  border: 1px solid rgba(100, 255, 218, 0.15);
+  border-radius: 10px;
+  padding: 2rem;
+  margin-top: 2.5rem;
+  text-align: center;
+}
+
+/* Result heading */
+.result-section h3 {
+  color: var(--accent-color);
+  margin-bottom: 1.5rem;
+  font-size: 1.5rem;
+  font-weight: 600;
+}
+
+/* Result paragraphs */
+.result-section p {
+  color: var(--text-color);
+  font-size: 1.2rem;
+  margin-bottom: 1rem;
+  font-family: 'Roboto Mono', monospace;
+  white-space: pre-wrap; /* Handle long placement suggestions */
+}
+
+/* Responsive Design for Tablets and Smaller Devices */
+@media (max-width: 1024px) {
+  .lighting-design-calculator {
+    margin: 1.5rem;
+    padding: 1.5rem;
+  }
+
+  .input-section {
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  }
+}
+
+/* Responsive Design for Mobile Devices */
+@media (max-width: 768px) {
+  .lighting-design-calculator {
+    margin: 1rem;
+    padding: 1rem;
+  }
+
+  .lighting-design-calculator h2 {
+    font-size: 1.6rem;
+  }
+
+  .lighting-design-calculator p {
+    font-size: 1rem;
+  }
+
+  .input-section {
+    grid-template-columns: 1fr;
+  }
+
+  .calculate-btn {
+    width: 100%;
+    padding: 0.8rem;
+    font-size: 1rem;
+  }
+
+  .result-section {
+    padding: 1.5rem;
+  }
+}
+
+/* Extra Small Devices */
+@media (max-width: 480px) {
+  .lighting-design-calculator h2 {
+    font-size: 1.4rem;
+  }
+
+  .input-group label {
+    font-size: 0.9rem;
+  }
+
+  .input-group input,
+  .environment-select select {
+    padding: 0.8rem;
+    font-size: 0.9rem;
+  }
+}
+
+/* Dark Mode Support */
+@media (prefers-color-scheme: dark) {
+  .environment-select select,
+  .input-group input {
+    background: var(--secondary-color);
+    color: var(--text-color);
+    border-color: var(--accent-color);
+  }
+
+  .environment-select select:focus,
+  .input-group input:focus {
+    box-shadow: 0 0 8px rgba(100, 255, 218, 0.3);
+  }
+}
+
+/* Accessibility Enhancements */
+:focus-visible {
+  outline: 2px solid var(--accent-color);
+  outline-offset: 2px;
+}
+/* Result section */
+.result-section {
+  background: rgba(23, 42, 69, 0.6);
+  border: 1px solid rgba(100, 255, 218, 0.15);
+  border-radius: 10px;
+  padding: 2rem;
+  margin-top: 2.5rem;
+  /* text-align: center; // Keep for h3, but individual items can be left-aligned */
+}
+
+/* Result heading */
+.result-section h3 {
+  color: var(--accent-color);
+  margin-bottom: 1.5rem;
+  font-size: 1.5rem;
+  font-weight: 600;
+  text-align: center;
+}
+
+/* Result paragraphs - general styling for notes */
+.result-section p {
+  color: var(--text-color);
+  font-size: 1rem; /* Adjusted for notes */
+  margin-bottom: 1rem;
+  font-family: 'Roboto Mono', monospace;
+  white-space: pre-wrap; /* Handle long placement suggestions */
+  text-align: left;
+}
+
+.results-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+  text-align: left;
+}
+
+.result-item {
+  background-color: var(--secondary-color);
+  padding: 0.8rem 1rem;
+  border-radius: 6px;
+  border-left: 4px solid var(--accent-color);
+}
+
+.result-item .label {
+  display: block;
+  color: var(--text-color);
+  font-size: 0.9rem;
+  margin-bottom: 0.3rem;
+  opacity: 0.8;
+}
+
+.result-item .value {
+  color: var(--accent-color);
+  font-size: 1.1rem;
+  font-weight: 500;
+}
+
+.placement-info {
+  margin-top: 1.5rem;
+  text-align: left;
+}
+
+.placement-info h4 {
+  color: var(--accent-color);
+  margin-bottom: 0.5rem;
+  font-size: 1.1rem;
+}
+
+.placement-info p { /* Specifically for placement text */
+  font-size: 1.1rem; /* Larger for placement */
+  line-height: 1.6;
+}
+
+
+.notes {
+  font-size: 0.9rem !important; /* Ensure notes are smaller */
+  opacity: 0.8;
+  margin-top: 1.5rem;
+  text-align: center;
+  font-style: italic;
+}
+
+.error-message {
+  color: #ff6b6b; /* A common error color */
+  background-color: rgba(255, 107, 107, 0.1);
+  border: 1px solid #ff6b6b;
+  padding: 1rem;
+  border-radius: 5px;
+  margin-bottom: 1.5rem;
+  text-align: center;
+}

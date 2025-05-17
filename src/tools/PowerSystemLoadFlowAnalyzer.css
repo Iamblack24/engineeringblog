@@ -1,0 +1,547 @@
+/* Root container for the Power System Load Flow Analyzer */
+.power-system-load-flow-analyzer {
+  max-width: 1280px; /* Wide for power system data and diagrams */
+  margin: 2rem auto;
+  padding: 2rem;
+  background: var(--primary-color, #172a45); /* Dark background for focus */
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15); /* Strong shadow for depth */
+}
+
+/* Main heading */
+.power-system-load-flow-analyzer h2 {
+  color: var(--accent-color, #64ffda); /* Bright accent for visibility */
+  text-align: center;
+  margin-bottom: 2.5rem;
+  font-size: 2rem; /* Larger for emphasis */
+  font-weight: 600;
+  letter-spacing: 0.5px;
+}
+
+/* Controls section (search) */
+.controls {
+  display: flex;
+  gap: 2rem;
+  margin-bottom: 2.5rem;
+  flex-wrap: wrap; /* Wrap for smaller screens */
+  align-items: flex-start;
+}
+
+/* Search box container */
+.search-box {
+  flex: 1;
+  min-width: 280px; /* Wide for engineering inputs */
+  max-width: 400px; /* Prevent over-stretching */
+}
+
+/* Labels for inputs */
+.search-box label {
+  display: block;
+  margin-bottom: 0.6rem;
+  color: var(--text-color, #ccd6f6);
+  font-size: 1rem;
+  font-weight: 500;
+}
+
+/* Styling for input elements */
+.search-box input {
+  width: 100%;
+  padding: 0.9rem 1rem;
+  border-radius: 6px;
+  border: 1px solid var(--accent-color, #64ffda);
+  background: var(--secondary-color, #233554);
+  color: var(--text-color, #ccd6f6);
+  font-size: 1rem;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+/* Focus state for inputs */
+.search-box input:focus {
+  outline: none;
+  border-color: var(--accent-color, #64ffda);
+  box-shadow: 0 0 8px rgba(100, 255, 218, 0.3);
+}
+
+/* Table container */
+.systems-table-container {
+  overflow-x: auto;
+  margin-bottom: 2.5rem;
+  border-radius: 8px;
+  border: 1px solid rgba(100, 255, 218, 0.2);
+  background: var(--secondary-color, #233554);
+}
+
+/* Table styling */
+.systems-table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 600px; /* Ensure table is wide enough for data */
+}
+
+/* Table headers */
+.systems-table th {
+  background: var(--secondary-color, #233554);
+  color: var(--accent-color, #64ffda);
+  padding: 1.2rem 1rem;
+  text-align: left;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  user-select: none;
+  transition: background 0.3s ease;
+}
+
+/* Hover effect for headers */
+.systems-table th:hover {
+  background: rgba(100, 255, 218, 0.15);
+}
+
+/* Table cells */
+.systems-table td {
+  padding: 1rem;
+  color: var(--text-color, #ccd6f6);
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  font-size: 0.95rem;
+}
+
+/* Hover effect for table rows */
+.systems-table tbody tr:hover {
+  background: rgba(100, 255, 218, 0.07);
+}
+
+/* Selected row styling */
+.systems-table tr.selected {
+  background: rgba(100, 255, 218, 0.12);
+}
+
+/* View details button */
+.view-details-btn {
+  background: var(--accent-color, #64ffda);
+  color: var(--primary-color, #172a45);
+  border: none;
+  padding: 0.6rem 1.2rem;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 0.95rem;
+  font-weight: 500;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+/* Button hover effect */
+.view-details-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 3px 10px rgba(100, 255, 218, 0.25);
+}
+
+/* System details section */
+.system-details {
+  background: rgba(23, 42, 69, 0.6); /* Semi-transparent for layering */
+  border: 1px solid rgba(100, 255, 218, 0.15);
+  border-radius: 10px;
+  padding: 2rem;
+  margin-top: 2.5rem;
+}
+
+/* Details heading */
+.system-details h3 {
+  color: var(--accent-color, #64ffda);
+  margin-bottom: 1.8rem;
+  font-size: 1.5rem;
+  font-weight: 600;
+}
+
+/* Properties grid for system details */
+.properties-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.2rem;
+  margin-bottom: 2.5rem;
+}
+
+/* Bus and line data grids */
+.bus-data-grid,
+.line-data-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 2.5rem;
+}
+
+/* Bus and line item containers */
+.bus-item,
+.line-item {
+  background: rgba(255, 255, 255, 0.06);
+  border-radius: 6px;
+  padding: 1rem;
+}
+
+/* Individual property item */
+.property-item {
+  display: flex;
+  justify-content: space-between;
+  padding: 0.6rem 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+  font-size: 0.95rem;
+}
+
+/* Property label */
+.property-label {
+  color: red;
+  opacity: 0.85;
+  font-weight: 500;
+}
+
+/* Property value */
+.property-value {
+  color: var(--accent-color, #64ffda);
+  font-family: 'Roboto Mono', monospace; /* Monospace for engineering precision */
+  font-weight: 500;
+}
+
+/* Subheadings for bus and line data */
+.system-details h4 {
+  color: blue;
+  margin-bottom: 1.5rem;
+  font-size: 1.4rem;
+  font-weight: 600;
+}
+
+/* Simulation section */
+.simulation-section {
+  background: rgba(23, 42, 69, 0.4);
+  border: 1px solid rgba(100, 255, 218, 0.15);
+  border-radius: 10px;
+  padding: 2rem;
+  margin-top: 2.5rem;
+}
+
+/* Simulation heading */
+.simulation-section h4 {
+  color: var(--accent-color, #64ffda);
+  margin-bottom: 1.8rem;
+  font-size: 1.4rem;
+  font-weight: 600;
+}
+
+/* Simulation inputs grid */
+.simulation-inputs {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+/* Input group styling */
+.input-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+.result-item span:first-child {
+  color: var(--text-color, #ccd6f6);
+  font-size: 0.95rem;
+  font-weight: 500;
+    font-weight: 600;
+    color: white;
+  }
+
+/* Input labels */
+.input-group label {
+  color: var(--text-color, #ccd6f6);
+  font-size: 0.95rem;
+  font-weight: 500;
+}
+
+/* Input styling */
+.input-group input {
+  padding: 0.9rem 1rem;
+  border-radius: 5px;
+  border: 1px solid var(--accent-color, #64ffda);
+  background: var(--secondary-color, #233554);
+  color: var(--text-color, #ccd6f6);
+  font-size: 1rem;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+/* Disabled input styling */
+.input-group input:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  background: rgba(35, 53, 84, 0.8);
+}
+
+/* Focus state for inputs */
+.input-group input:focus {
+  outline: none;
+  border-color: var(--accent-color, #64ffda);
+  box-shadow: 0 0 8px rgba(100, 255, 218, 0.3);
+}
+
+/* Simulate button */
+.simulate-btn {
+  background: var(--accent-color, #64ffda);
+  color: var(--primary-color, #172a45);
+  border: none;
+  padding: 0.9rem 2rem;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 1.1rem;
+  font-weight: 600;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  margin-bottom: 2rem;
+}
+
+/* Button hover effect */
+.simulate-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(100, 255, 218, 0.3);
+}
+
+/* Disabled button styling */
+.simulate-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+/* Simulation results section */
+.simulation-results {
+  background: rgba(23, 42, 69, 0.4);
+  border: 1px solid rgba(100, 255, 218, 0.15);
+  border-radius: 10px;
+  padding: 2rem;
+}
+
+/* Results heading */
+.simulation-results h5 {
+  color: var(--accent-color, #64ffda);
+  margin-bottom: 1.5rem;
+  font-size: 1.3rem;
+  font-weight: 600;
+}
+
+/* Error message styling */
+.error-message {
+  color: #ff6b6b; /* Red for errors */
+  font-size: 1rem;
+  padding: 1rem;
+  background: rgba(255, 107, 107, 0.1);
+  border-radius: 5px;
+  text-align: center;
+}
+
+/* Results grid */
+.results-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+/* Individual result item */
+.result-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  padding: 1rem;
+  background: rgba(255, 255, 255, 0.06);
+  border-radius: 6px;
+  transition: background 0.3s ease;
+}
+
+/* Hover effect for result items */
+.result-item:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+/* Result label */
+.result-label {
+  color: var(--text-color, #ccd6f6);
+  opacity: 0.85;
+  font-size: 0.95rem;
+  font-weight: 500;
+}
+
+/* Result value */
+.result-value {
+  color: var(--accent-color, #64ffda);
+  font-family: 'Roboto Mono', monospace;
+  font-size: 1.2rem;
+  font-weight: 500;
+}
+
+/* Network visualization container */
+.network-visualization {
+  background: rgba(255, 255, 255, 0.06);
+  border-radius: 6px;
+  padding: 1.5rem;
+  margin-top: 2rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* Network heading */
+.network-visualization h5 {
+  color: var(--accent-color, #64ffda);
+  margin-bottom: 1.5rem;
+  font-size: 1.2rem;
+  font-weight: 600;
+}
+
+/* SVG network diagram */
+.network-visualization svg {
+  max-width: 100%;
+  height: auto;
+}
+
+/* Visualization chart container */
+.visualization-chart {
+  background: rgba(255, 255, 255, 0.06);
+  border-radius: 6px;
+  padding: 1.5rem;
+  margin-top: 2rem;
+}
+
+/* Chart heading */
+.visualization-chart h5 {
+  color: var(--accent-color, #64ffda);
+  margin-bottom: 1.5rem;
+  font-size: 1.2rem;
+  font-weight: 600;
+}
+
+/* Sort indicator */
+.sort-indicator {
+  margin-left: 0.6rem;
+  font-size: 0.85rem;
+  color: var(--accent-color, #64ffda);
+}
+
+/* Responsive Design for Tablets and Smaller Devices */
+@media (max-width: 1024px) {
+  .power-system-load-flow-analyzer {
+    margin: 1.5rem;
+    padding: 1.5rem;
+  }
+
+  .controls {
+    gap: 1.5rem;
+  }
+
+  .simulation-inputs {
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  }
+
+  .results-grid {
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  }
+
+  .bus-data-grid,
+  .line-data-grid {
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  }
+}
+
+/* Responsive Design for Mobile Devices */
+@media (max-width: 768px) {
+  .power-system-load-flow-analyzer {
+    margin: 1rem;
+    padding: 1rem;
+  }
+
+  .power-system-load-flow-analyzer h2 {
+    font-size: 1.6rem;
+  }
+
+  .controls {
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .search-box {
+    min-width: 100%;
+    max-width: 100%;
+  }
+
+  .systems-table-container {
+    margin-bottom: 1.5rem;
+  }
+
+  .systems-table th,
+  .systems-table td {
+    padding: 0.8rem;
+    font-size: 0.9rem;
+  }
+
+  .system-details {
+    padding: 1.5rem;
+  }
+
+  .simulation-section {
+    padding: 1.5rem;
+  }
+
+  .simulation-inputs {
+    grid-template-columns: 1fr;
+  }
+
+  .results-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .bus-data-grid,
+  .line-data-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .network-visualization,
+  .visualization-chart {
+    padding: 1rem;
+  }
+}
+
+/* Extra Small Devices */
+@media (max-width: 480px) {
+  .power-system-load-flow-analyzer h2 {
+    font-size: 1.4rem;
+  }
+
+  .view-details-btn,
+  .simulate-btn {
+    width: 100%;
+    padding: 0.8rem;
+    font-size: 1rem;
+  }
+
+  .properties-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .network-visualization svg {
+    width: 100%;
+  }
+}
+
+/* Dark Mode Support */
+@media (prefers-color-scheme: dark) {
+  .search-box input,
+  .input-group input {
+    background: var(--secondary-color, #233554);
+    color: var(--text-color, #ccd6f6);
+    border-color: var(--accent-color, #64ffda);
+  }
+
+  .search-box input:focus,
+  .input-group input:focus {
+    box-shadow: 0 0 8px rgba(100, 255, 218, 0.3);
+  }
+}
+
+/* Accessibility Enhancements */
+:focus-visible {
+  outline: 2px solid var(--accent-color, #64ffda);
+  outline-offset: 2px;
+}
+

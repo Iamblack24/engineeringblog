@@ -292,3 +292,143 @@
       color: var(--text-color);
     }
   }
+  .calculation-section {
+  margin-top: 2rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--border-color, #303c55);
+}
+
+.calculation-section h4 {
+  color: var(--accent-color, #64ffda);
+  margin-bottom: 1.5rem;
+  font-size: 1.3rem;
+}
+
+.calculation-inputs {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.input-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.input-group label {
+  margin-bottom: 0.5rem;
+  color: var(--text-secondary-color, #a8b2d1);
+  font-size: 0.9rem;
+}
+
+.input-group input,
+.input-group select {
+  padding: 0.75rem;
+  background-color: var(--secondary-color, #112240);
+  border: 1px solid var(--border-color, #303c55);
+  color: var(--text-color, #ccd6f6);
+  border-radius: 4px;
+  font-size: 1rem;
+}
+
+.input-group input:focus,
+.input-group select:focus {
+  outline: none;
+  border-color: var(--accent-color, #64ffda);
+  box-shadow: 0 0 0 2px rgba(100, 255, 218, 0.3);
+}
+
+.calculate-btn {
+  background-color: var(--accent-color, #64ffda);
+  color: var(--primary-color, #0a192f);
+  border: none;
+  padding: 0.75rem 1.5rem;
+  font-size: 1rem;
+  font-weight: 600;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.2s ease-in-out;
+  display: block;
+  margin: 1.5rem auto 0;
+}
+
+.calculate-btn:hover {
+  background-color: var(--accent-hover-color, #52cca3);
+}
+
+.calculate-btn:disabled {
+  background-color: var(--border-color, #303c55);
+  cursor: not-allowed;
+}
+
+.calculation-results {
+  margin-top: 2rem;
+  padding: 1.5rem;
+  background-color: var(--secondary-color-light, #112240); /* Slightly lighter than main secondary for contrast */
+  border-radius: 8px;
+  border: 1px solid var(--border-color, #303c55);
+}
+
+.calculation-results h5 {
+  color: var(--accent-color, #64ffda);
+  text-align: center;
+  margin-bottom: 1.5rem;
+  font-size: 1.2rem;
+}
+
+.results-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1rem;
+  text-align: left;
+}
+
+.result-item {
+  background: var(--primary-color, #0a192f);
+  padding: 0.75rem 1rem;
+  border-radius: 4px;
+  color: var(--text-color, #ccd6f6);
+  font-size: 0.9rem;
+  border-left: 3px solid var(--accent-color, #64ffda);
+}
+
+.result-label {
+  display: block;
+  color: var(--text-secondary-color, #a8b2d1);
+  margin-bottom: 0.25rem;
+  font-weight: 500;
+}
+
+.result-value {
+  font-weight: 600;
+  color: var(--text-color, #ccd6f6);
+}
+
+.utilization-chart {
+  margin-top: 2rem;
+  padding: 1rem;
+  background: var(--primary-color, #0a192f);
+  border-radius: 4px;
+}
+
+.error-message,
+.corrosion-warning-message {
+  background-color: rgba(255, 99, 132, 0.1); /* Light red for error */
+  border: 1px solid rgba(255, 99, 132, 0.5);
+  color: #ff6384; /* Brighter red for text */
+  padding: 1rem;
+  border-radius: 4px;
+  margin-bottom: 1.5rem;
+  text-align: center;
+}
+
+.corrosion-warning-message {
+  background-color: rgba(255, 159, 64, 0.1); /* Light orange for warning */
+  border: 1px solid rgba(255, 159, 64, 0.5);
+  color: #ff9f40; /* Brighter orange for text */
+}
+
+.corrosion-warning-message p {
+  margin: 0.5rem 0;
+}

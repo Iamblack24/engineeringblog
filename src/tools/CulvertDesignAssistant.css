@@ -1,0 +1,293 @@
+.culvert-tool {
+  max-width: 900px;
+  margin: 2rem auto;
+  background: #fff;
+  border-radius: 1.2rem;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.10);
+  padding: 2rem 1.2rem 1.2rem 1.2rem;
+}
+.culvert-header {
+  text-align: center;
+  margin-bottom: 1.5rem;
+}
+.culvert-header h1 {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #2563eb;
+  margin-bottom: 0.3rem;
+}
+.culvert-header p {
+  color: #64748b;
+  font-size: 1.1rem;
+}
+.culvert-tabs {
+  display: flex;
+  border-bottom: 1px solid #e5e7eb;
+  margin-bottom: 1.5rem;
+}
+.culvert-tab-btn {
+  flex: 1;
+  padding: 1rem 0.5rem;
+  background: none;
+  border: none;
+  font-size: 1rem;
+  font-weight: 500;
+  color: #64748b;
+  border-bottom: 2.5px solid transparent;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.culvert-tab-btn.active, .culvert-tab-btn:hover {
+  color: #2563eb;
+  background: #f1f5fd;
+  border-bottom: 2.5px solid #2563eb;
+}
+.culvert-tab-content {
+  padding: 1rem 0 0 0;
+}
+.culvert-form-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+  gap: 1rem;
+  margin-bottom: 1.2rem;
+}
+.culvert-form-grid label {
+  font-size: 0.97rem;
+  font-weight: 500;
+  color: #334155;
+  margin-bottom: 0.2rem;
+  display: block;
+}
+.culvert-form-grid input,
+.culvert-form-grid select {
+  width: 100%;
+  padding: 0.5rem 0.7rem;
+  border: 1px solid #cbd5e1;
+  border-radius: 0.5rem;
+  font-size: 1rem;
+  background: #f8fafc;
+  margin-bottom: 0.2rem;
+  transition: box-shadow 0.2s;
+}
+.culvert-form-grid input:focus,
+.culvert-form-grid select:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px #2563eb33;
+  border-color: #2563eb;
+}
+.culvert-radio-group {
+  display: flex;
+  gap: 1.2rem;
+  margin-top: 0.2rem;
+}
+.culvert-radio-group label {
+  font-weight: 400;
+  color: #475569;
+  font-size: 0.97rem;
+}
+.culvert-calc-btn {
+  width: 100%;
+  background: linear-gradient(90deg, #2563eb 0%, #818cf8 100%);
+  color: #fff;
+  font-weight: 600;
+  font-size: 1.1rem;
+  padding: 0.7rem 0;
+  border: none;
+  border-radius: 0.6rem;
+  margin: 1.2rem 0 0.7rem 0;
+  cursor: pointer;
+  transition: background 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+}
+.culvert-calc-btn:hover {
+  background: linear-gradient(90deg, #1d4ed8 0%, #6366f1 100%);
+}
+.culvert-results {
+  margin-top: 1.2rem;
+  background: #f8fafc;
+  border-radius: 0.8rem;
+  padding: 1.2rem 0.8rem;
+  box-shadow: 0 2px 8px #0001;
+}
+.culvert-results h3 {
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: #2563eb;
+  margin-bottom: 0.7rem;
+}
+.culvert-results-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+  gap: 0.8rem;
+  margin-bottom: 1rem;
+}
+.culvert-result-card {
+  background: #fff;
+  border-radius: 0.7rem;
+  padding: 0.7rem 0.6rem;
+  box-shadow: 0 1px 4px #0001;
+  text-align: center;
+  transition: box-shadow 0.2s, transform 0.2s;
+}
+.culvert-result-card.blue { border-left: 4px solid #2563eb; }
+.culvert-result-card.green { border-left: 4px solid #22c55e; }
+.culvert-result-card.purple { border-left: 4px solid #a78bfa; }
+.culvert-result-card.yellow { border-left: 4px solid #facc15; }
+.culvert-result-card.red { border-left: 4px solid #ef4444; }
+.culvert-result-card .label {
+  font-size: 0.95rem;
+  color: #64748b;
+  margin-bottom: 0.2rem;
+}
+.culvert-result-card .value {
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: #334155;
+}
+.culvert-recommendations {
+  margin-top: 0.7rem;
+}
+.culvert-recommendations h4 {
+  font-size: 1.08rem;
+  color: #2563eb;
+  margin-bottom: 0.3rem;
+}
+.culvert-recommendations ul {
+  padding-left: 1.2rem;
+  color: #475569;
+  font-size: 0.98rem;
+}
+.culvert-footer {
+  text-align: center;
+  color: #64748b;
+  font-size: 0.97rem;
+  margin-top: 2.2rem;
+}
+@media (max-width: 700px) {
+  .culvert-tool {
+    padding: 1rem 0.3rem 0.7rem 0.3rem;
+  }
+  .culvert-header h1 { font-size: 1.2rem; }
+  .culvert-results-grid { grid-template-columns: 1fr; }
+}
+.culvert-analysis-chart {
+  background: #f8fafc;
+  border-radius: 0.8rem;
+  box-shadow: 0 2px 8px #0001;
+  padding: 1.2rem 0.8rem;
+  margin-bottom: 1.2rem;
+}
+.culvert-analysis-note {
+  color: #64748b;
+  font-size: 1.05rem;
+  margin-top: 0.7rem;
+}
+@media (max-width: 700px) {
+  .culvert-analysis-chart {
+    padding: 0.5rem 0.2rem;
+  }
+}
+.culvert-diagram-box {
+  background: #f8fafc;
+  border-radius: 0.7rem;
+  margin-bottom: 1.2rem;
+  padding: 0.7rem 0.7rem 0.2rem 0.7rem;
+  box-shadow: 0 1px 4px #0001;
+  text-align: center;
+}
+.culvert-diagram-title {
+  font-size: 1.08rem;
+  color: #2563eb;
+  margin-bottom: 0.3rem;
+  font-weight: 600;
+}
+.culvert-diagram-caption {
+  color: #64748b;
+  font-size: 0.97rem;
+  margin-top: 0.3rem;
+}
+.culvert-analysis-table table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 0.5rem;
+  background: #f8fafc;
+  border-radius: 0.5rem;
+  overflow: hidden;
+}
+.culvert-analysis-table th, .culvert-analysis-table td {
+  padding: 0.5rem 1rem;
+  border-bottom: 1px solid #e5e7eb;
+  text-align: center;
+}
+.culvert-analysis-table th {
+  background: #e0e7ef;
+  color: #2563eb;
+}
+/* Add to your CSS file */
+.culvert-cost-form {
+  background: #f8fafc;
+  padding: 1rem;
+  border-radius: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.culvert-form-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  align-items: center;
+}
+
+.culvert-cost-results {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.culvert-cost-card {
+  background: #f1f5fd;
+  padding: 1rem;
+  border-radius: 0.5rem;
+  text-align: center;
+}
+
+.culvert-cost-card.total {
+  background: #dbeafe;
+  font-weight: bold;
+}
+
+.cost-label {
+  font-size: 0.9rem;
+  margin-bottom: 0.5rem;
+  color: #4b5563;
+}
+
+.cost-value {
+  font-size: 1.2rem;
+  color: #1e40af;
+}
+
+.culvert-export-buttons {
+  display: flex;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.culvert-export-btn {
+  background: #f1f5fd;
+  border: 1px solid #cbd5e1;
+  padding: 0.5rem 1rem;
+  border-radius: 0.25rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.culvert-export-btn:hover {
+  background: #dbeafe;
+}

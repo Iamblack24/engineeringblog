@@ -170,12 +170,12 @@ const HomePage = () => {
     },
     {
       id: 2,
-      title: "Sustainable Engineering Practices",
-      excerpt: "Learn about sustainable engineering practices that are helping to create a greener future.",
+      title: "Understanding Hydrology For Road Construction",
+      excerpt: "A comprehensive guide to understanding hydrology and its impact on road construction projects.",
       image: "/sustainable.jpg",
       readTime: "7 min",
       category: "Sustainability",
-      link: "/articles/2"
+      link: "/articles/10"
     },
     {
       id: 3,
@@ -290,7 +290,7 @@ const HomePage = () => {
                   animate={{ scale: 1 }}
                   transition={{ delay: 1, duration: 0.5 }}
                 >
-                  <span className="stat-number">5000+</span>
+                  <span className="stat-number">500+</span>
                   <span className="stat-label">Community Members</span>
                 </motion.div>
                 <motion.div 
@@ -299,7 +299,7 @@ const HomePage = () => {
                   animate={{ scale: 1 }}
                   transition={{ delay: 1.2, duration: 0.5 }}
                 >
-                  <span className="stat-number">200+</span>
+                  <span className="stat-number">100+</span>
                   <span className="stat-label">Engineering Tools</span>
                 </motion.div>
               </div>
@@ -707,7 +707,7 @@ const HomePage = () => {
             >
               <div className="founder-content">
                 <h3>John Micheal</h3>
-                <p>Founder and developer of Engineering Hub</p>
+                <p>Lead Developer</p>
                 <div className="social-links">
                   <motion.a 
                     href="https://www.linkedin.com/in/john-micheal-736bb71b4" 
@@ -749,7 +749,7 @@ const HomePage = () => {
             >
               <div className="founder-content">
                 <h3>Owen Richard</h3>
-                <p>Co-founder of Engineering Hub</p>
+                <p>Content Director</p>
                 <div className="social-links">
                   <motion.a 
                     href="https://www.linkedin.com/in/owen-richard-93737433a" 
@@ -781,7 +781,48 @@ const HomePage = () => {
                 </div>
               </div>
             </motion.div>
-          </div>
+            <motion.div 
+              className="founder-developer"
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5, delay: 0.4 }}
+              >
+              <div className="founder-content">
+                <h3>Baron Otieno</h3>
+                <p>Marketing Director</p>
+                <div className="social-links">
+                  <motion.a 
+                    href="example.com" 
+                    target="_blank" 
+                    rel="noreferrer"
+                    whileHover={{ y: -3 }}
+                    transition={{ duration: 0.2 }}
+                  >
+                    <i className='fab fa-linkedin'></i>
+                  </motion.a>
+                  <motion.a 
+                    href="https://x.com/sir_hesbon?t=5ORXngKKDOIB2hFjGFVgqQ&s=08" 
+                    target='_blank' 
+                    rel="noreferrer"
+                    whileHover={{ y: -3 }}
+                    transition={{ duration: 0.2 }}
+                  >
+                    <i className='fab fa-twitter'></i>
+                  </motion.a>
+                  <motion.a 
+                    href="https://www.instagram.com/hesbonbaron?utm_source=qr&igsh=bWdlamVndjZkMmJq" 
+                    target='_blank' 
+                    rel="noreferrer"
+                    whileHover={{ y: -3 }}
+                    transition={{ duration: 0.2 }}
+                  >
+                    <i className='fab fa-instagram'></i>
+                  </motion.a>
+                </div>
+              </div>
+          </motion.div>
+          </div> 
         </motion.section>
         <section className="newsletter-section">
           <NewsletterSignup />

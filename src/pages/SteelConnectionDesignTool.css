@@ -142,3 +142,41 @@ button:hover {
     color: var(--unsafe-color);
     font-weight: bold;
 }
+fieldset {
+  border: 1px solid #ccc;
+  padding: 15px;
+  margin-bottom: 20px;
+  border-radius: 5px;
+}
+
+legend {
+  font-weight: bold;
+  padding: 0 10px;
+  color: #333;
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 15px;
+}
+
+.calculation-details-box {
+  background-color: #f9f9f9;
+  border: 1px solid #e0e0e0;
+  padding: 10px;
+  margin-bottom: 15px;
+  border-radius: 4px;
+  font-size: 0.9em;
+}
+
+.calculation-details-box h4 {
+  margin-top: 0;
+  margin-bottom: 10px;
+  color: #555;
+}
+
+.calculation-details-box p {
+  margin: 5px 0;
+  color: #666;
+}

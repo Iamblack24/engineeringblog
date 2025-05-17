@@ -53,3 +53,62 @@
     color: #777;
     margin-top: 10px;
   }
+  .newsletter-form {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 10px;
+  align-items: center; /* Align items vertically */
+}
+
+.newsletter-form input[type="email"] {
+  flex-grow: 1;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 1rem;
+}
+
+.newsletter-form button {
+  padding: 10px 15px;
+  background-color: var(--accent-color, #64ffda); /* Use your site's accent color */
+  color: var(--primary-color, #0a192f); /* Use your site's primary background for text on accent */
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: background-color 0.2s ease-in-out;
+}
+
+.newsletter-form button:hover {
+  background-color: var(--accent-hover-color, #52cca3); /* Darken accent color on hover */
+}
+
+.newsletter-form button:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
+.form-message {
+  margin-top: 10px;
+  padding: 10px;
+  border-radius: 4px;
+  text-align: center;
+}
+
+.form-message.success {
+  background-color: #e6fffa; /* Light green */
+  color: #007059; /* Dark green */
+  border: 1px solid #00b38a;
+}
+
+.form-message.error {
+  background-color: #fff0f0; /* Light red */
+  color: #c00; /* Dark red */
+  border: 1px solid #ffcccc;
+}
+
+.form-note {
+  font-size: 0.85rem;
+  color: #777;
+  text-align: center;
+}

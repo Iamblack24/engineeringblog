@@ -4,18 +4,17 @@ import './Navbar.css'; // Import the CSS file for navbar styling
 import { AuthContext } from '../contexts/AuthContext';
 import { signOut } from 'firebase/auth';
 import { auth } from '../firebase';
-import AuthModal from './AuthModal';
-import { Link, NavLink } from 'react-router-dom'; // Use NavLink for active link styling
+import { Link, NavLink, useNavigate } from 'react-router-dom'; // Add useNavigate
 import { FaBars, FaTimes, FaCaretDown, FaMale, FaFemale, FaTools, FaBook, FaGraduationCap, FaBriefcase, FaUsers, FaInfo } from 'react-icons/fa'; // Import icons from react-icons library
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [showAuthModal, setShowAuthModal] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [openDropdown, setOpenDropdown] = useState(null);
   const { currentUser } = useContext(AuthContext);
   const dropdownRef = useRef(null);
   const mobileNavRef = useRef(null);
+  const navigate = useNavigate(); // Add this
 
   const handleMenuToggle = () => {
     setIsMenuOpen(!isMenuOpen);
@@ -36,14 +35,6 @@ const Navbar = () => {
     } catch (error) {
       console.error('Error signing out:', error);
     }
-  };
-
-  const openAuthModal = () => {
-    setShowAuthModal(true);
-  };
-
-  const closeAuthModal = () => {
-    setShowAuthModal(false);
   };
 
   const toggleDropdown = () => {
@@ -76,17 +67,6 @@ const Navbar = () => {
       setIsMenuOpen(false);
     }
   };
-
-  useEffect(() => {
-    // Only show the modal automatically on first load if user is not logged in
-    // and there's no stored preference to hide it
-    const hasSeenModal = localStorage.getItem('hasSeenAuthModal');
-    if (!currentUser && !hasSeenModal) {
-      setShowAuthModal(true);
-      // Set flag to prevent showing on every page load
-      localStorage.setItem('hasSeenAuthModal', 'true');
-    }
-  }, [currentUser]);
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -322,7 +302,10 @@ const Navbar = () => {
               )}
             </div>
           ) : (
-            <span className="nav-links login-signup" onClick={openAuthModal}>
+            <span
+              className="nav-links login-signup"
+              onClick={() => navigate('/auth')}
+            >
               Login / Signup
             </span>
           )}
@@ -331,9 +314,6 @@ const Navbar = () => {
 
       {/* Mobile menu overlay */}
       <div className={`mobile-menu-overlay ${isMenuOpen ? 'active' : ''}`} onClick={handleCloseMenu}></div>
-      
-      {showAuthModal && <AuthModal onClose={closeAuthModal} />}
-      <AuthModal isOpen={showAuthModal} onClose={closeAuthModal} />
       <div aria-live="polite" id="dropdown-announcement" className="sr-only"></div>
     </nav>
   );

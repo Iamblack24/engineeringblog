@@ -12,6 +12,8 @@ import './App.css';
 
 // Import all components directly
 import HomePage from './pages/HomePage';
+import AuthPage from './pages/AuthPage';
+import NotFoundPage from './pages/NotFoundPage';
 import ArticlesPage from './pages/ArticlesPage';
 import CaseStudiesPage from './pages/CaseStudiesPage';
 import InteractiveToolsPage from './pages/InteractiveToolsPage';
@@ -102,6 +104,14 @@ import ExtensionHubPage from './pages/ExtensionHubPage';
 import AdsStrategyPage from './pages/AdsStrategyPage';
 import BillOfQuantitiesGenerator from './tools/BillOfQuantitiesGenerator';
 import MovingLoadAnalyzer from './tools/MovingLoadAnalyzer/MovingLoadAnalyzer';
+import ShortCircuitCurrentCalculator from './tools/ShortCircuitCurrentCalculator';
+import PowerSystemLoadFlowAnalyzer from './tools/PowerSystemLoadFlowAnalyzer';
+import OpenChannelFlowCalculator from './tools/OpenChannelFlowCalculator';
+import LightingDesignCalculator from './tools/LightingDesignCalculator';
+import IoTDeviceNetworkPlanner from './tools/IoTDeviceNetworkPlanner';
+import GeotechnicalDataVisualizer from './tools/GeotechnicalDataVisualizer';
+import CircuitSimulator from './tools/CircuitSimulator';
+import CulvertDesignAssistant from './tools/CulvertDesignAssistant';  
 
 // Create a layout wrapper component
 const AppLayout = ({ children }) => {
@@ -166,6 +176,7 @@ function App() {
           <Route path="/about-us" element={<AboutUsPage />} />
           <Route path="/privacy-policy" element={<PrivacyPolicy />} />
           <Route path="/terms-of-service" element={<TermsOfService />} />
+          <Route path="/auth" element={<AuthPage />} />
 
           {/* Protected Routes */}
           <Route path="/articles" element={<ProtectedRoute><ArticlesPage /></ProtectedRoute>} />
@@ -254,6 +265,15 @@ function App() {
           <Route path="/tools/bill-of-quantities-generator" element={<ProtectedRoute><BillOfQuantitiesGenerator /></ProtectedRoute>} />
           <Route path="/hub/:extensionId" element={<ProtectedRoute><ExtensionHubPage /></ProtectedRoute>} />
           <Route path="/moving-load-analyzer" element={<ProtectedRoute><MovingLoadAnalyzer /></ProtectedRoute>} />
+          <Route path="/tools/short-circuit-current-calculator" element={<ProtectedRoute><ShortCircuitCurrentCalculator /></ProtectedRoute>} />
+          <Route path="/tools/power-system-load-flow-analyzer" element={<ProtectedRoute><PowerSystemLoadFlowAnalyzer /></ProtectedRoute>} />
+          <Route path="/tools/open-channel-flow-calculator" element={<ProtectedRoute><OpenChannelFlowCalculator /></ProtectedRoute>} />
+          <Route path="/tools/lighting-design-calculator" element={<ProtectedRoute><LightingDesignCalculator /></ProtectedRoute>} />
+          <Route path="/tools/iot-device-network-planner" element={<ProtectedRoute><IoTDeviceNetworkPlanner /></ProtectedRoute>} />
+          <Route path="/tools/geotechnical-data-visualizer" element={<ProtectedRoute><GeotechnicalDataVisualizer /></ProtectedRoute>} />
+          <Route path="/tools/circuit-simulator" element={<ProtectedRoute><CircuitSimulator /></ProtectedRoute>} />
+          <Route path="/tools/culvert-design-assistant" element={<ProtectedRoute><CulvertDesignAssistant /></ProtectedRoute>} />
+          <Route path="*" element={<NotFoundPage/>} />
         </Routes>
       </AppLayout>
       <InstallPrompt />

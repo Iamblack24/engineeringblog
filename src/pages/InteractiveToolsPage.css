@@ -554,7 +554,19 @@
   box-shadow: 0 4px 15px rgba(var(--primary-color-rgb), 0.3);
   transition: all 0.3s ease;
 }
-
+.search input[type=text] {
+  width: 100%;
+  padding: 10px;
+  border-radius: 5px;
+  border: 1px solid var(--border-color);
+  font-size: 1rem;
+  color: black;
+}
+.input[type=text]:focus {
+  outline: none;
+  border-color: var(--primary-color);
+  box-shadow: 0 0 5px rgba(var(--primary-color-rgb), 0.5);
+}
 .reset-search-btn:hover {
   background: var(--primary-hover);
 }
